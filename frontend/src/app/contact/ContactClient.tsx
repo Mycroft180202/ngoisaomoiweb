@@ -111,7 +111,7 @@ export default function ContactClient() {
       </section>
 
       {/* Main Grid */}
-      <section className="section" style={{ background: "#fcfaf6" }}>
+      <section className="section" style={{ background: "var(--public-background, #fcfaf6)" }}>
         <div className="container">
           <div
             style={{
@@ -133,14 +133,14 @@ export default function ContactClient() {
               <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 {offices.map((office) => (
                   <article key={office.name} className="contact-card surface-panel" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-                    <h3 style={{ fontSize: "1.3rem", color: "#1a1c1e" }}>{office.name}</h3>
-                    <p style={{ color: "#475569", fontSize: "0.95rem", lineHeight: "1.6" }}>
+                    <h3 style={{ fontSize: "1.3rem", color: "var(--public-text-strong, #1a1c1e)" }}>{office.name}</h3>
+                    <p style={{ color: "var(--public-text, #475569)", fontSize: "0.95rem", lineHeight: "1.6" }}>
                       📍 <strong>Địa chỉ:</strong> {office.address}
                     </p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.5rem" }}>
                       <div>
                         <strong style={{ display: "block", fontSize: "0.85rem", color: "var(--muted)", textTransform: "uppercase" }}>Điện thoại</strong>
-                        <p style={{ fontSize: "0.95rem", fontWeight: 600, color: "#1a1c1e" }}>{office.phone || ""}</p>
+                        <p style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--public-text-strong, #1a1c1e)" }}>{office.phone || ""}</p>
                       </div>
                       <div>
                         <strong style={{ display: "block", fontSize: "0.85rem", color: "var(--muted)", textTransform: "uppercase" }}>Hotline</strong>
@@ -167,7 +167,7 @@ export default function ContactClient() {
               <div className="surface-panel" style={{ padding: "2rem" }}>
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                   <label style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                    <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a1c1e" }}>Họ và tên *</span>
+                    <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--public-text-strong, #1a1c1e)" }}>Họ và tên *</span>
                     <input
                       type="text"
                       required
@@ -186,7 +186,7 @@ export default function ContactClient() {
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <label style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                      <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a1c1e" }}>Số điện thoại *</span>
+                      <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--public-text-strong, #1a1c1e)" }}>Số điện thoại *</span>
                       <input
                         type="tel"
                         required
@@ -204,7 +204,7 @@ export default function ContactClient() {
                     </label>
 
                     <label style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                      <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a1c1e" }}>Email (nếu có)</span>
+                      <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--public-text-strong, #1a1c1e)" }}>Email (nếu có)</span>
                       <input
                         type="email"
                         placeholder="example@gmail.com"
@@ -222,7 +222,7 @@ export default function ContactClient() {
                   </div>
 
                   <label style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                    <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a1c1e" }}>Chủ đề *</span>
+                    <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--public-text-strong, #1a1c1e)" }}>Chủ đề *</span>
                     <select
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -231,7 +231,7 @@ export default function ContactClient() {
                         borderRadius: "0.75rem",
                         border: "1px solid var(--border-strong)",
                         fontSize: "0.95rem",
-                        backgroundColor: "white",
+                        backgroundColor: "var(--public-surface, white)",
                         outline: "none",
                       }}
                     >
@@ -243,7 +243,7 @@ export default function ContactClient() {
                   </label>
 
                   <label style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                    <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a1c1e" }}>Lời nhắn / Yêu cầu chi tiết *</span>
+                    <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--public-text-strong, #1a1c1e)" }}>Lời nhắn / Yêu cầu chi tiết *</span>
                     <textarea
                       required
                       rows={4}

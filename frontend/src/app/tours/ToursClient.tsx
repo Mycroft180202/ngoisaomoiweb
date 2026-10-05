@@ -209,9 +209,9 @@ export default function ToursClient({
                         <span className="tour-search-item__name">{tour.title}</span>
                         <div className="tour-search-item__meta">
                           <span className="tour-search-item__tag">{tour.tag}</span>
-                          <span style={{ color: "#94a3b8" }}>·</span>
-                          <span style={{ color: "#64748b" }}>{tour.duration}</span>
-                          <span style={{ color: "#94a3b8" }}>·</span>
+                          <span style={{ color: "var(--public-muted, #94a3b8)" }}>·</span>
+                          <span style={{ color: "var(--public-muted, #64748b)" }}>{tour.duration}</span>
+                          <span style={{ color: "var(--public-muted, #94a3b8)" }}>·</span>
                           <span className="tour-search-item__price">{tour.price}</span>
                         </div>
                       </div>

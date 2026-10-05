@@ -44,7 +44,7 @@ export default function SiteShell({
   }, []);
 
   useEffect(() => {
-    if (isAdmin || isAuth) {
+    if (isAdmin) {
       return;
     }
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -86,7 +86,7 @@ export default function SiteShell({
     return <MaintenanceScreen config={maintenance} />;
   }
 
-  if (isAuth) return <>{children}</>;
+  if (isAuth) return <div className={uiVersion === "v2" ? "site-frame site-frame--v2 site-frame--auth" : undefined}>{children}</div>;
 
   const VersionedFrame = uiVersion === "v2"
     ? (viewportMode === "touch" ? TouchSiteFrame : DesktopSiteFrame)

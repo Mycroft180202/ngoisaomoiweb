@@ -378,7 +378,7 @@ export default function CheckoutClient() {
         <div className="surface-panel" style={{ maxWidth: 480, width: "100%", padding: "3rem 2rem", textAlign: "center", borderRadius: "1.5rem" }}>
           <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>😔</div>
           <h2 style={{ fontSize: "1.4rem", marginBottom: "0.75rem" }}>Tour không tìm thấy</h2>
-          <p style={{ color: "#64748b", marginBottom: "1.5rem" }}>Tour bạn đang tìm có thể đã hết hoặc không tồn tại.</p>
+          <p style={{ color: "var(--public-muted, #64748b)", marginBottom: "1.5rem" }}>Tour bạn đang tìm có thể đã hết hoặc không tồn tại.</p>
           <Link href="/tours" className="button button-primary">Xem tất cả tour</Link>
         </div>
       </main>
@@ -389,7 +389,7 @@ export default function CheckoutClient() {
     <main style={{ background: "var(--bg)", minHeight: "100vh", paddingTop: "2rem", paddingBottom: "4rem" }}>
       {/* Breadcrumb */}
       <div className="container" style={{ marginBottom: "1.5rem" }}>
-        <nav style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.88rem", color: "#64748b", flexWrap: "wrap" }}>
+        <nav style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.88rem", color: "var(--public-muted, #64748b)", flexWrap: "wrap" }}>
           <Link href="/" style={{ color: "var(--accent)", textDecoration: "none" }}>Trang chủ</Link>
           <span>›</span>
           <Link href="/tours" style={{ color: "var(--accent)", textDecoration: "none" }}>Tours</Link>
@@ -402,7 +402,7 @@ export default function CheckoutClient() {
             </>
           )}
           <span>›</span>
-          <span style={{ color: "#0f172a", fontWeight: 600 }}>Đặt tour</span>
+          <span style={{ color: "var(--public-text-strong, #0f172a)", fontWeight: 600 }}>Đặt tour</span>
         </nav>
       </div>
 
@@ -411,16 +411,16 @@ export default function CheckoutClient() {
           {/* ─── LEFT COLUMN: Form ─── */}
           <div className="checkout-form-col">
             <div className="surface-panel" style={{ padding: "2rem", borderRadius: "1.25rem" }}>
-              <h1 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.4rem", color: "#0f172a" }}>
+              <h1 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.4rem", color: "var(--public-text-strong, #0f172a)" }}>
                 📋 Thông tin đặt tour
               </h1>
-              <p style={{ color: "#64748b", fontSize: "0.92rem", marginBottom: "1.75rem" }}>
+              <p style={{ color: "var(--public-muted, #64748b)", fontSize: "0.92rem", marginBottom: "1.75rem" }}>
                 Vui lòng kiểm tra và điền đầy đủ thông tin bên dưới.
               </p>
 
               {errorMsg && (
                 <div style={{
-                  background: "#fef2f2", border: "1px solid #fca5a5", color: "#dc2626",
+                  background: "var(--public-error-surface, #fef2f2)", border: "1px solid var(--public-error-border, #fca5a5)", color: "#dc2626",
                   padding: "0.85rem 1rem", borderRadius: "0.75rem",
                   marginBottom: "1.25rem", fontSize: "0.9rem", fontWeight: 500
                 }}>
@@ -458,7 +458,7 @@ export default function CheckoutClient() {
                   <h3 className="checkout-section-title">📅 Ngày khởi hành <span style={{ color: "#ef4444" }}>*</span></h3>
 
                   {tourLoading ? (
-                    <div style={{ height: "3rem", borderRadius: "0.75rem", background: "#e2e8f0", animation: "pulse 1.5s infinite" }} />
+                    <div style={{ height: "3rem", borderRadius: "0.75rem", background: "var(--public-border, #e2e8f0)", animation: "pulse 1.5s infinite" }} />
                   ) : availableDates.length > 0 ? (
                     /* ── Scheduled departure dates ── */
                     <div className="departure-date-grid">
@@ -480,7 +480,7 @@ export default function CheckoutClient() {
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "0.15rem" }}>
                               <span className="departure-date-btn__date">{formatDate(dateStr)}</span>
                               {datePrice && datePrice.price > 0 && (
-                                <span style={{ fontSize: "0.78rem", color: "#64748b" }}>
+                                <span style={{ fontSize: "0.78rem", color: "var(--public-muted, #64748b)" }}>
                                   {datePrice.promoPrice > 0 ? (
                                     <>
                                       <span style={{ textDecoration: "line-through", marginRight: "0.3rem" }}>
@@ -513,7 +513,7 @@ export default function CheckoutClient() {
                   ) : (
                     /* ── Free date input ── */
                     <div className="checkout-field">
-                      <label style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "0.35rem", fontWeight: 400 }}>
+                      <label style={{ fontSize: "0.82rem", color: "var(--public-muted, #64748b)", marginBottom: "0.35rem", fontWeight: 400 }}>
                         Tour này chưa có lịch cố định, vui lòng chọn ngày dự kiến khởi hành:
                       </label>
                       <input
@@ -606,7 +606,7 @@ export default function CheckoutClient() {
                           <span className="guest-subtitle">Độ tuổi 2-11</span>
                         </div>
                         <div className="guest-price-col">
-                          <span style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 500 }}>Liên hệ báo giá</span>
+                          <span style={{ fontSize: "0.85rem", color: "var(--public-muted, #64748b)", fontWeight: 500 }}>Liên hệ báo giá</span>
                         </div>
                         <div className="checkout-stepper-wrapper">
                           <div className="checkout-stepper">
@@ -638,7 +638,7 @@ export default function CheckoutClient() {
                     <button type="button" onClick={handleApplyPromo} disabled={promoLoading}
                       style={{
                         padding: "0 1.25rem", borderRadius: "0.75rem", background: "var(--accent)",
-                        color: "white", fontWeight: 700, border: "none", cursor: "pointer",
+                        color: "var(--public-on-accent, white)", fontWeight: 700, border: "none", cursor: "pointer",
                         whiteSpace: "nowrap", fontSize: "0.9rem", opacity: promoLoading ? 0.7 : 1
                       }}>
                       {promoLoading ? "..." : "Áp dụng"}
@@ -658,7 +658,7 @@ export default function CheckoutClient() {
                   ) : "✅ Xác nhận đặt tour"}
                 </button>
 
-                <p style={{ textAlign: "center", fontSize: "0.82rem", color: "#94a3b8" }}>
+                <p style={{ textAlign: "center", fontSize: "0.82rem", color: "var(--public-muted, #94a3b8)" }}>
                   Bằng cách đặt tour, bạn đồng ý với{" "}
                   <a href="/contact" style={{ color: "var(--accent)", textDecoration: "underline" }}>điều khoản dịch vụ</a> của chúng tôi.
                 </p>
@@ -669,14 +669,14 @@ export default function CheckoutClient() {
           {/* ─── RIGHT COLUMN: Order Summary ─── */}
           <div className="checkout-summary-col">
             <div className="surface-panel checkout-summary" style={{ padding: "1.75rem", borderRadius: "1.25rem", position: "sticky", top: "6rem" }}>
-              <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "1.25rem", color: "#0f172a" }}>
+              <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "1.25rem", color: "var(--public-text-strong, #0f172a)" }}>
                 🧾 Tóm tắt đơn hàng
               </h2>
 
               {tourLoading ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} style={{ height: "1.2rem", borderRadius: "0.4rem", background: "#e2e8f0", animation: "pulse 1.5s infinite" }} />
+                    <div key={i} style={{ height: "1.2rem", borderRadius: "0.4rem", background: "var(--public-border, #e2e8f0)", animation: "pulse 1.5s infinite" }} />
                   ))}
                 </div>
               ) : tour ? (
@@ -703,44 +703,44 @@ export default function CheckoutClient() {
                     </div>
                   </div>
 
-                  <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "0.65rem", color: "#0f172a", lineHeight: 1.4 }}>
+                  <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "0.65rem", color: "var(--public-text-strong, #0f172a)", lineHeight: 1.4 }}>
                     {tour.title}
                   </h3>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", fontSize: "0.875rem", color: "#64748b", marginBottom: "1.25rem" }}>
-                    <span>⏱ Thời gian: <strong style={{ color: "#334155" }}>{tour.duration}</strong></span>
-                    <span>📍 Lộ trình: <strong style={{ color: "#334155" }}>{tour.location}</strong></span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", fontSize: "0.875rem", color: "var(--public-muted, #64748b)", marginBottom: "1.25rem" }}>
+                    <span>⏱ Thời gian: <strong style={{ color: "var(--public-text, #334155)" }}>{tour.duration}</strong></span>
+                    <span>📍 Lộ trình: <strong style={{ color: "var(--public-text, #334155)" }}>{tour.location}</strong></span>
                     {tour.departure_point && (
-                      <span>🛫 Điểm đi: <strong style={{ color: "#334155" }}>{tour.departure_point.name}</strong></span>
+                      <span>🛫 Điểm đi: <strong style={{ color: "var(--public-text, #334155)" }}>{tour.departure_point.name}</strong></span>
                     )}
                     {selectedDateStr && (
                       <span>📅 Ngày đi: <strong style={{ color: "var(--accent)" }}>{formatDate(selectedDateStr)}</strong></span>
                     )}
                     {adultsCount > 0 && (
-                      <span>🧑 Người lớn: <strong style={{ color: "#334155" }}>{adultsCount}</strong></span>
+                      <span>🧑 Người lớn: <strong style={{ color: "var(--public-text, #334155)" }}>{adultsCount}</strong></span>
                     )}
                     {childrenCount > 0 && (
-                      <span>👧 Trẻ em: <strong style={{ color: "#334155" }}>{childrenCount}</strong></span>
+                      <span>👧 Trẻ em: <strong style={{ color: "var(--public-text, #334155)" }}>{childrenCount}</strong></span>
                     )}
                     {infantCount > 0 && (
-                      <span>👶 Em bé: <strong style={{ color: "#334155" }}>{infantCount}</strong></span>
+                      <span>👶 Em bé: <strong style={{ color: "var(--public-text, #334155)" }}>{infantCount}</strong></span>
                     )}
                   </div>
 
                   {/* Price breakdown */}
                   <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "#64748b" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "var(--public-muted, #64748b)" }}>
                       <span>{formatCurrency(tour.price)} × {adultsCount} người lớn</span>
                       <span>{formatCurrency(adultSubtotal)}</span>
                     </div>
                     {childrenCount > 0 && tour.price_child > 0 && (
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "#64748b" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "var(--public-muted, #64748b)" }}>
                         <span>{formatCurrency(tour.price_child)} × {childrenCount} trẻ em</span>
                         <span>{formatCurrency(childSubtotal)}</span>
                       </div>
                     )}
                     {infantCount > 0 && tour.price_infant > 0 && (
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "#64748b" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "var(--public-muted, #64748b)" }}>
                         <span>{formatCurrency(tour.price_infant)} × {infantCount} em bé</span>
                         <span>{formatCurrency(infantSubtotal)}</span>
                       </div>
@@ -753,7 +753,7 @@ export default function CheckoutClient() {
                     )}
                     <div style={{
                       display: "flex", justifyContent: "space-between",
-                      fontWeight: 800, fontSize: "1.1rem", color: "#0f172a",
+                      fontWeight: 800, fontSize: "1.1rem", color: "var(--public-text-strong, #0f172a)",
                       borderTop: "1px dashed var(--border)", paddingTop: "0.75rem", marginTop: "0.25rem"
                     }}>
                       <span>Tổng thanh toán</span>
@@ -765,7 +765,7 @@ export default function CheckoutClient() {
                   <div style={{
                     marginTop: "1.25rem", padding: "0.85rem 1rem",
                     background: "var(--accent-soft, #f0fdf4)", borderRadius: "0.75rem",
-                    display: "flex", flexDirection: "column", gap: "0.4rem", fontSize: "0.82rem", color: "#334155"
+                    display: "flex", flexDirection: "column", gap: "0.4rem", fontSize: "0.82rem", color: "var(--public-text, #334155)"
                   }}>
                     <div>✅ Xác nhận đặt chỗ ngay sau khi đặt</div>
                     <div>📧 Email xác nhận gửi tới hộp thư của bạn</div>
@@ -775,9 +775,9 @@ export default function CheckoutClient() {
                 </>
               ) : (
                 /* No tour slug – advisory booking */
-                <div style={{ padding: "1rem", background: "#f8fafc", borderRadius: "0.75rem", color: "#64748b", fontSize: "0.9rem" }}>
+                <div style={{ padding: "1rem", background: "var(--public-surface-soft, #f8fafc)", borderRadius: "0.75rem", color: "var(--public-muted, #64748b)", fontSize: "0.9rem" }}>
                   <p style={{ marginBottom: "0.5rem" }}>📝 <strong>Tour tư vấn:</strong></p>
-                  <p style={{ fontWeight: 600, color: "#334155" }}>{tourTitle || "Chưa chọn tour cụ thể"}</p>
+                  <p style={{ fontWeight: 600, color: "var(--public-text, #334155)" }}>{tourTitle || "Chưa chọn tour cụ thể"}</p>
                   <p style={{ marginTop: "0.5rem", fontSize: "0.82rem" }}>
                     Sau khi đặt, nhân viên sẽ liên hệ để tư vấn và báo giá chính xác.
                   </p>

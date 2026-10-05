@@ -90,16 +90,16 @@ export default function BookingLookupPage() {
       <div className="auth-container" style={{ width: "100%", maxWidth: "600px", zIndex: 10 }}>
         <div className="auth-card" style={{ padding: "2.5rem", borderRadius: "1.5rem", boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)" }}>
           <div className="auth-header" style={{ marginBottom: "2rem", textAlign: "center" }}>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginBottom: "0.5rem" }}>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--public-text-strong, #0f172a)", marginBottom: "0.5rem" }}>
               Tra cứu đơn đặt tour
             </h2>
-            <p style={{ color: "#64748b", fontSize: "0.95rem" }}>
+            <p style={{ color: "var(--public-muted, #64748b)", fontSize: "0.95rem" }}>
               Nhập mã đơn hàng và Email/Số điện thoại để kiểm tra trạng thái và tiếp tục thanh toán.
             </p>
           </div>
 
           {error && (
-            <div className="auth-message error" style={{ padding: "1rem", borderRadius: "0.75rem", background: "#fef2f2", border: "1px solid #fca5a5", color: "#b91c1c", fontSize: "0.9rem", marginBottom: "1.5rem" }}>
+            <div className="auth-message error" style={{ padding: "1rem", borderRadius: "0.75rem", background: "var(--public-error-surface, #fef2f2)", border: "1px solid var(--public-error-border, #fca5a5)", color: "var(--public-error-text, #b91c1c)", fontSize: "0.9rem", marginBottom: "1.5rem" }}>
               ⚠️ {error}
             </div>
           )}
@@ -107,7 +107,7 @@ export default function BookingLookupPage() {
           {!result ? (
             <form onSubmit={handleSubmit} className="auth-form" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
               <div className="form-group">
-                <label htmlFor="bookingId" style={{ fontWeight: 700, fontSize: "0.88rem", color: "#1a1c1e" }}>Mã đơn hàng (Booking ID) *</label>
+                <label htmlFor="bookingId" style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--public-text-strong, #1a1c1e)" }}>Mã đơn hàng (Booking ID) *</label>
                 <input
                   type="text"
                   id="bookingId"
@@ -115,12 +115,12 @@ export default function BookingLookupPage() {
                   value={bookingId}
                   onChange={(e) => setBookingId(e.target.value)}
                   required
-                  style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.75rem", border: "1px solid #cbd5e1" }}
+                  style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.75rem", border: "1px solid var(--public-border, #cbd5e1)" }}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="emailOrPhone" style={{ fontWeight: 700, fontSize: "0.88rem", color: "#1a1c1e" }}>Email hoặc Số điện thoại *</label>
+                <label htmlFor="emailOrPhone" style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--public-text-strong, #1a1c1e)" }}>Email hoặc Số điện thoại *</label>
                 <input
                   type="text"
                   id="emailOrPhone"
@@ -128,7 +128,7 @@ export default function BookingLookupPage() {
                   value={emailOrPhone}
                   onChange={(e) => setEmailOrPhone(e.target.value)}
                   required
-                  style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.75rem", border: "1px solid #cbd5e1" }}
+                  style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.75rem", border: "1px solid var(--public-border, #cbd5e1)" }}
                 />
               </div>
 
@@ -144,12 +144,12 @@ export default function BookingLookupPage() {
                 borderRadius: "1rem",
                 border: "1px solid var(--accent-light)",
                 fontSize: "0.95rem",
-                color: "#334155",
+                color: "var(--public-text, #334155)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.5rem"
               }}>
-                <h4 style={{ margin: "0 0 0.5rem 0", color: "#0f172a", fontSize: "1.1rem", fontWeight: 800 }}>
+                <h4 style={{ margin: "0 0 0.5rem 0", color: "var(--public-text-strong, #0f172a)", fontSize: "1.1rem", fontWeight: 800 }}>
                   Thông tin đơn đặt: #{result.id}
                 </h4>
                 <div>📍 <strong>Tour đặt:</strong> {result.tour_title}</div>
@@ -179,7 +179,7 @@ export default function BookingLookupPage() {
                     Thanh toán online qua QR
                   </button>
                 ) : result.payment_status !== "paid" && result.status !== "cancelled" && (
-                  <div style={{ padding: "0.9rem", borderRadius: "0.75rem", background: "#eff6ff", color: "#1e40af", textAlign: "center", fontWeight: 600 }}>
+                  <div style={{ padding: "0.9rem", borderRadius: "0.75rem", background: "var(--public-info-surface, #eff6ff)", color: "var(--public-info-text, #1e40af)", textAlign: "center", fontWeight: 600 }}>
                     {config.payment?.online_enabled ? "Nhân viên New Star Tour sẽ xác nhận đơn trước khi mở thanh toán online." : "Nhân viên New Star Tour sẽ liên hệ xác nhận và hướng dẫn thanh toán."}
                   </div>
                 )}
@@ -190,8 +190,8 @@ export default function BookingLookupPage() {
                     borderRadius: "0.75rem",
                     fontWeight: 700,
                     background: "none",
-                    border: "1px solid #cbd5e1",
-                    color: "#475569",
+                    border: "1px solid var(--public-border, #cbd5e1)",
+                    color: "var(--public-text, #475569)",
                     cursor: "pointer"
                   }}
                 >

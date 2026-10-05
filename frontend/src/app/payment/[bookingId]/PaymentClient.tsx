@@ -255,8 +255,8 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
     return (
       <div className="container" style={{ padding: "4rem 2rem", textAlign: "center" }}>
         <div className="animate-pulse">
-          <div style={{ width: "200px", height: "24px", background: "#e2e8f0", borderRadius: "4px", margin: "0 auto 2rem" }} />
-          <div style={{ width: "100%", maxWidth: "600px", height: "400px", background: "#e2e8f0", borderRadius: "12px", margin: "0 auto" }} />
+          <div style={{ width: "200px", height: "24px", background: "var(--public-border, #e2e8f0)", borderRadius: "4px", margin: "0 auto 2rem" }} />
+          <div style={{ width: "100%", maxWidth: "600px", height: "400px", background: "var(--public-border, #e2e8f0)", borderRadius: "12px", margin: "0 auto" }} />
         </div>
       </div>
     );
@@ -266,7 +266,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
     return (
       <div className="container" style={{ padding: "4rem 2rem", textAlign: "center" }}>
         <h2 style={{ color: "#ef4444", marginBottom: "1rem" }}>Lỗi thanh toán</h2>
-        <p style={{ color: "#6b7280", marginBottom: "2rem" }}>{error || "Không thể tải thông tin đặt tour"}</p>
+        <p style={{ color: "var(--public-muted, #6b7280)", marginBottom: "2rem" }}>{error || "Không thể tải thông tin đặt tour"}</p>
         <Link href="/tours" className="button button-primary">Về trang chủ</Link>
       </div>
     );
@@ -309,11 +309,11 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "1.875rem", marginBottom: "0.5rem", color: "#0f172a", fontWeight: 800 }}>
+        <h1 style={{ fontSize: "1.875rem", marginBottom: "0.5rem", color: "var(--public-text-strong, #0f172a)", fontWeight: 800 }}>
           Thanh toán đặt tour
         </h1>
-        <p style={{ color: "#64748b", fontSize: "0.95rem" }}>
-          Mã đơn hàng: <strong style={{ color: "#0f172a" }}>#{bookingId}</strong>
+        <p style={{ color: "var(--public-muted, #64748b)", fontSize: "0.95rem" }}>
+          Mã đơn hàng: <strong style={{ color: "var(--public-text-strong, #0f172a)" }}>#{bookingId}</strong>
         </p>
       </div>
 
@@ -321,7 +321,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
         {/* Booking Info */}
         <div className="surface-panel" style={{ padding: "1.75rem" }}>
-          <h3 style={{ fontSize: "1.1rem", marginTop: 0, marginBottom: "1.25rem", color: "#0f172a", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <h3 style={{ fontSize: "1.1rem", marginTop: 0, marginBottom: "1.25rem", color: "var(--public-text-strong, #0f172a)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span>📋</span> Thông tin đặt tour
           </h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem 1.5rem" }}>
@@ -337,19 +337,19 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
           <div style={{
             marginTop: "1.5rem",
             paddingTop: "1.25rem",
-            borderTop: "1px dashed #cbd5e1",
+            borderTop: "1px dashed var(--public-border, #cbd5e1)",
             display: "flex",
             flexDirection: "column",
             gap: "0.5rem"
           }}>
             {booking.discount_code && (
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", color: "#475569" }}>
-                <span>Áp dụng mã: <strong style={{ color: "#0d9488" }}>{booking.discount_code}</strong></span>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", color: "var(--public-text, #475569)" }}>
+                <span>Áp dụng mã: <strong style={{ color: "var(--public-success-text, #0d9488)" }}>{booking.discount_code}</strong></span>
                 <span style={{ color: "#ef4444", fontWeight: 600 }}>-{formatCurrency(booking.discount_amount || 0)}</span>
               </div>
             )}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.25rem" }}>
-              <span style={{ fontWeight: 700, color: "#0f172a" }}>Tổng thanh toán:</span>
+              <span style={{ fontWeight: 700, color: "var(--public-text-strong, #0f172a)" }}>Tổng thanh toán:</span>
               <strong style={{ fontSize: "1.25rem", color: "#ef4444" }}>
                 {formatCurrency(booking.total_amount || 0)}
               </strong>
@@ -359,10 +359,10 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
         {/* Cancelled Banner */}
         {isCancelled && (
-          <div className="surface-panel" style={{ padding: "2rem", background: "linear-gradient(135deg, #fef2f2, #fff5f5)", border: "2px solid #fca5a5", textAlign: "center" }}>
+          <div className="surface-panel public-status--error" style={{ padding: "2rem", background: "linear-gradient(135deg, var(--public-error-surface, #fef2f2), var(--public-error-surface, #fff5f5))", border: "2px solid var(--public-error-border, #fca5a5)", textAlign: "center" }}>
             <div style={{ fontSize: "3rem", lineHeight: 1, marginBottom: "0.75rem" }}>🚫</div>
-            <h3 style={{ fontSize: "1.3rem", color: "#991b1b", marginTop: 0, marginBottom: "0.5rem" }}>Đơn hàng đã bị huỷ</h3>
-            <p style={{ color: "#7f1d1d", fontSize: "0.95rem", margin: "0 0 1.5rem", lineHeight: 1.6 }}>
+            <h3 style={{ fontSize: "1.3rem", color: "var(--public-error-text, #991b1b)", marginTop: 0, marginBottom: "0.5rem" }}>Đơn hàng đã bị huỷ</h3>
+            <p style={{ color: "var(--public-error-text, #7f1d1d)", fontSize: "0.95rem", margin: "0 0 1.5rem", lineHeight: 1.6 }}>
               Booking <strong>#{bookingId}</strong> đã bị huỷ và không thể thực hiện thanh toán.
               Nếu bạn vẫn muốn đặt tour này, vui lòng đặt lại từ đầu.
             </p>
@@ -370,7 +370,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
               <Link href="/tours" style={{ background: "#dc2626", color: "white", textDecoration: "none", fontWeight: 700, padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>
                 Đặt tour mới
               </Link>
-              <Link href="/" style={{ background: "white", color: "#991b1b", textDecoration: "none", fontWeight: 600, padding: "0.75rem 1.5rem", borderRadius: "0.5rem", border: "1px solid #fca5a5" }}>
+              <Link href="/" style={{ background: "var(--public-surface, white)", color: "var(--public-error-text, #991b1b)", textDecoration: "none", fontWeight: 600, padding: "0.75rem 1.5rem", borderRadius: "0.5rem", border: "1px solid var(--public-error-border, #fca5a5)" }}>
                 Về trang chủ
               </Link>
             </div>
@@ -379,10 +379,10 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
         {/* Refunded Banner */}
         {isRefunded && !isCancelled && (
-          <div className="surface-panel" style={{ padding: "2rem", background: "linear-gradient(135deg, #f5f3ff, #faf5ff)", border: "2px solid #c4b5fd", textAlign: "center" }}>
+          <div className="surface-panel public-status--refund" style={{ padding: "2rem", background: "linear-gradient(135deg, var(--public-refund-surface, #f5f3ff), var(--public-refund-surface, #faf5ff))", border: "2px solid var(--public-refund-border, #c4b5fd)", textAlign: "center" }}>
             <div style={{ fontSize: "3rem", lineHeight: 1, marginBottom: "0.75rem" }}>💜</div>
-            <h3 style={{ fontSize: "1.3rem", color: "#5b21b6", marginTop: 0, marginBottom: "0.5rem" }}>Đã hoàn tiền</h3>
-            <p style={{ color: "#4c1d95", fontSize: "0.95rem", margin: "0 0 1.5rem", lineHeight: 1.6 }}>
+            <h3 style={{ fontSize: "1.3rem", color: "var(--public-refund-text, #5b21b6)", marginTop: 0, marginBottom: "0.5rem" }}>Đã hoàn tiền</h3>
+            <p style={{ color: "var(--public-refund-text, #4c1d95)", fontSize: "0.95rem", margin: "0 0 1.5rem", lineHeight: 1.6 }}>
               Khoản tiền của booking <strong>#{bookingId}</strong> đã được hoàn trả.
               Vui lòng kiểm tra tài khoản ngân hàng trong 3–5 ngày làm việc.
               Liên hệ hỗ trợ nếu chưa nhận được.
@@ -391,7 +391,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
               <Link href="/contact" style={{ background: "#7c3aed", color: "white", textDecoration: "none", fontWeight: 700, padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>
                 Liên hệ hỗ trợ
               </Link>
-              <Link href="/tours" style={{ background: "white", color: "#5b21b6", textDecoration: "none", fontWeight: 600, padding: "0.75rem 1.5rem", borderRadius: "0.5rem", border: "1px solid #c4b5fd" }}>
+              <Link href="/tours" style={{ background: "var(--public-surface, white)", color: "var(--public-refund-text, #5b21b6)", textDecoration: "none", fontWeight: 600, padding: "0.75rem 1.5rem", borderRadius: "0.5rem", border: "1px solid var(--public-refund-border, #c4b5fd)" }}>
                 Khám phá tour khác
               </Link>
             </div>
@@ -402,12 +402,12 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
         {!isCancelled && !isRefunded && (
         <div className="surface-panel" style={{ padding: "1.75rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
-            <h3 style={{ fontSize: "1.1rem", margin: 0, color: "#0f172a", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <h3 style={{ fontSize: "1.1rem", margin: 0, color: "var(--public-text-strong, #0f172a)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span>💳</span> Trạng thái thanh toán
             </h3>
             {!isPaid && (
-              <div style={{ fontSize: "0.8rem", color: "#0d9488", display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 600 }}>
-                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#0d9488", animation: "pulseDot 1.5s infinite ease-in-out" }} />
+              <div style={{ fontSize: "0.8rem", color: "var(--public-success-text, #0d9488)", display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 600 }}>
+                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--public-success-text, #0d9488)", animation: "pulseDot 1.5s infinite ease-in-out" }} />
                 Đang theo dõi giao dịch
               </div>
             )}
@@ -416,13 +416,13 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
           <div style={{
             padding: "1rem 1.5rem", borderRadius: "0.75rem",
             border: `2px solid ${isPaid ? "#10b981" : isPending ? "#f59e0b" : "#3b82f6"}`,
-            background: isPaid ? "#f0fdf4" : isPending ? "#fffbeb" : "#eff6ff",
+            background: isPaid ? "var(--public-success-surface, #f0fdf4)" : isPending ? "var(--public-warning-surface, #fffbeb)" : "var(--public-info-surface, #eff6ff)",
             textAlign: "center",
           }}>
-            <div style={{ fontSize: "1.05rem", fontWeight: 700, color: isPaid ? "#065f46" : isPending ? "#92400e" : "#1e40af", marginBottom: "0.35rem" }}>
+            <div style={{ fontSize: "1.05rem", fontWeight: 700, color: isPaid ? "var(--public-success-text, #065f46)" : isPending ? "var(--public-warning-text, #92400e)" : "var(--public-info-text, #1e40af)", marginBottom: "0.35rem" }}>
               {isPaid ? "✅ Đã thanh toán" : isPending ? "⏳ Chờ xác nhận" : "💳 Đang chờ thanh toán"}
             </div>
-            <div style={{ fontSize: "0.9rem", color: "#475569" }}>
+            <div style={{ fontSize: "0.9rem", color: "var(--public-text, #475569)" }}>
               {isPaid
                 ? "Booking đã được xác nhận. Chúng tôi sẽ liên hệ với bạn sớm."
                 : isPending
@@ -440,7 +440,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
                   marginTop: "1rem", width: "100%", padding: "0.85rem",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
                   fontWeight: 600, fontSize: "0.95rem",
-                  background: checkingPayment ? "#94a3b8" : "#3b82f6",
+                  background: checkingPayment ? "var(--public-muted, #94a3b8)" : "#3b82f6",
                   color: "white", border: "none", borderRadius: "0.5rem",
                   cursor: checkingPayment ? "not-allowed" : "pointer", transition: "background 0.2s",
                 }}
@@ -448,11 +448,11 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
                 {checkingPayment ? "Đang kiểm tra..." : "🔄 Tôi đã chuyển khoản — Kiểm tra ngay"}
               </button>
 
-              <div style={{ marginTop: "1.5rem", borderTop: "1px dashed #cbd5e1", paddingTop: "1rem" }}>
-                <h4 style={{ fontSize: "0.85rem", color: "#475569", margin: "0 0 0.5rem 0", fontWeight: 700, textAlign: "left" }}>
+              <div style={{ marginTop: "1.5rem", borderTop: "1px dashed var(--public-border, #cbd5e1)", paddingTop: "1rem" }}>
+                <h4 style={{ fontSize: "0.85rem", color: "var(--public-text, #475569)", margin: "0 0 0.5rem 0", fontWeight: 700, textAlign: "left" }}>
                   Chính sách hủy đặt tour:
                 </h4>
-                <ul style={{ fontSize: "0.8rem", color: "#64748b", margin: "0 0 1rem 0", paddingLeft: "1.2rem", lineHeight: 1.5, textAlign: "left" }}>
+                <ul style={{ fontSize: "0.8rem", color: "var(--public-muted, #64748b)", margin: "0 0 1rem 0", paddingLeft: "1.2rem", lineHeight: 1.5, textAlign: "left" }}>
                   <li>Bạn có thể hủy đơn đặt tour miễn phí bất cứ lúc nào trước khi thanh toán.</li>
                   <li>Sau khi thanh toán thành công, vui lòng liên hệ hotline để được hỗ trợ hoàn/hủy theo quy định của StarTour.</li>
                 </ul>
@@ -461,11 +461,11 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
                   style={{
                     width: "100%", padding: "0.6rem",
                     fontSize: "0.85rem", fontWeight: 600,
-                    color: "#ef4444", background: "none", border: "1px solid #fca5a5",
+                    color: "#ef4444", background: "none", border: "1px solid var(--public-error-border, #fca5a5)",
                     borderRadius: "0.5rem", cursor: "pointer", transition: "all 0.2s"
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.background = "#fef2f2";
+                    e.currentTarget.style.background = "var(--public-error-surface, #fef2f2)";
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.background = "none";
@@ -482,7 +482,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
         {/* Payment Panel */}
         {!isPaid && !isCancelled && !isRefunded && paymentTransaction && (
           <div className="surface-panel" style={{ padding: "2rem 1.75rem" }}>
-            <p style={{ fontSize: "0.9rem", color: "#475569", margin: "0 0 1.5rem 0", display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
+            <p style={{ fontSize: "0.9rem", color: "var(--public-text, #475569)", margin: "0 0 1.5rem 0", display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
               <span>💡</span>
               <span>Mở App Ngân hàng bất kỳ để <strong>quét mã VietQR</strong> hoặc <strong>chuyển khoản</strong> chính xác số tiền, nội dung bên dưới</span>
             </p>
@@ -492,16 +492,16 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
               {/* QR Code */}
               {paymentTransaction.qr_code_url && (
-                <div style={{
+                <div className="payment-qr-surface" style={{
                   display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem",
-                  padding: "1.25rem", background: "white", border: "1px solid #e2e8f0",
+                  padding: "1.25rem", background: "var(--public-surface, white)", border: "1px solid var(--public-border, #e2e8f0)",
                   borderRadius: "1rem", boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                   position: "relative", overflow: "hidden", flexShrink: 0,
                 }}>
                   {/* scan line */}
                   <div style={{
                     position: "absolute", left: 0, width: "100%", height: "3px",
-                    background: "linear-gradient(90deg, transparent, #0d9488, transparent)",
+                    background: "linear-gradient(90deg, transparent, var(--public-success-text, #0d9488), transparent)",
                     animation: "scanLine 3s infinite ease-in-out",
                   }} />
 
@@ -512,9 +512,9 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
                   />
 
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600, letterSpacing: "0.05em" }}>NAPAS 247</span>
-                    <span style={{ color: "#cbd5e1" }}>|</span>
-                    <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#1d4ed8" }}>VietQR</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--public-muted, #94a3b8)", fontWeight: 600, letterSpacing: "0.05em" }}>NAPAS 247</span>
+                    <span style={{ color: "var(--public-border, #cbd5e1)" }}>|</span>
+                    <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--public-info-text, #1d4ed8)" }}>VietQR</span>
                   </div>
                 </div>
               )}
@@ -524,17 +524,17 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
                 {/* Ngân hàng */}
                 {paymentTransaction.bank_name && (
-                  <div style={{ paddingBottom: "0.75rem", borderBottom: "1px solid #f1f5f9" }}>
-                    <span style={{ fontSize: "0.8rem", color: "#94a3b8", display: "block", marginBottom: "0.2rem" }}>Ngân hàng</span>
-                    <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0f172a" }}>{paymentTransaction.bank_name}</span>
+                  <div style={{ paddingBottom: "0.75rem", borderBottom: "1px solid var(--public-surface-soft, #f1f5f9)" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--public-muted, #94a3b8)", display: "block", marginBottom: "0.2rem" }}>Ngân hàng</span>
+                    <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--public-text-strong, #0f172a)" }}>{paymentTransaction.bank_name}</span>
                   </div>
                 )}
 
                 {/* Chủ tài khoản */}
                 {paymentTransaction.account_name && (
-                  <div style={{ paddingBottom: "0.75rem", borderBottom: "1px solid #f1f5f9" }}>
-                    <span style={{ fontSize: "0.8rem", color: "#94a3b8", display: "block", marginBottom: "0.2rem" }}>Chủ tài khoản</span>
-                    <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0f172a" }}>{paymentTransaction.account_name}</span>
+                  <div style={{ paddingBottom: "0.75rem", borderBottom: "1px solid var(--public-surface-soft, #f1f5f9)" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--public-muted, #94a3b8)", display: "block", marginBottom: "0.2rem" }}>Chủ tài khoản</span>
+                    <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--public-text-strong, #0f172a)" }}>{paymentTransaction.account_name}</span>
                   </div>
                 )}
 
@@ -572,7 +572,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
                 {/* Lưu ý */}
                 {paymentTransaction.transfer_content && (
-                  <p style={{ fontSize: "0.8rem", color: "#f59e0b", margin: 0, padding: "0.6rem 0.75rem", background: "#fffbeb", borderRadius: "0.5rem", border: "1px solid #fde68a" }}>
+                  <p style={{ fontSize: "0.8rem", color: "#f59e0b", margin: 0, padding: "0.6rem 0.75rem", background: "var(--public-warning-surface, #fffbeb)", borderRadius: "0.5rem", border: "1px solid var(--public-warning-border, #fde68a)" }}>
                     ⚠️ Lưu ý: Nhập chính xác số tiền <strong>{formatCurrency(paymentTransaction.amount)}</strong>, nội dung <strong>{paymentTransaction.transfer_content}</strong> khi chuyển khoản
                   </p>
                 )}
@@ -580,10 +580,10 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
             </div>
 
             {/* Divider */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "1.5rem 0", color: "#94a3b8", fontSize: "0.85rem" }}>
-              <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "1.5rem 0", color: "var(--public-muted, #94a3b8)", fontSize: "0.85rem" }}>
+              <div style={{ flex: 1, height: "1px", background: "var(--public-border, #e2e8f0)" }} />
               <span>HOẶC</span>
-              <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+              <div style={{ flex: 1, height: "1px", background: "var(--public-border, #e2e8f0)" }} />
             </div>
 
             {/* PayOS button */}
@@ -591,6 +591,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
               <div style={{ textAlign: "center" }}>
                 <a
                   href={paymentTransaction.checkout_url}
+                  className="button button-primary"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -602,7 +603,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
                 >
                   💳 Thanh toán bằng Thẻ / Apple Pay qua PayOS
                 </a>
-                <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: "0.75rem 0 0 0" }}>
+                <p style={{ fontSize: "0.8rem", color: "var(--public-muted, #94a3b8)", margin: "0.75rem 0 0 0" }}>
                   🔒 Giao dịch được xử lý an toàn qua cổng PayOS. Trang tự động cập nhật khi thanh toán thành công.
                 </p>
               </div>
@@ -619,7 +620,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 
         {/* Success */}
         {isPaid && (
-          <div className="surface-panel" style={{ padding: "2.5rem 2rem", background: "linear-gradient(135deg, #10b981, #065f46)", color: "white", textAlign: "center" }}>
+          <div className="surface-panel public-status--success" style={{ padding: "2.5rem 2rem", background: "linear-gradient(135deg, #10b981, #065f46)", color: "white", textAlign: "center" }}>
             <div style={{ fontSize: "3.5rem", lineHeight: 1, marginBottom: "1rem" }}>🎉</div>
             <h3 style={{ fontSize: "1.5rem", marginTop: 0, marginBottom: "0.75rem", color: "white" }}>
               Cảm ơn bạn đã đặt tour!
@@ -629,7 +630,7 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
               Email xác nhận đã được gửi tới <strong>{booking.email}</strong>.
             </p>
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/profile" style={{ background: "white", color: "#065f46", textDecoration: "none", fontWeight: 700, padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>
+              <Link href="/profile" style={{ background: "var(--public-surface, white)", color: "var(--public-success-text, #065f46)", textDecoration: "none", fontWeight: 700, padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>
                 Xem booking của tôi
               </Link>
               <Link href="/tours" style={{ background: "rgba(255,255,255,0.15)", color: "white", textDecoration: "none", fontWeight: 600, padding: "0.75rem 1.5rem", borderRadius: "0.5rem", border: "1px solid rgba(255,255,255,0.3)" }}>
@@ -647,14 +648,14 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
           marginTop: "2rem",
           padding: "1.5rem",
           border: "2px dashed #a855f7",
-          background: "#faf5ff",
+          background: "var(--public-refund-surface, #faf5ff)",
           borderRadius: "1rem",
           textAlign: "center"
         }}>
-          <h4 style={{ margin: "0 0 0.5rem 0", color: "#7e22ce", fontWeight: 800 }}>
+          <h4 style={{ margin: "0 0 0.5rem 0", color: "var(--public-refund-text, #7e22ce)", fontWeight: 800 }}>
             🛠️ [DEV ONLY] Giả lập thanh toán thành công
           </h4>
-          <p style={{ fontSize: "0.85rem", color: "#6b21a8", margin: "0 0 1rem 0" }}>
+          <p style={{ fontSize: "0.85rem", color: "var(--public-refund-text, #6b21a8)", margin: "0 0 1rem 0" }}>
             Nhấp nút bên dưới để gửi yêu cầu giả lập thanh toán thành công tới Backend.
             Hệ thống sẽ cập nhật trạng thái đơn hàng và gửi email xác nhận.
           </p>
@@ -684,18 +685,18 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
           background: "rgba(15, 23, 42, 0.45)", backdropFilter: "blur(4px)"
         }}>
           <div className="surface-panel" style={{ maxWidth: "440px", padding: "2rem", margin: "1rem", textAlign: "center" }}>
-            <h3 style={{ fontSize: "1.25rem", color: "#0f172a", marginTop: 0, marginBottom: "1rem" }}>
+            <h3 style={{ fontSize: "1.25rem", color: "var(--public-text-strong, #0f172a)", marginTop: 0, marginBottom: "1rem" }}>
               Xác nhận hủy đặt tour
             </h3>
-            <p style={{ fontSize: "0.9rem", color: "#475569", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+            <p style={{ fontSize: "0.9rem", color: "var(--public-text, #475569)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
               Bạn có chắc chắn muốn hủy đơn đặt tour này không? Hành động này sẽ giải phóng số ghế của bạn và không thể hoàn tác.
             </p>
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
               <button
                 onClick={() => setShowCancelModal(false)}
                 style={{
-                  padding: "0.6rem 1.25rem", borderRadius: "0.5rem", border: "1px solid #cbd5e1",
-                  background: "white", color: "#475569", fontWeight: 600, cursor: "pointer"
+                  padding: "0.6rem 1.25rem", borderRadius: "0.5rem", border: "1px solid var(--public-border, #cbd5e1)",
+                  background: "var(--public-surface, white)", color: "var(--public-text, #475569)", fontWeight: 600, cursor: "pointer"
                 }}
               >
                 Quay lại
@@ -721,8 +722,8 @@ export default function PaymentClient({ bookingId }: { bookingId: string }) {
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span style={{ color: "#64748b", display: "block", marginBottom: "0.2rem", fontSize: "0.82rem" }}>{label}</span>
-      <strong style={{ color: "#0f172a", fontSize: "0.95rem" }}>{value}</strong>
+      <span style={{ color: "var(--public-muted, #64748b)", display: "block", marginBottom: "0.2rem", fontSize: "0.82rem" }}>{label}</span>
+      <strong style={{ color: "var(--public-text-strong, #0f172a)", fontSize: "0.95rem" }}>{value}</strong>
     </div>
   );
 }
@@ -744,10 +745,10 @@ function CopyRow({
 }) {
   const isCopied = copiedField === fieldKey;
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "0.75rem", borderBottom: "1px solid #f1f5f9", gap: "0.75rem" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "0.75rem", borderBottom: "1px solid var(--public-surface-soft, #f1f5f9)", gap: "0.75rem" }}>
       <div>
-        <span style={{ fontSize: "0.8rem", color: "#94a3b8", display: "block", marginBottom: "0.2rem" }}>{label}</span>
-        <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0f172a", fontFamily: fieldKey === "account" ? "ui-monospace, monospace" : "inherit" }}>{value}</span>
+        <span style={{ fontSize: "0.8rem", color: "var(--public-muted, #94a3b8)", display: "block", marginBottom: "0.2rem" }}>{label}</span>
+        <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--public-text-strong, #0f172a)", fontFamily: fieldKey === "account" ? "ui-monospace, monospace" : "inherit" }}>{value}</span>
       </div>
       <button
         className="copy-btn"
@@ -755,9 +756,9 @@ function CopyRow({
         style={{
           flexShrink: 0,
           padding: "0.3rem 0.75rem",
-          background: isCopied ? "#dcfce7" : "#f1f5f9",
-          color: isCopied ? "#166534" : "#475569",
-          border: `1px solid ${isCopied ? "#86efac" : "#e2e8f0"}`,
+          background: isCopied ? "var(--public-success-surface, #dcfce7)" : "var(--public-surface-soft, #f1f5f9)",
+          color: isCopied ? "var(--public-success-text, #166534)" : "var(--public-text, #475569)",
+          border: `1px solid ${isCopied ? "#86efac" : "var(--public-border, #e2e8f0)"}`,
           borderRadius: "0.4rem",
           fontSize: "0.8rem",
           fontWeight: 600,

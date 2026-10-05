@@ -46,7 +46,7 @@ function renderActivityLine(act: string, idx: number) {
   }
 
   return (
-    <li key={idx} style={{ display: "flex", gap: "0.6rem", alignItems: "flex-start", fontSize: "0.95rem", color: "#475569", lineHeight: "1.6" }}>
+    <li key={idx} style={{ display: "flex", gap: "0.6rem", alignItems: "flex-start", fontSize: "0.95rem", color: "var(--public-text, #475569)", lineHeight: "1.6" }}>
       <span style={{ color, fontSize: emoji === "●" ? "0.8rem" : "1.05rem", marginTop: emoji === "●" ? "0.3rem" : "0.05rem", display: "inline-block", width: "1.25rem", textAlign: "center" }}>
         {emoji}
       </span>
@@ -234,13 +234,13 @@ export default function TourDetailClient({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <main className="animate-pulse" style={{ background: "#fcfaf6", minHeight: "100vh" }}>
+      <main className="animate-pulse" style={{ background: "var(--public-background, #fcfaf6)", minHeight: "100vh" }}>
         {/* Banner Hero Skeleton */}
         <section 
           className="hero" 
           style={{ 
             height: "350px", 
-            background: "linear-gradient(90deg, #cbd5e1 25%, #e2e8f0 50%, #cbd5e1 75%)",
+            background: "linear-gradient(90deg, var(--public-border, #cbd5e1) 25%, var(--public-border, #e2e8f0) 50%, var(--public-border, #cbd5e1) 75%)",
             backgroundSize: "200% 100%",
             animation: "shimmer 1.5s infinite",
             position: "relative" 
@@ -260,11 +260,11 @@ export default function TourDetailClient({ slug }: { slug: string }) {
           <div className="container">
             {/* Breadcrumb Skeleton */}
             <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem" }}>
-              <span style={{ width: "4rem", height: "1rem", borderRadius: "0.25rem", background: "#cbd5e1" }} />
-              <span style={{ color: "#cbd5e1" }}>&gt;</span>
-              <span style={{ width: "3rem", height: "1rem", borderRadius: "0.25rem", background: "#cbd5e1" }} />
-              <span style={{ color: "#cbd5e1" }}>&gt;</span>
-              <span style={{ width: "8rem", height: "1rem", borderRadius: "0.25rem", background: "#cbd5e1" }} />
+              <span style={{ width: "4rem", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #cbd5e1)" }} />
+              <span style={{ color: "var(--public-border, #cbd5e1)" }}>&gt;</span>
+              <span style={{ width: "3rem", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #cbd5e1)" }} />
+              <span style={{ color: "var(--public-border, #cbd5e1)" }}>&gt;</span>
+              <span style={{ width: "8rem", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #cbd5e1)" }} />
             </div>
 
             <div 
@@ -276,42 +276,42 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                 
                 {/* Overview Skeleton */}
                 <div className="surface-panel" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div style={{ width: "35%", height: "1.5rem", borderRadius: "0.25rem", background: "#cbd5e1" }} />
-                  <div style={{ width: "100%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
-                  <div style={{ width: "95%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
-                  <div style={{ width: "98%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
-                  <div style={{ width: "60%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
+                  <div style={{ width: "35%", height: "1.5rem", borderRadius: "0.25rem", background: "var(--public-border, #cbd5e1)" }} />
+                  <div style={{ width: "100%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
+                  <div style={{ width: "95%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
+                  <div style={{ width: "98%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
+                  <div style={{ width: "60%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
                 </div>
 
                 {/* Highlights Skeleton */}
                 <div className="surface-panel" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div style={{ width: "30%", height: "1.5rem", borderRadius: "0.25rem", background: "#cbd5e1" }} />
+                  <div style={{ width: "30%", height: "1.5rem", borderRadius: "0.25rem", background: "var(--public-border, #cbd5e1)" }} />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.5rem" }}>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "#cbd5e1" }} />
-                      <span style={{ width: "80%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
+                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "var(--public-border, #cbd5e1)" }} />
+                      <span style={{ width: "80%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
                     </div>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "#cbd5e1" }} />
-                      <span style={{ width: "70%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
+                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "var(--public-border, #cbd5e1)" }} />
+                      <span style={{ width: "70%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
                     </div>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "#cbd5e1" }} />
-                      <span style={{ width: "85%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
+                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "var(--public-border, #cbd5e1)" }} />
+                      <span style={{ width: "85%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
                     </div>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "#cbd5e1" }} />
-                      <span style={{ width: "75%", height: "1rem", borderRadius: "0.25rem", background: "#e2e8f0" }} />
+                      <span style={{ width: "1rem", height: "1rem", borderRadius: "9999px", background: "var(--public-border, #cbd5e1)" }} />
+                      <span style={{ width: "75%", height: "1rem", borderRadius: "0.25rem", background: "var(--public-border, #e2e8f0)" }} />
                     </div>
                   </div>
                 </div>
 
                 {/* Itinerary Accordion Skeletons */}
                 <div className="surface-panel" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-                  <div style={{ width: "25%", height: "1.5rem", borderRadius: "0.25rem", background: "#cbd5e1", marginBottom: "0.5rem" }} />
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem", borderLeft: "2px dashed #cbd5e1", paddingLeft: "1.5rem", marginLeft: "0.25rem" }}>
+                  <div style={{ width: "25%", height: "1.5rem", borderRadius: "0.25rem", background: "var(--public-border, #cbd5e1)", marginBottom: "0.5rem" }} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem", borderLeft: "2px dashed var(--public-border, #cbd5e1)", paddingLeft: "1.5rem", marginLeft: "0.25rem" }}>
                     {Array.from({ length: 3 }).map((_, idx) => (
-                      <div key={idx} style={{ height: "3.5rem", borderRadius: "0.75rem", background: "#f1f5f9", border: "1px solid #e2e8f0", width: "100%" }} />
+                      <div key={idx} style={{ height: "3.5rem", borderRadius: "0.75rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #e2e8f0)", width: "100%" }} />
                     ))}
                   </div>
                 </div>
@@ -320,10 +320,10 @@ export default function TourDetailClient({ slug }: { slug: string }) {
               {/* Right Column Booking Skeleton */}
               <div>
                 <div className="surface-panel" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                  <div style={{ width: "50%", height: "1.5rem", borderRadius: "0.25rem", background: "#cbd5e1" }} />
-                  <div style={{ width: "100%", height: "2.75rem", borderRadius: "0.75rem", background: "#f1f5f9", border: "1px solid #e2e8f0" }} />
-                  <div style={{ width: "100%", height: "2.75rem", borderRadius: "0.75rem", background: "#f1f5f9", border: "1px solid #e2e8f0" }} />
-                  <div style={{ width: "100%", height: "3rem", borderRadius: "0.75rem", background: "#cbd5e1", marginTop: "0.5rem" }} />
+                  <div style={{ width: "50%", height: "1.5rem", borderRadius: "0.25rem", background: "var(--public-border, #cbd5e1)" }} />
+                  <div style={{ width: "100%", height: "2.75rem", borderRadius: "0.75rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #e2e8f0)" }} />
+                  <div style={{ width: "100%", height: "2.75rem", borderRadius: "0.75rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #e2e8f0)" }} />
+                  <div style={{ width: "100%", height: "3rem", borderRadius: "0.75rem", background: "var(--public-border, #cbd5e1)", marginTop: "0.5rem" }} />
                 </div>
               </div>
 
@@ -369,6 +369,7 @@ export default function TourDetailClient({ slug }: { slug: string }) {
           style={{ objectFit: "cover", objectPosition: "center", zIndex: 0 }}
         />
         <div
+          className="tour-detail-hero-overlay"
           style={{
             position: "absolute",
             inset: 0,
@@ -413,7 +414,7 @@ export default function TourDetailClient({ slug }: { slug: string }) {
       </section>
 
       {/* ── Main Content ── */}
-      <section className="section" style={{ background: "#fcfaf6" }}>
+      <section className="section" style={{ background: "var(--public-background, #fcfaf6)" }}>
         <div className="container">
           {/* Breadcrumb */}
           <div style={{ fontSize: "0.9rem", color: "var(--muted)", marginBottom: "2rem" }}>
@@ -458,8 +459,8 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                     </a>
                   )}
                 </div>
-                <p style={{ whiteSpace: "pre-line", lineHeight: "1.8", color: "#475569" }}>{tour.description}</p>
-                {(tour.isPromo || tour.tags?.length > 0) && <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1rem" }}>{tour.isPromo && <span style={{ padding: "0.35rem 0.7rem", borderRadius: "999px", background: "#dc2626", color: "white", fontSize: "0.78rem", fontWeight: 800 }}>🔥 Đang giảm giá</span>}{tour.tags?.map((tag: any) => <span key={tag.id || tag.name} style={{ padding: "0.35rem 0.7rem", borderRadius: "999px", background: "#fff7ed", border: "1px solid #fed7aa", color: "#9a3412", fontSize: "0.78rem", fontWeight: 700 }}>🏷 {tag.name}</span>)}</div>}
+                <p style={{ whiteSpace: "pre-line", lineHeight: "1.8", color: "var(--public-text, #475569)" }}>{tour.description}</p>
+                {(tour.isPromo || tour.tags?.length > 0) && <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1rem" }}>{tour.isPromo && <span style={{ padding: "0.35rem 0.7rem", borderRadius: "999px", background: "#dc2626", color: "white", fontSize: "0.78rem", fontWeight: 800 }}>🔥 Đang giảm giá</span>}{tour.tags?.map((tag: any) => <span key={tag.id || tag.name} style={{ padding: "0.35rem 0.7rem", borderRadius: "999px", background: "var(--public-warning-surface, #fff7ed)", border: "1px solid var(--public-warning-border, #fed7aa)", color: "var(--public-warning-text, #9a3412)", fontSize: "0.78rem", fontWeight: 700 }}>🏷 {tag.name}</span>)}</div>}
               </div>
 
               {/* Bảng giá chi tiết */}
@@ -471,32 +472,32 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.95rem" }}>
                     <thead>
-                      <tr style={{ borderBottom: "2px solid var(--border-strong)", background: "#f8fafc" }}>
-                        <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "#1e293b" }}>Đối tượng</th>
-                        <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "#1e293b" }}>Độ tuổi áp dụng</th>
-                        <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "#1e293b", textAlign: "right" }}>Giá tour</th>
+                      <tr style={{ borderBottom: "2px solid var(--border-strong)", background: "var(--public-surface-soft, #f8fafc)" }}>
+                        <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--public-text-strong, #1e293b)" }}>Đối tượng</th>
+                        <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--public-text-strong, #1e293b)" }}>Độ tuổi áp dụng</th>
+                        <th style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "var(--public-text-strong, #1e293b)", textAlign: "right" }}>Giá tour</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                        <td style={{ padding: "1rem", fontWeight: 600, color: "#0f172a" }}>Người lớn</td>
-                        <td style={{ padding: "1rem", color: "#475569" }}>Từ 12 tuổi trở lên</td>
+                        <td style={{ padding: "1rem", fontWeight: 600, color: "var(--public-text-strong, #0f172a)" }}>Người lớn</td>
+                        <td style={{ padding: "1rem", color: "var(--public-text, #475569)" }}>Từ 12 tuổi trở lên</td>
                         <td style={{ padding: "1rem", fontWeight: 700, color: "var(--accent)", textAlign: "right" }}>{tour.price}</td>
                       </tr>
                       <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                        <td style={{ padding: "1rem", fontWeight: 600, color: "#0f172a" }}>Trẻ em</td>
-                        <td style={{ padding: "1rem", color: "#475569" }}>Từ 2 đến dưới 12 tuổi</td>
-                        <td style={{ padding: "1rem", fontWeight: 700, color: "#0f172a", textAlign: "right" }}>{tour.priceChild || "Liên hệ tư vấn"}</td>
+                        <td style={{ padding: "1rem", fontWeight: 600, color: "var(--public-text-strong, #0f172a)" }}>Trẻ em</td>
+                        <td style={{ padding: "1rem", color: "var(--public-text, #475569)" }}>Từ 2 đến dưới 12 tuổi</td>
+                        <td style={{ padding: "1rem", fontWeight: 700, color: "var(--public-text-strong, #0f172a)", textAlign: "right" }}>{tour.priceChild || "Liên hệ tư vấn"}</td>
                       </tr>
                       <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                        <td style={{ padding: "1rem", fontWeight: 600, color: "#0f172a" }}>Em bé</td>
-                        <td style={{ padding: "1rem", color: "#475569" }}>Dưới 2 tuổi</td>
-                        <td style={{ padding: "1rem", fontWeight: 700, color: "#0f172a", textAlign: "right" }}>{tour.priceInfant || "Liên hệ tư vấn"}</td>
+                        <td style={{ padding: "1rem", fontWeight: 600, color: "var(--public-text-strong, #0f172a)" }}>Em bé</td>
+                        <td style={{ padding: "1rem", color: "var(--public-text, #475569)" }}>Dưới 2 tuổi</td>
+                        <td style={{ padding: "1rem", fontWeight: 700, color: "var(--public-text-strong, #0f172a)", textAlign: "right" }}>{tour.priceInfant || "Liên hệ tư vấn"}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <small style={{ color: "#64748b", marginTop: "1rem", display: "block", lineHeight: "1.5" }}>
+                <small style={{ color: "var(--public-muted, #64748b)", marginTop: "1rem", display: "block", lineHeight: "1.5" }}>
                   * Lưu ý: Giá tour có thể thay đổi tùy thuộc vào ngày khởi hành và các chương trình khuyến mãi hiện hành. Vui lòng liên hệ hỗ trợ hoặc nhấn "Đặt tour" để nhận giá chính xác nhất.
                 </small>
               </div>
@@ -504,8 +505,8 @@ export default function TourDetailClient({ slug }: { slug: string }) {
               {tour.accommodationPrices?.length > 0 && (
                 <div className="surface-panel" style={{ padding: "2rem", overflowX: "auto" }}>
                   <h3 style={{ fontSize: "1.45rem", marginBottom: "1rem" }}>Giá theo hạng lưu trú</h3>
-                  <p style={{ color: "#64748b", marginBottom: "1rem" }}>Bảng giá áp dụng cho đoàn từ {tour.minGroupSize} khách.</p>
-                  <table style={{ width: "100%", minWidth: "680px", borderCollapse: "collapse" }}><thead><tr style={{ background: "#f8fafc" }}>{["Khách sạn", "Loại phòng", "Khách/phòng", "Người lớn", "Trẻ em", "Phụ thu phòng đơn"].map((label) => <th key={label} style={{ padding: "0.8rem", textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>{label}</th>)}</tr></thead><tbody>{tour.accommodationPrices.map((option: any, index: number) => <tr key={index}>{[`${option.hotel_stars} sao`, option.room_type, option.guests_per_room, `${new Intl.NumberFormat("vi-VN").format(option.adult_price)} VNĐ`, `${new Intl.NumberFormat("vi-VN").format(option.child_price)} VNĐ`, `${new Intl.NumberFormat("vi-VN").format(option.single_supplement)} VNĐ`].map((value, i) => <td key={i} style={{ padding: "0.8rem", borderBottom: "1px solid #e2e8f0" }}>{value}</td>)}</tr>)}</tbody></table>
+                  <p style={{ color: "var(--public-muted, #64748b)", marginBottom: "1rem" }}>Bảng giá áp dụng cho đoàn từ {tour.minGroupSize} khách.</p>
+                  <table style={{ width: "100%", minWidth: "680px", borderCollapse: "collapse" }}><thead><tr style={{ background: "var(--public-surface-soft, #f8fafc)" }}>{["Khách sạn", "Loại phòng", "Khách/phòng", "Người lớn", "Trẻ em", "Phụ thu phòng đơn"].map((label) => <th key={label} style={{ padding: "0.8rem", textAlign: "left", borderBottom: "1px solid var(--public-border, #e2e8f0)" }}>{label}</th>)}</tr></thead><tbody>{tour.accommodationPrices.map((option: any, index: number) => <tr key={index}>{[`${option.hotel_stars} sao`, option.room_type, option.guests_per_room, `${new Intl.NumberFormat("vi-VN").format(option.adult_price)} VNĐ`, `${new Intl.NumberFormat("vi-VN").format(option.child_price)} VNĐ`, `${new Intl.NumberFormat("vi-VN").format(option.single_supplement)} VNĐ`].map((value, i) => <td key={i} style={{ padding: "0.8rem", borderBottom: "1px solid var(--public-border, #e2e8f0)" }}>{value}</td>)}</tr>)}</tbody></table>
                 </div>
               )}
 
@@ -513,7 +514,7 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                 <div className="surface-panel" style={{ padding: "2rem" }}>
                   <h3 style={{ fontSize: "1.45rem", marginBottom: "1.2rem" }}>Điều kiện và chính sách Tour</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
-                    {[["✅ Giá Tour bao gồm", tour.priceIncludes], ["➖ Giá Tour không bao gồm", tour.priceExcludes], ["↩️ Điều khoản hoàn – huỷ", tour.cancellationPolicy], ["💳 Điều kiện thanh toán", tour.paymentTerms]].filter(([, value]) => value).map(([label, value]) => <div key={label} style={{ padding: "1rem", background: "#f8fafc", borderRadius: "0.75rem", border: "1px solid #e2e8f0" }}><h4 style={{ marginBottom: "0.6rem" }}>{label}</h4><p style={{ whiteSpace: "pre-line", color: "#475569", lineHeight: 1.7 }}>{value}</p></div>)}
+                    {[["✅ Giá Tour bao gồm", tour.priceIncludes], ["➖ Giá Tour không bao gồm", tour.priceExcludes], ["↩️ Điều khoản hoàn – huỷ", tour.cancellationPolicy], ["💳 Điều kiện thanh toán", tour.paymentTerms]].filter(([, value]) => value).map(([label, value]) => <div key={label} style={{ padding: "1rem", background: "var(--public-surface-soft, #f8fafc)", borderRadius: "0.75rem", border: "1px solid var(--public-border, #e2e8f0)" }}><h4 style={{ marginBottom: "0.6rem" }}>{label}</h4><p style={{ whiteSpace: "pre-line", color: "var(--public-text, #475569)", lineHeight: 1.7 }}>{value}</p></div>)}
                   </div>
                 </div>
               )}
@@ -525,13 +526,13 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                     📝 Lưu ý hành trình
                     <span style={{ position: "absolute", bottom: 0, left: 0, width: "3rem", height: "3px", background: "var(--accent)" }} />
                   </h3>
-                  <p style={{ whiteSpace: "pre-line", lineHeight: "1.8", color: "#475569", fontSize: "0.95rem" }}>
+                  <p style={{ whiteSpace: "pre-line", lineHeight: "1.8", color: "var(--public-text, #475569)", fontSize: "0.95rem" }}>
                     {tour.notes}
                   </p>
                 </div>
               )}
 
-              {tour.importantNote && <div style={{ padding: "1.25rem 1.5rem", borderRadius: "0.75rem", border: "1px solid #fca5a5", background: "#fff1f2", color: "#b91c1c", whiteSpace: "pre-line", lineHeight: 1.7, fontWeight: 600 }}><strong style={{ display: "block", marginBottom: "0.4rem" }}>⚠️ Lưu ý quan trọng</strong>{tour.importantNote}</div>}
+              {tour.importantNote && <div style={{ padding: "1.25rem 1.5rem", borderRadius: "0.75rem", border: "1px solid var(--public-error-border, #fca5a5)", background: "var(--public-error-surface, #fff1f2)", color: "var(--public-error-text, #b91c1c)", whiteSpace: "pre-line", lineHeight: 1.7, fontWeight: 600 }}><strong style={{ display: "block", marginBottom: "0.4rem" }}>⚠️ Lưu ý quan trọng</strong>{tour.importantNote}</div>}
 
               {/* Itinerary */}
               {tour.itinerary && tour.itinerary.length > 0 && (
@@ -572,7 +573,7 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                             onClick={() => toggleDay(index)}
                           >
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <h4 style={{ fontSize: "1.05rem", color: "#0f172a", display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
+                              <h4 style={{ fontSize: "1.05rem", color: "var(--public-text-strong, #0f172a)", display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
                                 <span style={{ color: "var(--accent)" }}>{item.day}:</span>
                                 <span>{item.title}</span>
                               </h4>
@@ -586,7 +587,7 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {(item.meals || item.overnight) && (
-                                  <div style={{ display: "flex", gap: "1.5rem", marginBottom: "0.85rem", fontSize: "0.88rem", background: "#f8fafc", padding: "0.6rem 0.85rem", borderRadius: "0.5rem", border: "1px solid #e2e8f0", color: "#475569", flexWrap: "wrap" }}>
+                                  <div style={{ display: "flex", gap: "1.5rem", marginBottom: "0.85rem", fontSize: "0.88rem", background: "var(--public-surface-soft, #f8fafc)", padding: "0.6rem 0.85rem", borderRadius: "0.5rem", border: "1px solid var(--public-border, #e2e8f0)", color: "var(--public-text, #475569)", flexWrap: "wrap" }}>
                                     {item.overnight && (
                                       <span><strong>🏨 Nghỉ đêm:</strong> {item.overnight}</span>
                                     )}
@@ -661,13 +662,13 @@ export default function TourDetailClient({ slug }: { slug: string }) {
             {/* Right Column: Sticky Booking Widget */}
             <div id="booking-card-container" style={{ position: "sticky", top: "128px", display: "flex", flexDirection: "column", gap: "1.5rem", zIndex: 10 }}>
               <div className="surface-panel" style={{ padding: "2rem", borderRadius: "1.25rem", border: "1px solid var(--border)" }}>
-                <span style={{ fontSize: "0.82rem", color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Giá tour từ</span>
+                <span style={{ fontSize: "0.82rem", color: "var(--public-muted, #64748b)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Giá tour từ</span>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "0.4rem", margin: "0.4rem 0 1rem" }}>
                   <span style={{ fontSize: "2rem", fontWeight: 800, color: "var(--accent)", lineHeight: 1 }}>{tour.price}</span>
-                  <span style={{ fontSize: "0.88rem", color: "#64748b" }}>/khách</span>
+                  <span style={{ fontSize: "0.88rem", color: "var(--public-muted, #64748b)" }}>/khách</span>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.9rem", color: "#475569", borderTop: "1px solid var(--border)", paddingTop: "1.25rem", marginBottom: "1.5rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.9rem", color: "var(--public-text, #475569)", borderTop: "1px solid var(--border)", paddingTop: "1.25rem", marginBottom: "1.5rem" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                     <span style={{ fontSize: "1.1rem" }}>⏱</span>
                     <span>Lịch trình: <strong>{tour.duration}</strong></span>
@@ -680,7 +681,7 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                   )}
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
                     <span style={{ fontSize: "1.1rem", marginTop: "0.1rem" }}>📍</span>
-                    <span style={{ color: "#475569", lineHeight: "1.5" }}>
+                    <span style={{ color: "var(--public-text, #475569)", lineHeight: "1.5" }}>
                       Tuyến: <strong>{tour.route}</strong>
                     </span>
                   </div>
@@ -795,7 +796,7 @@ export default function TourDetailClient({ slug }: { slug: string }) {
 
       {/* ── Mobile Sticky Booking Bar ── */}
       <div 
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 flex md:hidden justify-between items-center border-t border-[var(--border-strong)] shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur-md bg-white/90"
+        className="tour-detail-mobile-booking fixed bottom-0 left-0 right-0 z-50 p-4 flex md:hidden justify-between items-center border-t border-[var(--border-strong)] shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur-md bg-white/90"
         style={{
           boxShadow: "0 -8px 24px rgba(143, 100, 44, 0.08)"
         }}

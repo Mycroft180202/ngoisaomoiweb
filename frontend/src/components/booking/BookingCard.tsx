@@ -253,7 +253,7 @@ export function BookingCard({ tourId, tourSlug, prefillValue = "", isVertical = 
                     <span style={{ fontSize: "1.5rem" }}>🔍</span>
                     <div>
                       <strong>Không tìm thấy tour phù hợp</strong>
-                      <p style={{ margin: "0.25rem 0 0", fontSize: "0.82rem", color: "#64748b" }}>
+                      <p style={{ margin: "0.25rem 0 0", fontSize: "0.82rem", color: "var(--public-muted, #64748b)" }}>
                         Thử từ khoá khác hoặc xem{" "}
                         <a href="/tours" style={{ color: "var(--accent)", textDecoration: "underline" }}>tất cả tour</a>
                       </p>
@@ -280,9 +280,9 @@ export function BookingCard({ tourId, tourSlug, prefillValue = "", isVertical = 
                         <span className="tour-search-item__name">{tour.title}</span>
                         <div className="tour-search-item__meta">
                           <span className="tour-search-item__tag">{tour.tag}</span>
-                          <span style={{ color: "#94a3b8" }}>·</span>
-                          <span style={{ color: "#64748b" }}>{tour.duration}</span>
-                          <span style={{ color: "#94a3b8" }}>·</span>
+                          <span style={{ color: "var(--public-muted, #94a3b8)" }}>·</span>
+                          <span style={{ color: "var(--public-muted, #64748b)" }}>{tour.duration}</span>
+                          <span style={{ color: "var(--public-muted, #94a3b8)" }}>·</span>
                           <span className="tour-search-item__price">
                             {new Intl.NumberFormat("vi-VN").format(tour.price)} VNĐ
                           </span>

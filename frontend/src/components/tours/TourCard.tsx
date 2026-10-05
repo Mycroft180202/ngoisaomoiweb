@@ -87,11 +87,11 @@ export function TourCard({ tour }: TourCardProps) {
           <span className="card-tag">{tour.tag}</span>
           <strong className="card-duration">{tour.duration}</strong>
         </div>
-        {!!tour.tags?.length && <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginBottom: "0.65rem" }}>{tour.tags.slice(0, 3).map((tag) => <span key={tag.id || tag.name} style={{ padding: "0.2rem 0.5rem", borderRadius: "999px", background: "#fff7ed", border: "1px solid #fed7aa", color: "#9a3412", fontSize: "0.7rem", fontWeight: 700 }}>🏷 {tag.name}</span>)}</div>}
+        {!!tour.tags?.length && <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginBottom: "0.65rem" }}>{tour.tags.slice(0, 3).map((tag) => <span key={tag.id || tag.name} style={{ padding: "0.2rem 0.5rem", borderRadius: "999px", background: "var(--public-warning-surface, #fff7ed)", border: "1px solid var(--public-warning-border, #fed7aa)", color: "var(--public-warning-text, #9a3412)", fontSize: "0.7rem", fontWeight: 700 }}>🏷 {tag.name}</span>)}</div>}
         <Link href={`/tours/${tour.slug}`}>
           <h3 className="hover:text-[var(--accent)] transition-colors">{tour.title}</h3>
         </Link>
-        <div className="tour-card__location" style={{ fontSize: "0.85rem", color: "#64748b", margin: "0.4rem 0", display: "flex", flexDirection: "column", gap: "0.2rem", minWidth: "0px" }}>
+        <div className="tour-card__location" style={{ fontSize: "0.85rem", color: "var(--public-muted, #64748b)", margin: "0.4rem 0", display: "flex", flexDirection: "column", gap: "0.2rem", minWidth: "0px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", minWidth: "0px" }}>
             <span>🛫</span> Khởi hành: <strong>{tour.departurePoint || "Chưa xác định"}</strong>
           </div>

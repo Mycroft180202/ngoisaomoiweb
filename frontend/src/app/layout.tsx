@@ -4,6 +4,7 @@ import { Be_Vietnam_Pro, Inter, Lora, Noto_Sans, Open_Sans, Roboto } from "next/
 import SiteShell from "@/components/layout/SiteShell";
 import "./globals.css";
 import "./v2.css";
+import "./customer-theme.css";
 import AppDialogProvider from "@/components/ui/AppDialogProvider";
 
 async function getInitialUiVersion(): Promise<"legacy" | "v2"> {

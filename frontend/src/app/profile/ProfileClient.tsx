@@ -167,10 +167,10 @@ function AvatarCropModal({ imageSrc, onClose, onApply }: AvatarCropModalProps) {
         flexDirection: "column",
         gap: "1.5rem",
         boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
-        backgroundColor: "white"
+        backgroundColor: "var(--public-surface, white)"
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "#1a1c1e" }}>✂️ Cắt ảnh đại diện</h3>
+          <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, color: "var(--public-text-strong, #1a1c1e)" }}>✂️ Cắt ảnh đại diện</h3>
           <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "1.2rem", cursor: "pointer", color: "var(--muted)" }}>✕</button>
         </div>
 
@@ -191,7 +191,7 @@ function AvatarCropModal({ imageSrc, onClose, onApply }: AvatarCropModalProps) {
               borderRadius: "8px",
               cursor: isDragging ? "grabbing" : "grab",
               touchAction: "none",
-              backgroundColor: "#f8fafc"
+              backgroundColor: "var(--public-surface-soft, #f8fafc)"
             }}
           />
         </div>
@@ -759,7 +759,7 @@ function UserProfileContent() {
                   style={{
                     background: isSocialLinked ? "rgba(255, 255, 255, 0.1)" : "var(--accent)",
                     border: "none",
-                    color: isSocialLinked ? "rgba(255, 255, 255, 0.4)" : "white",
+                    color: isSocialLinked ? "rgba(255, 255, 255, 0.4)" : "var(--public-on-accent, white)",
                     padding: "4px 8px",
                     borderRadius: "4px",
                     fontSize: "0.72rem",
@@ -805,7 +805,7 @@ function UserProfileContent() {
                 fontSize: "0.92rem",
                 cursor: "pointer",
                 background: activeTab === "info" ? "linear-gradient(135deg, var(--accent), var(--accent-dark))" : "transparent",
-                color: activeTab === "info" ? "white" : "var(--foreground)",
+                color: activeTab === "info" ? "var(--public-on-accent, white)" : "var(--foreground)",
                 transition: "all 0.2s",
               }}
             >
@@ -823,7 +823,7 @@ function UserProfileContent() {
                 fontSize: "0.92rem",
                 cursor: "pointer",
                 background: activeTab === "bookings" ? "linear-gradient(135deg, var(--accent), var(--accent-dark))" : "transparent",
-                color: activeTab === "bookings" ? "white" : "var(--foreground)",
+                color: activeTab === "bookings" ? "var(--public-on-accent, white)" : "var(--foreground)",
                 transition: "all 0.2s",
               }}
             >
@@ -840,7 +840,7 @@ function UserProfileContent() {
           {activeTab === "info" ? (
             /* Account Info Tab */
             <div>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "1.5rem", color: "#1a1c1e" }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--public-text-strong, #1a1c1e)" }}>
                 👤 Thông tin tài khoản của bạn
               </h2>
 
@@ -866,7 +866,7 @@ function UserProfileContent() {
                           padding: "2px 8px",
                           borderRadius: "4px",
                           fontWeight: 600,
-                          backgroundColor: user.email_verified ? "#e6fffa" : "#fff5f5",
+                          backgroundColor: user.email_verified ? "#e6fffa" : "var(--public-error-surface, #fff5f5)",
                           color: user.email_verified ? "#319795" : "#e53e3e",
                           border: `1px solid ${user.email_verified ? "#b2f5ea" : "#fed7d7"}`
                         }}
@@ -898,7 +898,7 @@ function UserProfileContent() {
                   </div>
                   
                   {otpEmailSent && (
-                    <div style={{ marginTop: "0.75rem", padding: "0.75rem", border: "1px dashed var(--border)", borderRadius: "6px", backgroundColor: "#f8fafc" }}>
+                    <div style={{ marginTop: "0.75rem", padding: "0.75rem", border: "1px dashed var(--border)", borderRadius: "6px", backgroundColor: "var(--public-surface-soft, #f8fafc)" }}>
                       <label style={{ fontSize: "0.8rem", color: "var(--muted)", display: "block", marginBottom: "0.25rem" }}>
                         Nhập mã xác thực gửi đến Email của bạn:
                       </label>
@@ -942,7 +942,7 @@ function UserProfileContent() {
                           padding: "2px 8px",
                           borderRadius: "4px",
                           fontWeight: 600,
-                          backgroundColor: user.phone_verified ? "#e6fffa" : "#fff5f5",
+                          backgroundColor: user.phone_verified ? "#e6fffa" : "var(--public-error-surface, #fff5f5)",
                           color: user.phone_verified ? "#319795" : "#e53e3e",
                           border: `1px solid ${user.phone_verified ? "#b2f5ea" : "#fed7d7"}`
                         }}
@@ -974,7 +974,7 @@ function UserProfileContent() {
                   </div>
 
                   {otpPhoneSent && (
-                    <div style={{ marginTop: "0.75rem", padding: "0.75rem", border: "1px dashed var(--border)", borderRadius: "6px", backgroundColor: "#f8fafc" }}>
+                    <div style={{ marginTop: "0.75rem", padding: "0.75rem", border: "1px dashed var(--border)", borderRadius: "6px", backgroundColor: "var(--public-surface-soft, #f8fafc)" }}>
                       <label style={{ fontSize: "0.8rem", color: "var(--muted)", display: "block", marginBottom: "0.25rem" }}>
                         Nhập mã xác thực gửi qua Zalo OA:
                       </label>
@@ -1011,7 +1011,7 @@ function UserProfileContent() {
                 {/* Avatar URL field removed to prioritize crop & upload to MinIO */}
 
                 <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem", marginTop: "1rem" }}>
-                  <h4 style={{ fontSize: "0.98rem", fontWeight: 700, marginBottom: "1rem", color: "#1a1c1e" }}>
+                  <h4 style={{ fontSize: "0.98rem", fontWeight: 700, marginBottom: "1rem", color: "var(--public-text-strong, #1a1c1e)" }}>
                     🔒 Đổi mật khẩu bảo vệ
                   </h4>
 
@@ -1052,13 +1052,13 @@ function UserProfileContent() {
 
               {/* Social Accounts Connections */}
               <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem", marginTop: "2.5rem", maxWidth: "560px" }}>
-                <h4 style={{ fontSize: "0.98rem", fontWeight: 700, marginBottom: "1rem", color: "#1a1c1e" }}>
+                <h4 style={{ fontSize: "0.98rem", fontWeight: 700, marginBottom: "1rem", color: "var(--public-text-strong, #1a1c1e)" }}>
                   🔗 Liên kết tài khoản mạng xã hội
                 </h4>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   
                   {/* Google Connection */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1rem", border: "1px solid var(--border)", borderRadius: "0.5rem", backgroundColor: "white" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1rem", border: "1px solid var(--border)", borderRadius: "0.5rem", backgroundColor: "var(--public-surface, white)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                       <svg viewBox="0 0 24 24" width="20" height="20" style={{ flexShrink: 0 }}>
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -1102,7 +1102,7 @@ function UserProfileContent() {
           ) : (
             /* Booked Tours History Tab */
             <div>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "1.5rem", color: "#1a1c1e" }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--public-text-strong, #1a1c1e)" }}>
                 ✈️ Danh sách tour của bạn đã đặt
               </h2>
 
@@ -1127,7 +1127,7 @@ function UserProfileContent() {
                           overflow: "hidden",
                           display: "flex",
                           flexDirection: "column",
-                          backgroundColor: "white",
+                          backgroundColor: "var(--public-surface, white)",
                           boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)"
                         }}
                       >
@@ -1137,7 +1137,7 @@ function UserProfileContent() {
                           gridTemplateColumns: "180px 1fr",
                         }}>
                           {/* Tour Image */}
-                          <div style={{ position: "relative", minHeight: "130px", background: "#f1f5f9" }}>
+                          <div style={{ position: "relative", minHeight: "130px", background: "var(--public-surface-soft, #f1f5f9)" }}>
                             {tourDetails?.image ? (
                               <img
                                 src={tourDetails.image}
@@ -1155,7 +1155,7 @@ function UserProfileContent() {
                           <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                             <div>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.5rem" }}>
-                                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, margin: 0, color: "#1a1c1e" }}>
+                                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, margin: 0, color: "var(--public-text-strong, #1a1c1e)" }}>
                                   {booking.tour_title}
                                 </h3>
                                 <span className={`badge badge-${booking.status}`} style={{ flexShrink: 0 }}>
@@ -1181,7 +1181,7 @@ function UserProfileContent() {
                               {booking.status !== "cancelled" && booking.payment_status !== "paid" && config.payment?.online_enabled && booking.status === "confirmed" ? (
                                 <button onClick={() => router.push(`/payment/${booking.id}`)} className="button button-primary" style={{ border: 0, padding: ".65rem 1rem", borderRadius: 10, fontWeight: 700, cursor: "pointer" }}>Thanh toán QR</button>
                               ) : booking.status !== "cancelled" && booking.payment_status !== "paid" && (
-                                <span style={{ fontSize: "0.82rem", color: "#1e40af", fontWeight: 600 }}>
+                                <span style={{ fontSize: "0.82rem", color: "var(--public-info-text, #1e40af)", fontWeight: 600 }}>
                                   {config.payment?.online_enabled ? "Chờ nhân viên xác nhận đơn" : "Chờ nhân viên xác nhận và hướng dẫn thanh toán"}
                                 </span>
                               )}
@@ -1239,7 +1239,7 @@ function UserProfileContent() {
                     }}
                   />
                 ) : (
-                  <div style={{ width: "200px", height: "200px", borderRadius: "50%", background: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "5rem" }}>
+                  <div style={{ width: "200px", height: "200px", borderRadius: "50%", background: "var(--public-surface, white)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "5rem" }}>
                     👤
                   </div>
                 )}
@@ -1250,7 +1250,7 @@ function UserProfileContent() {
                     position: "absolute",
                     top: "-45px",
                     right: "0",
-                    background: "white",
+                    background: "var(--public-surface, white)",
                     border: "none",
                     borderRadius: "50%",
                     width: "36px",

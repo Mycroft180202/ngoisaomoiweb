@@ -1,0 +1,319 @@
+.site-frame--v2 {
+  --background: #06111f;
+  --body-background: #06111f;
+  --bg: #06111f;
+  --foreground: #eef8ff;
+  --text: #e0edf5;
+  --muted: #b8cbd9;
+  --primary: #83e8f5;
+  --accent: #83e8f5;
+  --accent-dark: #67d9e6;
+  --accent-light: #b3f6ff;
+  --accent-soft: rgba(80, 227, 255, .1);
+  --accent-soft-strong: rgba(80, 227, 255, .18);
+  --surface: #10273b;
+  --surface-strong: #10273b;
+  --surface-soft: #18354b;
+  --surface-dark: #081b2d;
+  --section-background: #06111f;
+  --border: #2b4b62;
+  --border-strong: #47718b;
+  --shadow: 0 12px 30px rgba(0, 0, 0, .2);
+  --shadow-deep: 0 20px 50px rgba(0, 0, 0, .25);
+  --shadow-lift: 0 16px 40px rgba(38, 193, 222, .15);
+  --public-text-strong: #eef8ff;
+  --public-text: #d3e4ef;
+  --public-muted: #b8cbd9;
+  --public-surface: #10273b;
+  --public-surface-soft: #18354b;
+  --public-background: #06111f;
+  --public-border: #2b4b62;
+  --public-on-accent: #032032;
+  --public-info-text: #b3eeff;
+  --public-info-surface: #11354c;
+  --public-info-border: #39768e;
+  --public-success-text: #9ceac7;
+  --public-success-surface: #103b35;
+  --public-success-border: #377d68;
+  --public-warning-text: #ffe0a3;
+  --public-warning-surface: #3c301c;
+  --public-warning-border: #8b7040;
+  --public-error-text: #ffb9b5;
+  --public-error-surface: #44252d;
+  --public-error-border: #97535e;
+  --public-refund-text: #ddc9ff;
+  --public-refund-surface: #302543;
+  --public-refund-border: #775c9c;
+  color-scheme: dark;
+}
+
+.site-frame--v2 :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--foreground);
+}
+
+.site-frame--v2 > main:not(.v2-home),
+.site-frame--v2 main.min-h-screen,
+.site-frame--v2 .auth-page {
+  color: var(--text);
+  background: radial-gradient(circle at 90% 0, rgba(30, 131, 177, .12), transparent 35%), var(--background) !important;
+}
+
+.site-frame--v2 :is(.surface-panel, .contact-card, .auth-card, .tour-card, .tour-card__body) {
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+  background: var(--surface) !important;
+}
+
+.site-frame--v2 :is(.surface-panel, .contact-card) p {
+  color: var(--text) !important;
+}
+
+.site-frame--v2 :is(.section-title p, .auth-header p, .tour-card p, .tour-card__meta, .card-duration) {
+  color: var(--muted) !important;
+}
+
+.site-frame--v2 :is(.surface-panel, .auth-card) table {
+  color: var(--text);
+}
+
+.site-frame--v2 :is(.surface-panel, .auth-card) th {
+  color: var(--foreground);
+  background: var(--surface-soft);
+}
+
+.site-frame--v2 :is(.surface-panel, .auth-card) td {
+  border-color: var(--border);
+}
+
+.site-frame--v2 :is(.card-tag, .news-article-footer > div strong) {
+  border-color: var(--border);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.site-frame--v2 :is(.button-primary, .btn-auth-submit, .btn-accent, .button-tour-cta) {
+  color: var(--public-on-accent) !important;
+  background: linear-gradient(135deg, #aaf3ff, #56d9ed 55%, #53d2b9) !important;
+}
+
+.site-frame--v2 .button-secondary {
+  color: var(--foreground) !important;
+  background: var(--surface-soft) !important;
+  border-color: var(--border-strong) !important;
+}
+
+.site-frame--v2 :is(input, select, textarea) {
+  color: var(--foreground) !important;
+  border-color: var(--border-strong) !important;
+  background: #081b2d !important;
+  accent-color: var(--accent);
+}
+
+.site-frame--v2 :is(input, textarea)::placeholder {
+  color: #a3bdcf !important;
+  opacity: 1;
+}
+
+.site-frame--v2 :is(input, select, textarea):focus-visible {
+  border-color: var(--accent) !important;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.site-frame--v2 :is(a, button):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.site-frame--v2 :is(label, label span, .form-group label) {
+  color: var(--foreground) !important;
+}
+
+.site-frame--v2 .auth-message.error,
+.site-frame--v2 .badge-cancelled {
+  color: var(--public-error-text) !important;
+  border-color: var(--public-error-border) !important;
+  background: var(--public-error-surface) !important;
+}
+
+.site-frame--v2 .auth-message.success,
+.site-frame--v2 .badge-confirmed {
+  color: var(--public-success-text) !important;
+  border-color: var(--public-success-border) !important;
+  background: var(--public-success-surface) !important;
+}
+
+.site-frame--v2 .badge-pending {
+  color: var(--public-warning-text);
+  border-color: var(--public-warning-border);
+  background: var(--public-warning-surface);
+}
+
+.site-frame--v2 :is(.news-featured-card, .news-modern-card, .news-empty-state, .news-article, .news-sidebar-card) {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.site-frame--v2 :is(.news-section-heading > p, .news-featured-card__body > p, .news-modern-card__body > p, .news-card-meta, .news-detail-hero__summary, .news-detail-byline__author span, .news-detail-byline__meta) {
+  color: var(--muted) !important;
+}
+
+.site-frame--v2 :is(.news-article-prose, .news-article-lead) {
+  color: var(--text) !important;
+}
+
+.site-frame--v2 :is(.news-article-footer button, .news-related-item h4, .news-empty-state p) {
+  color: var(--text);
+}
+
+.site-frame--v2 :is(.news-article-footer > div span, .news-index-breadcrumb, .news-detail-breadcrumb) {
+  color: var(--muted);
+}
+
+.site-frame--v2 .booking-toast {
+  color: var(--foreground);
+  border-color: var(--border-strong);
+  background: var(--surface);
+}
+
+.site-frame--v2 .booking-toast__content p {
+  color: var(--muted);
+}
+
+.site-frame--v2 .booking-toast__content strong {
+  color: var(--foreground);
+}
+
+.site-frame--v2 .tour-detail-hero-overlay {
+  background: linear-gradient(135deg, rgba(3, 16, 30, .88), rgba(5, 32, 52, .72)) !important;
+}
+
+.site-frame--v2 .payment-qr-surface {
+  --public-muted: #64748b;
+  --public-border: #cbd5e1;
+  --public-info-text: #1d4ed8;
+  color-scheme: light;
+  background: #fff !important;
+}
+
+.site-frame--v2 .calendar-day.is-selected {
+  color: var(--public-on-accent) !important;
+}
+
+.site-frame--v2 :is(.v2-footer__brand p, .v2-footer__links a, .v2-footer__contact p, .v2-footer__contact small, .v2-footer__bottom, .v2-site-hotline small) {
+  color: var(--muted);
+}
+
+.site-frame--v2 :is(.checkout-stepper, .checkout-guest-row, .departure-date-btn, .tour-detail-mobile-booking) {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--surface);
+}
+
+.site-frame--v2 :is(.checkout-stepper > span, .checkout-stepper button, .guest-title, .departure-date-btn__date, .checkout-section-title) {
+  color: var(--foreground);
+}
+
+.site-frame--v2 :is(.guest-subtitle, .tour-search-noresult) {
+  color: var(--muted);
+}
+
+.site-frame--v2 .checkout-submit-btn {
+  color: var(--public-on-accent);
+  background: linear-gradient(135deg, #aaf3ff, #56d9ed 55%, #53d2b9);
+}
+
+.site-frame--v2 .departure-date-btn.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft-strong);
+}
+
+.site-frame--v2 .departure-date-btn.full {
+  background: var(--surface-soft);
+}
+
+.site-frame--v2 .departure-date-btn__seats {
+  color: var(--public-success-text);
+}
+
+.site-frame--v2 .departure-date-btn__seats.low {
+  color: var(--public-warning-text);
+}
+
+.site-frame--v2 .tour-search-item__tag {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.site-frame--v2 :is(.news-breadcrumb, .news-breadcrumb a, .news-share-button, .news-detail-loader, .news-not-found p, .news-modern-card__category, .news-card-meta a) {
+  color: var(--muted);
+}
+
+.site-frame--v2 :is(.news-not-found h1, .news-empty-state h2, .news-sidebar-card h4) {
+  color: var(--foreground);
+}
+
+.site-frame--v2 .news-share-button {
+  color: var(--foreground);
+  border-color: var(--border-strong);
+  background: var(--surface-soft);
+}
+
+.site-frame--v2 .news-author-card p,
+.site-frame--v2 .news-author-card > div:last-child > span {
+  color: var(--muted);
+}
+
+.site-frame--v2 .public-status--error {
+  --text: var(--public-error-text);
+  border-color: var(--public-error-border) !important;
+  background: var(--public-error-surface) !important;
+}
+
+.site-frame--v2 .public-status--refund {
+  --text: var(--public-refund-text);
+  border-color: var(--public-refund-border) !important;
+  background: var(--public-refund-surface) !important;
+}
+
+.site-frame--v2 .public-status--success {
+  --text: var(--public-success-text);
+  border-color: var(--public-success-border) !important;
+  background: var(--public-success-surface) !important;
+}
+
+.site-frame--v2 .cookie-btn--primary {
+  color: var(--public-on-accent);
+  background: var(--accent);
+}
+
+.site-frame--v2 .news-category-pill {
+  color: var(--accent);
+  border-color: var(--border-strong);
+  background: var(--accent-soft);
+}
+
+.site-frame--v2 :is(.news-author-avatar, .news-index-cta__button span) {
+  color: var(--public-on-accent);
+}
+
+.site-frame--v2 .news-index-hero__stat strong {
+  color: var(--accent);
+}
+
+.site-frame--v2 .news-index-cta__inner {
+  border: 1px solid var(--border);
+  background: radial-gradient(circle at 10% 10%, rgba(80, 227, 255, .1), transparent 40%), var(--surface);
+}
+
+.site-frame--v2 :is(.news-index-cta__button, .news-sidebar-card--share button) {
+  color: var(--public-on-accent);
+  background: var(--accent);
+}
+
+@media (max-width: 620px) {
+  .site-frame--v2 :is(.surface-panel, .auth-card) table {
+    font-size: .9rem;
+  }
+}
