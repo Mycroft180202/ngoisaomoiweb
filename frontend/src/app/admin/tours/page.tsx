@@ -1207,7 +1207,7 @@ function ToursManagerContent() {
         <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
           
           {/* Header Row */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <div className="tour-list-header">
             <div>
               <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--public-text-strong, #0f172a)" }}>
                 {editTourId ? `✏️ Chỉnh sửa Tour: ${title}` : "➕ Tạo Tour du lịch mới"}
@@ -2397,7 +2397,7 @@ function ToursManagerContent() {
               </p>
             </div>
             
-            <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <div className="tour-list-actions">
               {["super_admin", "manager"].includes(currentRole) && <button onClick={handleSyncAllToCrm} disabled={syncingCrm} style={{ padding: "0.65rem 1.2rem", background: "var(--admin-action-bg, #2563eb)", color: "var(--public-on-accent, white)", border: "none", borderRadius: "0.75rem", fontWeight: 700, cursor: syncingCrm ? "wait" : "pointer" }}>{syncingCrm ? "Đang đồng bộ..." : "↻ Chuyển tour sang CRM"}</button>}
               <button onClick={handleOpenAddForm} style={{ padding: "0.65rem 1.5rem", background: "var(--admin-action-bg, #16a34a)", color: "var(--public-on-accent, white)", border: "none", borderRadius: "0.75rem", fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "0.5rem", boxShadow: "0 4px 12px rgba(22,163,74,0.2)" }}>➕ Thêm Tour Mới</button>
             </div>
@@ -2413,7 +2413,7 @@ function ToursManagerContent() {
           </section>}
 
           {/* Filtering and Sorting Section (Screenshot 1 Align) */}
-          <div className="modern-card" style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr 0.9fr 0.9fr 0.8fr 0.7fr auto", gap: "0.75rem", alignItems: "end", flexWrap: "wrap" }}>
+          <div className="modern-card tour-list-filters">
             
             <div>
               <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: 700, fontSize: "0.82rem", color: "var(--public-text, #475569)" }}>Tìm tên Tour</label>
@@ -2531,8 +2531,8 @@ function ToursManagerContent() {
               Không tìm thấy tour nào khớp với cấu hình lọc tìm kiếm.
             </div>
           ) : (
-            <div className="modern-card" style={{ padding: 0, overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.9rem" }}>
+            <div className="modern-card tour-list-table-wrap" role="region" aria-label="Danh sách tour" tabIndex={0}>
+              <table className="tour-list-table">
                 <thead>
                   <tr style={{ background: "var(--public-surface-soft, #f8fafc)", borderBottom: "1px solid var(--public-border, #cbd5e1)" }}>
                     <th style={{ padding: "1rem 0.75rem", width: "40px" }}>#</th>
@@ -2550,7 +2550,7 @@ function ToursManagerContent() {
                 </thead>
                 <tbody>
                   {filteredTours.map((tour, idx) => (
-                    <tr key={tour.id} style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.background = "#f8fafc"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}>
+                    <tr key={tour.id}>
                       
                       <td style={{ padding: "1rem 0.75rem", color: "var(--public-muted, #64748b)", fontWeight: 700 }}>
                         {idx + 1}

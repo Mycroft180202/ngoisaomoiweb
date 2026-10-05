@@ -469,7 +469,153 @@
   background: #fff !important;
 }
 
+.admin-theme .tour-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: .75rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.admin-theme .tour-list-header h2 {
+  margin: 0 0 .35rem;
+}
+
+.admin-theme .tour-list-header p {
+  margin: 0;
+  max-width: 65ch;
+  line-height: 1.5;
+}
+
+.admin-theme .tour-list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.admin-theme .tour-list-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: .65rem .85rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-theme .tour-list-filters > div {
+  min-width: 0;
+}
+
+.admin-theme .tour-list-filters input,
+.admin-theme .tour-list-filters select {
+  box-sizing: border-box;
+  min-height: 38px;
+  font-size: .85rem;
+}
+
+.admin-theme .tour-list-filters button {
+  min-height: 38px;
+  white-space: nowrap;
+}
+
+.admin-theme .tour-list-table-wrap {
+  max-width: 100%;
+  padding: 0;
+  overflow-x: auto;
+}
+
+.admin-theme .tour-list-table {
+  width: 100%;
+  min-width: 1180px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: .85rem;
+  line-height: 1.45;
+}
+
+.admin-theme .tour-list-table th,
+.admin-theme .tour-list-table td {
+  padding: .7rem .6rem !important;
+  vertical-align: middle;
+}
+
+.admin-theme .tour-list-table th {
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+.admin-theme .tour-list-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-theme .tour-list-table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.admin-theme .tour-list-table tbody td {
+  transition: background-color .18s ease;
+}
+
+.admin-theme .tour-list-table tbody tr:hover td,
+.admin-theme .tour-list-table tbody tr:focus-within td {
+  background-color: var(--surface-soft);
+}
+
+.admin-theme .tour-list-table td:nth-child(3) {
+  min-width: 260px;
+  width: 28%;
+  overflow-wrap: anywhere;
+}
+
+.admin-theme .tour-list-table td:nth-child(3) > div {
+  gap: .15rem;
+}
+
+.admin-theme .tour-list-table td:nth-child(4) {
+  min-width: 120px;
+}
+
+.admin-theme .tour-list-table td:nth-child(5),
+.admin-theme .tour-list-table td:nth-child(6),
+.admin-theme .tour-list-table td:nth-child(7) {
+  white-space: nowrap;
+}
+
+.admin-theme .tour-list-table .switch-container {
+  vertical-align: middle;
+}
+
+.admin-theme .tour-list-table-wrap:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-theme .tour-list-table tbody td {
+    transition: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .admin-theme .tour-list-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 620px) {
+  .admin-theme .tour-list-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-theme .tour-list-actions {
+    width: 100%;
+  }
+
+  .admin-theme .tour-list-actions button {
+    flex: 1 1 auto;
+  }
+
   .admin-theme .admin-content {
     padding: 1rem;
   }
