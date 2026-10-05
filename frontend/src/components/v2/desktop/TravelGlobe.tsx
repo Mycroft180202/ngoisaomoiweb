@@ -23,6 +23,7 @@ interface TravelGlobeProps {
 
 const GLOBE_RADIUS = 2;
 const MARKER_RADIUS = GLOBE_RADIUS + 0.018;
+const SELECTION_ROTATION_DURATION = 1.8;
 const COASTLINE_DATA_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json";
 
 /**
@@ -211,32 +212,54 @@ function GlobeMesh({
   const globeRef = useRef<THREE.Group>(null);
   const surfaceRef = useRef<THREE.Mesh>(null!);
   const selectedDestination = destinations.find((destination) => destination.key === activeKey) || destinations[0];
-  const targetRotationY = useMemo(() => {
-    if (!selectedDestination) return 0;
-    const position = latLngToVector3(selectedDestination.lat, selectedDestination.lng);
-    // Move the selected destination to the camera-facing side of the globe.
-    return -Math.atan2(position.x, position.z);
-  }, [selectedDestination]);
+  const selection = selectedDestination
+    ? `${selectedDestination.key}:${selectedDestination.lat}:${selectedDestination.lng}`
+    : "";
+  const rotationRef = useRef<{
+    selection: string;
+    start: THREE.Quaternion;
+    target: THREE.Quaternion;
+    elapsed: number;
+  } | null>(null);
 
-  useFrame((_, delta) => {
-    if (!globeRef.current) return;
+  useFrame(({ camera }, delta) => {
+    const globe = globeRef.current;
+    if (!globe || !selectedDestination) return;
 
-    if (reduceMotion) {
-      globeRef.current.rotation.y = targetRotationY;
-      return;
+    if (rotationRef.current?.selection !== selection) {
+      const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
+      globe.parent?.worldToLocal(cameraPosition);
+      const cameraAzimuth = Math.atan2(cameraPosition.x, cameraPosition.z);
+      const cameraElevation = Math.atan2(cameraPosition.y, Math.hypot(cameraPosition.x, cameraPosition.z));
+      const position = latLngToVector3(selectedDestination.lat, selectedDestination.lng);
+      const northAxis = new THREE.Vector3(0, 1, 0);
+      const target = new THREE.Quaternion().setFromAxisAngle(northAxis, cameraAzimuth)
+        .multiply(new THREE.Quaternion().setFromAxisAngle(
+          new THREE.Vector3(1, 0, 0),
+          THREE.MathUtils.degToRad(selectedDestination.lat) - cameraElevation,
+        ))
+        .multiply(new THREE.Quaternion().setFromAxisAngle(northAxis, -Math.atan2(position.x, position.z)));
+      const initialSelection = rotationRef.current === null;
+      rotationRef.current = {
+        selection,
+        start: globe.quaternion.clone(),
+        target,
+        elapsed: initialSelection ? SELECTION_ROTATION_DURATION : 0,
+      };
+      if (initialSelection) globe.quaternion.copy(target);
     }
 
-    const currentRotationY = globeRef.current.rotation.y;
-    const shortestDelta = THREE.MathUtils.euclideanModulo(
-      targetRotationY - currentRotationY + Math.PI,
-      Math.PI * 2,
-    ) - Math.PI;
-    globeRef.current.rotation.y = currentRotationY + shortestDelta * (1 - Math.exp(-2.6 * delta));
+    const rotation = rotationRef.current;
+    if (rotation.elapsed >= SELECTION_ROTATION_DURATION) return;
+    rotation.elapsed = Math.min(rotation.elapsed + delta, SELECTION_ROTATION_DURATION);
+    const progress = rotation.elapsed / SELECTION_ROTATION_DURATION;
+    const easedProgress = progress * progress * (3 - 2 * progress);
+    globe.quaternion.slerpQuaternions(rotation.start, rotation.target, easedProgress);
   });
 
   return (
     <Float speed={reduceMotion ? 0 : 1.15} rotationIntensity={reduceMotion ? 0 : 0.08} floatIntensity={reduceMotion ? 0 : 0.22}>
-      <group ref={globeRef} rotation={[0, 0, 0]}>
+      <group ref={globeRef}>
         <mesh ref={surfaceRef} castShadow receiveShadow>
           <sphereGeometry args={[GLOBE_RADIUS, 72, 72]} />
           <meshStandardMaterial
