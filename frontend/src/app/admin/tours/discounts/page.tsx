@@ -176,7 +176,7 @@ export default function DiscountsAdmin() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontSize: "0.98rem",
               }}
               required

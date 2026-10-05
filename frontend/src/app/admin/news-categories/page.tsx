@@ -217,7 +217,7 @@ export default function NewsCategoriesManager() {
                 <label>Mô tả ngắn</label>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} style={{
                   width: "100%", borderRadius: "0.85rem", border: "1px solid var(--border-strong)",
-                  padding: "0.9rem 1.1rem", background: "white", fontFamily: "inherit"
+                  padding: "0.9rem 1.1rem", background: "var(--public-surface, white)", fontFamily: "inherit"
                 }} />
               </div>
               <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>

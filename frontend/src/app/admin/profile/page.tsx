@@ -138,7 +138,7 @@ export default function AdminProfile() {
       <form onSubmit={handleUpdateProfile} className="auth-form" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
         {/* Basic Info */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <h4 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "0.5rem", color: "#0f172a" }}>📄 Thông tin cơ bản</h4>
+          <h4 style={{ borderBottom: "1px solid var(--public-border, #e2e8f0)", paddingBottom: "0.5rem", color: "var(--public-text-strong, #0f172a)" }}>📄 Thông tin cơ bản</h4>
           
           <div className="form-group">
             <label htmlFor="adminName">Họ và tên</label>
@@ -167,7 +167,7 @@ export default function AdminProfile() {
 
         {/* Change Password */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
-          <h4 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "0.5rem", color: "#0f172a" }}>🔒 Đổi mật khẩu tài khoản</h4>
+          <h4 style={{ borderBottom: "1px solid var(--public-border, #e2e8f0)", paddingBottom: "0.5rem", color: "var(--public-text-strong, #0f172a)" }}>🔒 Đổi mật khẩu tài khoản</h4>
           <p style={{ fontSize: "0.82rem", color: "var(--muted)", marginTop: "-0.5rem" }}>
             * Bỏ trống nếu bạn không muốn thay đổi mật khẩu hiện tại.
           </p>

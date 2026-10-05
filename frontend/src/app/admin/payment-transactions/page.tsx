@@ -130,8 +130,8 @@ export default function PaymentTransactionsManager() {
               padding: "0.5rem 1rem",
               border: "1px solid var(--border)",
               borderRadius: "0.5rem",
-              background: filter === f.key ? "linear-gradient(135deg, var(--accent), var(--accent-dark))" : "#ffffff",
-              color: filter === f.key ? "#ffffff" : "#1e293b",
+              background: filter === f.key ? "linear-gradient(135deg, var(--accent), var(--accent-dark))" : "var(--public-surface, #ffffff)",
+              color: filter === f.key ? "var(--public-on-accent, #ffffff)" : "var(--public-text-strong, #1e293b)",
               cursor: "pointer",
               fontSize: "0.9rem",
               fontWeight: filter === f.key ? 700 : 600,
@@ -170,7 +170,7 @@ export default function PaymentTransactionsManager() {
                 <tr key={transaction.id}>
                   <td>
                     <code style={{
-                      background: "#f3f4f6",
+                      background: "var(--public-surface-soft, #f3f4f6)",
                       padding: "0.25rem 0.5rem",
                       borderRadius: "0.25rem",
                       fontSize: "0.8rem"
@@ -203,7 +203,7 @@ export default function PaymentTransactionsManager() {
                     )}
                   </td>
                   <td>
-                    <strong style={{ color: "#dc2626" }}>
+                    <strong style={{ color: "var(--public-error-text, #dc2626)" }}>
                       {formatAmount(transaction.amount)}
                     </strong>
                   </td>
@@ -223,7 +223,7 @@ export default function PaymentTransactionsManager() {
                       </div>
                     )}
                     {transaction.expires_at && transaction.status === "pending" && (
-                      <div style={{ fontSize: "0.8rem", color: "#f59e0b" }}>
+                      <div style={{ fontSize: "0.8rem", color: "var(--public-warning-text, #f59e0b)" }}>
                         Hết hạn: {formatDate(transaction.expires_at)}
                       </div>
                     )}
@@ -235,7 +235,7 @@ export default function PaymentTransactionsManager() {
                           onClick={() => handleManualConfirm(transaction.id)}
                           className="btn-action"
                           title="Xác nhận thủ công"
-                          style={{ background: "#10b981", color: "white" }}
+                          style={{ background: "var(--admin-action-bg, #10b981)", color: "var(--public-on-accent, white)" }}
                         >
                           ✓
                         </button>
@@ -263,23 +263,23 @@ export default function PaymentTransactionsManager() {
         gap: "1rem",
         marginTop: "2rem",
         padding: "1.5rem",
-        background: "#f8fafc",
+        background: "var(--public-surface-soft, #f8fafc)",
         borderRadius: "0.75rem"
       }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#10b981" }}>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--public-success-text, #10b981)" }}>
             {transactions.filter(t => t.status === "completed").length}
           </div>
           <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Đã hoàn thành</div>
         </div>
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#f59e0b" }}>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--public-warning-text, #f59e0b)" }}>
             {transactions.filter(t => t.status === "pending").length}
           </div>
           <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Chờ xử lý</div>
         </div>
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#dc2626" }}>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--public-error-text, #dc2626)" }}>
             {formatAmount(
               transactions
                 .filter(t => t.status === "completed")

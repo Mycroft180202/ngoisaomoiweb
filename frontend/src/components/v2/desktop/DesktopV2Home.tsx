@@ -100,7 +100,6 @@ export default function DesktopV2Home() {
               <span className="v2-section-kicker">Tọa độ tiếp theo</span>
               <h2 id="v2-tours-title">Hành trình đang chờ bạn</h2>
             </div>
-            <p>Mỗi tour được cập nhật trực tiếp từ CMS, với lịch trình và mức giá rõ ràng trước khi bạn lựa chọn.</p>
           </header>
 
           {loading && (

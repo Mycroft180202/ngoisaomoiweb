@@ -300,7 +300,7 @@ export default function BannersManager() {
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   <input type="text" value={mediaUrl} onChange={(e) => { setMediaUrl(e.target.value); if (mediaType === "image") setImageUrl(e.target.value); }} placeholder="Đường dẫn ảnh hoặc video..." required style={{ flexGrow: 1 }} />
                   <label style={{
-                    padding: "0.75rem 1.25rem", background: "#f1f5f9", border: "1px solid #cbd5e1",
+                    padding: "0.75rem 1.25rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #cbd5e1)",
                     borderRadius: "0.5rem", cursor: "pointer", fontSize: "0.88rem", fontWeight: 600,
                     whiteSpace: "nowrap"
                   }}>
@@ -319,7 +319,7 @@ export default function BannersManager() {
                   <label>Vị trí quảng cáo</label>
                   <select value={position} onChange={(e) => setPosition(e.target.value)} style={{
                     width: "100%", borderRadius: "0.85rem", border: "1px solid var(--border-strong)",
-                    padding: "0.9rem 1.1rem", background: "white"
+                    padding: "0.9rem 1.1rem", background: "var(--public-surface, white)"
                   }}>
                     <option value="home_sidebar">Sidebar trang chủ</option>
                     <option value="home_between_sections">Giữa Hero và section thứ hai</option>

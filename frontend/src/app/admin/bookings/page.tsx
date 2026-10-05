@@ -215,7 +215,7 @@ export default function BookingsManager() {
               flexGrow: 1,
               minWidth: "260px",
               borderRadius: "0.5rem",
-              border: "1px solid #cbd5e1",
+              border: "1px solid var(--public-border, #cbd5e1)",
               padding: "0.65rem 1rem",
               fontSize: "0.92rem",
             }}
@@ -225,9 +225,9 @@ export default function BookingsManager() {
             onChange={(e) => setStatusFilter(e.target.value)}
             style={{
               borderRadius: "0.5rem",
-              border: "1px solid #cbd5e1",
+              border: "1px solid var(--public-border, #cbd5e1)",
               padding: "0.65rem 1rem",
-              background: "white",
+              background: "var(--public-surface, white)",
               fontSize: "0.92rem",
             }}
           >
@@ -266,7 +266,7 @@ export default function BookingsManager() {
                       <td><strong>#{booking.id}</strong></td>
                       <td>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                          <span style={{ fontWeight: 700, color: "#0f172a" }}>{booking.full_name}</span>
+                          <span style={{ fontWeight: 700, color: "var(--public-text-strong, #0f172a)" }}>{booking.full_name}</span>
                           <span style={{ fontSize: "0.82rem", color: "var(--muted)" }}>📞 {booking.phone}</span>
                         </div>
                       </td>
@@ -302,7 +302,7 @@ export default function BookingsManager() {
                               <button
                                 onClick={() => handleUpdateStatus(booking.id, "confirmed")}
                                 className="btn-action"
-                                style={{ color: "#15803d", borderColor: "#bbf7d0" }}
+                                style={{ color: "var(--public-success-text, #15803d)", borderColor: "var(--public-success-border, #bbf7d0)" }}
                                 title="Xác nhận"
                               >
                                 ✓
@@ -344,7 +344,7 @@ export default function BookingsManager() {
         >
           <div
             style={{
-              backgroundColor: "white",
+              backgroundColor: "var(--public-surface, white)",
               borderRadius: "1rem",
               width: "100%",
               maxWidth: "560px",
@@ -361,10 +361,10 @@ export default function BookingsManager() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                background: "#f8fafc",
+                background: "var(--public-surface-soft, #f8fafc)",
               }}
             >
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 800, color: "#0f172a" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 800, color: "var(--public-text-strong, #0f172a)" }}>
                 📝 Chi tiết đơn đặt tour #{selectedBooking.id}
               </h3>
               <button
@@ -397,7 +397,7 @@ export default function BookingsManager() {
 
               <div>
                 <span style={{ fontSize: "0.8rem", color: "var(--muted)", fontWeight: 600 }}>Địa chỉ Email:</span>
-                <p style={{ margin: "0.15rem 0 0", color: "#334155" }}>{selectedBooking.email}</p>
+                <p style={{ margin: "0.15rem 0 0", color: "var(--public-text-strong, #334155)" }}>{selectedBooking.email}</p>
               </div>
 
               <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "0.75rem" }}>
@@ -423,7 +423,7 @@ export default function BookingsManager() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
                   <span style={{ fontSize: "0.8rem", color: "var(--muted)", fontWeight: 600 }}>Tổng tiền:</span>
-                  <p style={{ margin: "0.15rem 0 0", fontWeight: 800, color: "#0f172a", fontSize: "1.1rem" }}>
+                  <p style={{ margin: "0.15rem 0 0", fontWeight: 800, color: "var(--public-text-strong, #0f172a)", fontSize: "1.1rem" }}>
                     {formatPrice(selectedBooking.total_amount ?? (getTourPrice(selectedBooking) * selectedBooking.guests_count))}
                   </p>
                 </div>
@@ -443,11 +443,11 @@ export default function BookingsManager() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", borderTop: "1px solid #f1f5f9", paddingTop: "0.75rem" }}>
                   <div>
                     <span style={{ fontSize: "0.8rem", color: "var(--muted)", fontWeight: 600 }}>Mã giảm giá:</span>
-                    <p style={{ margin: "0.15rem 0 0", fontWeight: 700, color: "#16a34a" }}>{selectedBooking.discount_code}</p>
+                    <p style={{ margin: "0.15rem 0 0", fontWeight: 700, color: "var(--public-success-text, #16a34a)" }}>{selectedBooking.discount_code}</p>
                   </div>
                   <div>
                     <span style={{ fontSize: "0.8rem", color: "var(--muted)", fontWeight: 600 }}>Số tiền được giảm:</span>
-                    <p style={{ margin: "0.15rem 0 0", fontWeight: 700, color: "#dc2626" }}>-{formatPrice(selectedBooking.discount_amount || 0)}</p>
+                    <p style={{ margin: "0.15rem 0 0", fontWeight: 700, color: "var(--public-error-text, #dc2626)" }}>-{formatPrice(selectedBooking.discount_amount || 0)}</p>
                   </div>
                 </div>
               )}
@@ -473,11 +473,11 @@ export default function BookingsManager() {
                       <img
                         src={selectedBooking.payment_proof}
                         alt="Biên lai chuyển khoản"
-                        style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "contain", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                        style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "contain", borderRadius: "8px", border: "1px solid var(--public-border, #cbd5e1)" }}
                       />
                     </a>
                     {selectedBooking.payment_ref && (
-                      <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.88rem", color: "#475569" }}>
+                      <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.88rem", color: "var(--public-text, #475569)" }}>
                         Ghi chú khách gửi: <strong>{selectedBooking.payment_ref}</strong>
                       </p>
                     )}
@@ -491,13 +491,13 @@ export default function BookingsManager() {
                   <p
                     style={{
                       margin: "0.25rem 0 0",
-                      background: "#f8fafc",
+                      background: "var(--public-surface-soft, #f8fafc)",
                       padding: "0.75rem",
                       borderRadius: "0.5rem",
                       fontSize: "0.9rem",
-                      color: "#475569",
+                      color: "var(--public-text, #475569)",
                       whiteSpace: "pre-line",
-                      border: "1px solid #e2e8f0",
+                      border: "1px solid var(--public-border, #e2e8f0)",
                     }}
                   >
                     {selectedBooking.notes}
@@ -508,10 +508,10 @@ export default function BookingsManager() {
               <div style={{ fontSize: "0.75rem", color: "var(--muted)", textAlign: "right" }}>
                 Mã đơn: {selectedBooking.booking_code || `#${selectedBooking.id}`} · Ngày tạo: {new Date(selectedBooking.created_at).toLocaleString("vi-VN")}
               </div>
-              <div style={{ marginTop: "0.75rem", padding: "0.8rem", borderRadius: "0.75rem", background: "#f8fafc", border: "1px solid #e2e8f0", fontSize: "0.8rem" }}>
+              <div style={{ marginTop: "0.75rem", padding: "0.8rem", borderRadius: "0.75rem", background: "var(--public-surface-soft, #f8fafc)", border: "1px solid var(--public-border, #e2e8f0)", fontSize: "0.8rem" }}>
                 <strong>Đồng bộ CRM:</strong> {selectedBooking.crm_sync_status || "not_synced"}
                 {selectedBooking.crm_booking_id && <span> · CRM booking: {selectedBooking.crm_booking_id}</span>}
-                {selectedBooking.crm_last_error && <div style={{ color: "#dc2626", marginTop: "0.35rem" }}>{selectedBooking.crm_last_error}</div>}
+                {selectedBooking.crm_last_error && <div style={{ color: "var(--public-error-text, #dc2626)", marginTop: "0.35rem" }}>{selectedBooking.crm_last_error}</div>}
               </div>
             </div>
 
@@ -523,7 +523,7 @@ export default function BookingsManager() {
                 display: "flex",
                 justifyContent: "flex-end",
                 gap: "0.75rem",
-                background: "#f8fafc",
+                background: "var(--public-surface-soft, #f8fafc)",
               }}
             >
               {selectedBooking.status === "pending" && (
@@ -531,7 +531,7 @@ export default function BookingsManager() {
                   <button
                     onClick={() => handleUpdateStatus(selectedBooking.id, "confirmed")}
                     className="admin-btn-primary"
-                    style={{ background: "#16a34a", padding: "0.55rem 1.25rem" }}
+                    style={{ background: "var(--admin-action-bg, #16a34a)", padding: "0.55rem 1.25rem" }}
                   >
                     ✓ Xác nhận đơn
                   </button>
@@ -550,7 +550,7 @@ export default function BookingsManager() {
                     <button
                       onClick={() => handleUpdatePaymentStatus(selectedBooking.id, "paid")}
                       className="admin-btn-primary"
-                      style={{ background: "#2563eb", padding: "0.55rem 1.25rem" }}
+                      style={{ background: "var(--admin-action-bg, #2563eb)", padding: "0.55rem 1.25rem" }}
                     >
                       💳 Xác nhận Đã thanh toán
                     </button>
@@ -558,7 +558,7 @@ export default function BookingsManager() {
                     <button
                       onClick={() => handleUpdatePaymentStatus(selectedBooking.id, "unpaid")}
                       className="btn-sidebar-logout"
-                      style={{ width: "auto", padding: "0.55rem 1.25rem", margin: 0, borderColor: "#dc2626", color: "#dc2626", background: "none" }}
+                      style={{ width: "auto", padding: "0.55rem 1.25rem", margin: 0, borderColor: "var(--public-error-border, #dc2626)", color: "var(--public-error-text, #dc2626)", background: "none" }}
                     >
                       ↩️ Hủy xác nhận thanh toán
                     </button>
@@ -569,7 +569,7 @@ export default function BookingsManager() {
                 <button
                   onClick={() => handleRetryCrmSync(selectedBooking.id)}
                   className="btn-view-site"
-                  style={{ padding: "0.55rem 1.25rem", border: "1px solid #cbd5e1" }}
+                  style={{ padding: "0.55rem 1.25rem", border: "1px solid var(--public-border, #cbd5e1)" }}
                 >
                   ↻ Đồng bộ CRM
                 </button>
@@ -577,7 +577,7 @@ export default function BookingsManager() {
               <button
                 onClick={() => setSelectedBooking(null)}
                 className="btn-view-site"
-                style={{ padding: "0.55rem 1.25rem", border: "1px solid #cbd5e1" }}
+                style={{ padding: "0.55rem 1.25rem", border: "1px solid var(--public-border, #cbd5e1)" }}
               >
                 Đóng
               </button>

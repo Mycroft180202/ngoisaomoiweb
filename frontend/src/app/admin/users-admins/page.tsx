@@ -225,7 +225,7 @@ export default function AdminsManager() {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
             width: "100%", maxWidth: "400px", borderRadius: "0.5rem",
-            border: "1px solid #cbd5e1", padding: "0.65rem 1rem", fontSize: "0.92rem"
+            border: "1px solid var(--public-border, #cbd5e1)", padding: "0.65rem 1rem", fontSize: "0.92rem"
           }}
         />
       </div>
@@ -265,15 +265,15 @@ export default function AdminsManager() {
                     <span style={{
                       fontWeight: 600, fontSize: "0.82rem", padding: "0.25rem 0.6rem", borderRadius: "0.5rem",
                       background: 
-                        item.role === "super_admin" ? "#fef3c7" : 
-                        item.role === "manager" ? "#dbeafe" : 
-                        item.role === "sale" ? "#dcfce7" : 
-                        item.role === "support" ? "#f3e8ff" : "#e2e8f0",
+                        item.role === "super_admin" ? "var(--public-warning-surface, #fef3c7)" :
+                        item.role === "manager" ? "var(--public-info-surface, #dbeafe)" :
+                        item.role === "sale" ? "var(--public-success-surface, #dcfce7)" :
+                        item.role === "support" ? "var(--public-refund-surface, #f3e8ff)" : "var(--public-border, #e2e8f0)",
                       color: 
-                        item.role === "super_admin" ? "#d97706" : 
-                        item.role === "manager" ? "#1e40af" : 
-                        item.role === "sale" ? "#15803d" : 
-                        item.role === "support" ? "#6b21a8" : "#475569"
+                        item.role === "super_admin" ? "var(--public-warning-text, #d97706)" :
+                        item.role === "manager" ? "var(--public-info-text, #1e40af)" :
+                        item.role === "sale" ? "var(--public-success-text, #15803d)" :
+                        item.role === "support" ? "var(--public-refund-text, #6b21a8)" : "var(--public-text, #475569)"
                     }}>
                       {
                         item.role === "super_admin" ? "🔑 Super Admin" : 
@@ -336,7 +336,7 @@ export default function AdminsManager() {
                   <label>Nhóm quyền (Vai trò)</label>
                   <select value={role} onChange={(e) => setRole(e.target.value)} style={{
                     width: "100%", borderRadius: "0.85rem", border: "1px solid var(--border-strong)",
-                    padding: "0.9rem 1.1rem", background: "white"
+                    padding: "0.9rem 1.1rem", background: "var(--public-surface, white)"
                   }}>
                     <option value="super_admin">Super Admin (Toàn quyền hệ thống)</option>
                     <option value="manager">Manager (Quản lý nội dung & Bookings)</option>

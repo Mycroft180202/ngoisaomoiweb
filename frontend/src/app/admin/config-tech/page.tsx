@@ -110,7 +110,7 @@ export default function ConfigTechPage() {
       {success && <div className="auth-message success" style={{ marginBottom: "1.5rem" }}>{success}</div>}
 
       <form onSubmit={handleSave} className="auth-form">
-        <h4 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "0.5rem", marginTop: "1rem" }}>💬 Cấu hình Zalo OA (Gửi OTP)</h4>
+        <h4 style={{ borderBottom: "1px solid var(--public-border, #e2e8f0)", paddingBottom: "0.5rem", marginTop: "1rem" }}>💬 Cấu hình Zalo OA (Gửi OTP)</h4>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div className="form-group">
             <label>Zalo OA ID</label>
@@ -122,13 +122,13 @@ export default function ConfigTechPage() {
           </div>
         </div>
 
-        <h4 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "0.5rem", marginTop: "1.5rem" }}>🗺️ Google Maps API</h4>
+        <h4 style={{ borderBottom: "1px solid var(--public-border, #e2e8f0)", paddingBottom: "0.5rem", marginTop: "1.5rem" }}>🗺️ Google Maps API</h4>
         <div className="form-group">
           <label>Google Maps API Key</label>
           <input type="text" value={googleMapsKey} onChange={(e) => setGoogleMapsKey(e.target.value)} placeholder="AIzaSy..." />
         </div>
 
-        <h4 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "0.5rem", marginTop: "1.5rem" }}>📊 Phân tích & Theo dõi (Analytics)</h4>
+        <h4 style={{ borderBottom: "1px solid var(--public-border, #e2e8f0)", paddingBottom: "0.5rem", marginTop: "1.5rem" }}>📊 Phân tích & Theo dõi (Analytics)</h4>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div className="form-group">
             <label>Google Analytics ID (G-xxxxxx)</label>

@@ -5,6 +5,7 @@ import SiteShell from "@/components/layout/SiteShell";
 import "./globals.css";
 import "./v2.css";
 import "./customer-theme.css";
+import "./admin-theme.css";
 import AppDialogProvider from "@/components/ui/AppDialogProvider";
 
 async function getInitialUiVersion(): Promise<"legacy" | "v2"> {

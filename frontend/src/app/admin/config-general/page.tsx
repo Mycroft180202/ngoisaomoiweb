@@ -191,7 +191,7 @@ export default function ConfigGeneralPage() {
           <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
             <input type="text" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="Đường dẫn URL logo..." style={{ flexGrow: 1 }} />
             <label style={{
-              padding: "0.75rem 1.25rem", background: "#f1f5f9", border: "1px solid #cbd5e1",
+              padding: "0.75rem 1.25rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #cbd5e1)",
               borderRadius: "0.5rem", cursor: "pointer", fontSize: "0.88rem", fontWeight: 600,
               whiteSpace: "nowrap"
             }}>
@@ -200,7 +200,7 @@ export default function ConfigGeneralPage() {
             </label>
           </div>
           {logoUrl && (
-            <img src={logoUrl} alt="Logo Preview" style={{ marginTop: "1rem", maxHeight: "60px", objectFit: "contain", padding: "0.5rem", background: "#f1f5f9", borderRadius: "0.5rem" }} />
+            <img src={logoUrl} alt="Logo Preview" style={{ marginTop: "1rem", maxHeight: "60px", objectFit: "contain", padding: "0.5rem", background: "var(--public-surface-soft, #f1f5f9)", borderRadius: "0.5rem" }} />
           )}
         </div>
 

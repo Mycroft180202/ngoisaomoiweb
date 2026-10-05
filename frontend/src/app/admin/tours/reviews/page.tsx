@@ -211,7 +211,7 @@ export default function ReviewsAdmin() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontSize: "0.98rem",
               }}
               required
@@ -238,7 +238,7 @@ export default function ReviewsAdmin() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontSize: "0.98rem",
               }}
               required
@@ -264,7 +264,7 @@ export default function ReviewsAdmin() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontFamily: "inherit",
                 fontSize: "0.98rem",
               }}

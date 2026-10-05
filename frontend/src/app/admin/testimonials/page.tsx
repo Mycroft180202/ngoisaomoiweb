@@ -207,11 +207,11 @@ export default function TestimonialsManager() {
           {testimonials.map((item) => (
             <div key={item.id} className="admin-card" style={{
               display: "flex", flexDirection: "column", border: "1px solid var(--border)",
-              borderRadius: "0.85rem", background: "white", padding: "1.5rem", justifyContent: "space-between"
+              borderRadius: "0.85rem", background: "var(--public-surface, white)", padding: "1.5rem", justifyContent: "space-between"
             }}>
               <div>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginBottom: "1rem" }}>
-                  <img src={item.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} alt={item.customer_name} style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "50%", border: "1px solid #cbd5e1" }} />
+                  <img src={item.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} alt={item.customer_name} style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "50%", border: "1px solid var(--public-border, #cbd5e1)" }} />
                   <div>
                     <h5 style={{ margin: 0, fontWeight: 700 }}>{item.customer_name}</h5>
                     <span style={{ fontSize: "0.8rem", color: "var(--muted)" }}>{item.customer_role || "Khách hàng"}</span>
@@ -222,7 +222,7 @@ export default function TestimonialsManager() {
                     <span key={i} style={{ fontSize: "1rem" }}>{i < Math.round(item.rating) ? "★" : "☆"}</span>
                   ))}
                 </div>
-                <p style={{ fontStyle: "italic", fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, margin: 0 }}>
+                <p style={{ fontStyle: "italic", fontSize: "0.9rem", color: "var(--public-text-strong, #334155)", lineHeight: 1.5, margin: 0 }}>
                   "{item.comment}"
                 </p>
               </div>
@@ -262,7 +262,7 @@ export default function TestimonialsManager() {
                   <label>Đánh giá (Sao)</label>
                   <select value={rating} onChange={(e) => setRating(Number(e.target.value))} style={{
                     width: "100%", borderRadius: "0.85rem", border: "1px solid var(--border-strong)",
-                    padding: "0.9rem 1.1rem", background: "white"
+                    padding: "0.9rem 1.1rem", background: "var(--public-surface, white)"
                   }}>
                     <option value={5}>⭐⭐⭐⭐⭐ (5/5)</option>
                     <option value={4}>⭐⭐⭐⭐ (4/5)</option>
@@ -283,7 +283,7 @@ export default function TestimonialsManager() {
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   <input type="text" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="Đường dẫn ảnh..." style={{ flexGrow: 1 }} />
                   <label style={{
-                    padding: "0.75rem 1.25rem", background: "#f1f5f9", border: "1px solid #cbd5e1",
+                    padding: "0.75rem 1.25rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #cbd5e1)",
                     borderRadius: "0.5rem", cursor: "pointer", fontSize: "0.88rem", fontWeight: 600,
                     whiteSpace: "nowrap"
                   }}>
@@ -297,7 +297,7 @@ export default function TestimonialsManager() {
                 <label>Lời nhận xét / Ý kiến phản hồi</label>
                 <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Nhập lời nhận xét chi tiết của khách hàng về chất lượng dịch vụ..." rows={4} style={{
                   width: "100%", borderRadius: "0.85rem", border: "1px solid var(--border-strong)",
-                  padding: "0.9rem 1.1rem", background: "white", fontFamily: "inherit"
+                  padding: "0.9rem 1.1rem", background: "var(--public-surface, white)", fontFamily: "inherit"
                 }} required />
               </div>
 

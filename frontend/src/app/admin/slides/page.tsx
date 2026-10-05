@@ -252,7 +252,7 @@ export default function SlidesManager() {
           {slides.map((item) => (
             <div key={item.id} className="admin-card" style={{
               display: "flex", flexDirection: "column", border: "1px solid var(--border)",
-              borderRadius: "0.85rem", overflow: "hidden", background: "white"
+              borderRadius: "0.85rem", overflow: "hidden", background: "var(--public-surface, white)"
             }}>
               <img src={item.image_url} alt={item.title || "Slide image"} style={{ width: "100%", height: "160px", objectFit: "cover" }} />
               <div style={{ padding: "1.2rem", flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
@@ -306,7 +306,7 @@ export default function SlidesManager() {
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Đường dẫn ảnh..." required style={{ flexGrow: 1 }} />
                   <label style={{
-                    padding: "0.75rem 1.25rem", background: "#f1f5f9", border: "1px solid #cbd5e1",
+                    padding: "0.75rem 1.25rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #cbd5e1)",
                     borderRadius: "0.5rem", cursor: "pointer", fontSize: "0.88rem", fontWeight: 600,
                     whiteSpace: "nowrap"
                   }}>
@@ -320,7 +320,7 @@ export default function SlidesManager() {
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   <input type="text" value={tourImageUrl} onChange={(e) => setTourImageUrl(e.target.value)} placeholder="Đường dẫn ảnh đại diện..." style={{ flexGrow: 1 }} />
                   <label style={{
-                    padding: "0.75rem 1.25rem", background: "#f1f5f9", border: "1px solid #cbd5e1",
+                    padding: "0.75rem 1.25rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #cbd5e1)",
                     borderRadius: "0.5rem", cursor: "pointer", fontSize: "0.88rem", fontWeight: 600,
                     whiteSpace: "nowrap"
                   }}>

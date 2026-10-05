@@ -184,7 +184,7 @@ export default function GuidesAdmin() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontFamily: "inherit",
                 fontSize: "0.98rem",
               }}
@@ -219,7 +219,7 @@ export default function GuidesAdmin() {
                   {guides.map((item) => (
                     <tr key={item.id}>
                       <td>
-                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#f1f5f9", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #cbd5e1" }}>
+                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "var(--public-surface-soft, #f1f5f9)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--public-border, #cbd5e1)" }}>
                           {item.avatar ? (
                             <img src={item.avatar} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (

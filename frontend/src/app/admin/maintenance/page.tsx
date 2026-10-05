@@ -53,7 +53,7 @@ export default function MaintenanceManager() {
       <div className="admin-panel-header"><h3>🚧 Chế độ bảo trì</h3></div>
       {notice && <div className="auth-message success" style={{ marginBottom: "1rem" }}>{notice}</div>}
       <form onSubmit={save} className="auth-form">
-        <div style={{ padding: "1rem", borderRadius: ".75rem", background: enabled ? "#fff7ed" : "#f0fdf4", border: `1px solid ${enabled ? "#fed7aa" : "#bbf7d0"}` }}>
+        <div style={{ padding: "1rem", borderRadius: ".75rem", background: enabled ? "var(--public-warning-surface, #fff7ed)" : "var(--public-success-surface, #f0fdf4)", border: `1px solid ${enabled ? "var(--public-warning-border, #fed7aa)" : "var(--public-success-border, #bbf7d0)"}` }}>
           <label style={{ display: "flex", alignItems: "center", gap: ".75rem", margin: 0, cursor: "pointer" }}>
             <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} style={{ width: "auto" }} />
             <strong>{enabled ? "Đang bật — khách truy cập chỉ thấy trang bảo trì" : "Đang tắt — website hoạt động bình thường"}</strong>

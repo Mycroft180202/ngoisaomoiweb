@@ -196,7 +196,7 @@ export default function CustomersManager() {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
             width: "100%", maxWidth: "400px", borderRadius: "0.5rem",
-            border: "1px solid #cbd5e1", padding: "0.65rem 1rem", fontSize: "0.92rem"
+            border: "1px solid var(--public-border, #cbd5e1)", padding: "0.65rem 1rem", fontSize: "0.92rem"
           }}
         />
       </div>

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 type Toast = { id: number; message: string; type: "info" | "success" | "error" };
 type ConfirmRequest = { message: string; title?: string; resolve: (value: boolean) => void };
@@ -16,6 +17,8 @@ export function appConfirm(message: string, title = "Xác nhận thao tác") {
 }
 
 export default function AppDialogProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const themeClass = pathname.startsWith("/admin") ? " site-frame--v2 admin-theme" : "";
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [confirm, setConfirm] = useState<ConfirmRequest | null>(null);
 
@@ -31,7 +34,7 @@ export default function AppDialogProvider({ children }: { children: React.ReactN
 
   const closeConfirm = (result: boolean) => { confirm?.resolve(result); setConfirm(null); };
   return <>{children}
-    <div className="app-toast-stack" aria-live="polite">{toasts.map(item => <div key={item.id} className={`app-toast app-toast--${item.type}`}><span>{item.type === "error" ? "!" : item.type === "success" ? "✓" : "i"}</span><p>{item.message}</p><button onClick={() => setToasts(items => items.filter(t => t.id !== item.id))}>×</button></div>)}</div>
-    {confirm && <div className="app-dialog-backdrop" onMouseDown={e => e.target === e.currentTarget && closeConfirm(false)}><div className="app-confirm-dialog" role="alertdialog" aria-modal="true"><div className="app-confirm-dialog__icon">?</div><h3>{confirm.title}</h3><p>{confirm.message}</p><div><button className="app-confirm-dialog__cancel" onClick={() => closeConfirm(false)}>Hủy</button><button className="app-confirm-dialog__accept" onClick={() => closeConfirm(true)}>Xác nhận</button></div></div></div>}
+    <div className={`app-toast-stack${themeClass}`} aria-live="polite">{toasts.map(item => <div key={item.id} className={`app-toast app-toast--${item.type}`}><span>{item.type === "error" ? "!" : item.type === "success" ? "✓" : "i"}</span><p>{item.message}</p><button onClick={() => setToasts(items => items.filter(t => t.id !== item.id))}>×</button></div>)}</div>
+    {confirm && <div className={`app-dialog-backdrop${themeClass}`} onMouseDown={e => e.target === e.currentTarget && closeConfirm(false)}><div className="app-confirm-dialog" role="alertdialog" aria-modal="true"><div className="app-confirm-dialog__icon">?</div><h3>{confirm.title}</h3><p>{confirm.message}</p><div><button className="app-confirm-dialog__cancel" onClick={() => closeConfirm(false)}>Hủy</button><button className="app-confirm-dialog__accept" onClick={() => closeConfirm(true)}>Xác nhận</button></div></div></div>}
   </>;
 }

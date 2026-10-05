@@ -229,7 +229,7 @@ export default function MenusManager() {
                   <label>Menu cha (nếu có)</label>
                   <select value={parentId || ""} onChange={(e) => setParentId(e.target.value ? Number(e.target.value) : undefined)} style={{
                     width: "100%", borderRadius: "0.85rem", border: "1px solid var(--border-strong)",
-                    padding: "0.9rem 1.1rem", background: "white"
+                    padding: "0.9rem 1.1rem", background: "var(--public-surface, white)"
                   }}>
                     <option value="">-- Cấp cao nhất --</option>
                     {flatMenus.filter(m => !m.parent_id && m.id !== editId).map(m => (

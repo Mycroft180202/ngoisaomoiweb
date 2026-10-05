@@ -207,7 +207,7 @@ export default function PaymentsManager() {
                 <label>Mô tả / Hướng dẫn thanh toán</label>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Nhập hướng dẫn chuyển khoản hoặc nộp tiền..." rows={4} style={{
                   width: "100%", borderRadius: "0.85rem", border: "1px solid var(--border-strong)",
-                  padding: "0.9rem 1.1rem", background: "white", fontFamily: "inherit"
+                  padding: "0.9rem 1.1rem", background: "var(--public-surface, white)", fontFamily: "inherit"
                 }} />
               </div>
               <div className="form-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>

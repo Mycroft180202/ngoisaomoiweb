@@ -123,7 +123,7 @@ export default function ContactsManager() {
                   padding: "1.2rem",
                   borderRadius: "0.85rem",
                   border: `1px solid ${activeMsg?.id === item.id ? "var(--accent)" : "var(--border)"}`,
-                  background: activeMsg?.id === item.id ? "rgba(255,255,255,0.06)" : "white",
+                  background: activeMsg?.id === item.id ? "rgba(255,255,255,0.06)" : "var(--public-surface, white)",
                   cursor: "pointer",
                   transition: "all 0.2s"
                 }}
@@ -135,8 +135,8 @@ export default function ContactsManager() {
                     padding: "0.2rem 0.5rem",
                     borderRadius: "1rem",
                     fontWeight: 600,
-                    background: item.status === "pending" ? "#fee2e2" : "#dcfce7",
-                    color: item.status === "pending" ? "#ef4444" : "#22c55e"
+                    background: item.status === "pending" ? "var(--public-error-surface, #fee2e2)" : "var(--public-success-surface, #dcfce7)",
+                    color: item.status === "pending" ? "var(--public-error-text, #ef4444)" : "#22c55e"
                   }}>
                     {item.status === "pending" ? "Chưa xử lý" : "Đã xử lý"}
                   </span>
@@ -150,7 +150,7 @@ export default function ContactsManager() {
           {/* Message Details */}
           <div>
             {activeMsg ? (
-              <div className="admin-card" style={{ padding: "2rem", border: "1px solid var(--border)", borderRadius: "0.85rem", background: "white" }}>
+              <div className="admin-card" style={{ padding: "2rem", border: "1px solid var(--border)", borderRadius: "0.85rem", background: "var(--public-surface, white)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
                   <h4 style={{ margin: 0, fontWeight: 700 }}>Chi tiết tin nhắn</h4>
                   <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -189,8 +189,8 @@ export default function ContactsManager() {
                     marginTop: "0.5rem",
                     padding: "1.2rem",
                     borderRadius: "0.5rem",
-                    background: "#f8fafc",
-                    border: "1px solid #e2e8f0",
+                    background: "var(--public-surface-soft, #f8fafc)",
+                    border: "1px solid var(--public-border, #e2e8f0)",
                     whiteSpace: "pre-wrap",
                     lineHeight: 1.6
                   }}>

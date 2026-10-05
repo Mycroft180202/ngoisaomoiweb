@@ -387,7 +387,7 @@ export default function NewsManager() {
                     borderRadius: "0.85rem",
                     border: "1px solid var(--border-strong)",
                     padding: "0.9rem 1.1rem",
-                    background: "white",
+                    background: "var(--public-surface, white)",
                     fontSize: "0.98rem",
                   }}
                   required
@@ -402,7 +402,7 @@ export default function NewsManager() {
 
             <div className="form-group">
               <label>Tag tin tức</label>
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", border: "1px solid var(--border)", padding: "1rem", borderRadius: "0.5rem", background: "#f8fafc" }}>
+              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", border: "1px solid var(--border)", padding: "1rem", borderRadius: "0.5rem", background: "var(--public-surface-soft, #f8fafc)" }}>
                 {dbTags.length === 0 ? (
                   <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>Chưa có tag nào, vui lòng tạo tag trước.</span>
                 ) : (
@@ -480,7 +480,7 @@ export default function NewsManager() {
                   borderRadius: "0.85rem",
                   border: "1px solid var(--border-strong)",
                   padding: "0.9rem 1.1rem",
-                  background: "white",
+                  background: "var(--public-surface, white)",
                   fontFamily: "inherit",
                   fontSize: "0.98rem",
                 }}
@@ -501,7 +501,7 @@ export default function NewsManager() {
                   borderRadius: "0.85rem",
                   border: "1px solid var(--border-strong)",
                   padding: "0.9rem 1.1rem",
-                  background: "white",
+                  background: "var(--public-surface, white)",
                   fontFamily: "inherit",
                   fontSize: "0.98rem",
                 }}
@@ -517,7 +517,7 @@ export default function NewsManager() {
                 type="button"
                 onClick={() => setIsFormOpen(false)}
                 className="btn-view-site"
-                style={{ padding: "0.9rem 2rem", border: "1px solid #cbd5e1" }}
+                style={{ padding: "0.9rem 2rem", border: "1px solid var(--public-border, #cbd5e1)" }}
               >
                 Hủy bỏ
               </button>
@@ -545,7 +545,7 @@ export default function NewsManager() {
                 flexGrow: 1,
                 minWidth: "260px",
                 borderRadius: "0.5rem",
-                border: "1px solid #cbd5e1",
+                border: "1px solid var(--public-border, #cbd5e1)",
                 padding: "0.65rem 1rem",
                 fontSize: "0.92rem",
               }}
@@ -555,9 +555,9 @@ export default function NewsManager() {
               onChange={(e) => setCategoryFilter(e.target.value)}
               style={{
                 borderRadius: "0.5rem",
-                border: "1px solid #cbd5e1",
+                border: "1px solid var(--public-border, #cbd5e1)",
                 padding: "0.65rem 1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontSize: "0.92rem",
               }}
             >
@@ -593,13 +593,13 @@ export default function NewsManager() {
                         <img
                           src={item.image}
                           alt={item.title}
-                          style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "0.4rem", border: "1px solid #cbd5e1" }}
+                          style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "0.4rem", border: "1px solid var(--public-border, #cbd5e1)" }}
                           onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1505764706515-aa95265c5abc?auto=format&fit=crop&w=900&q=80" }}
                         />
                       </td>
                       <td>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                          <span style={{ fontWeight: 700, color: "#0f172a" }}>{item.title}</span>
+                          <span style={{ fontWeight: 700, color: "var(--public-text-strong, #0f172a)" }}>{item.title}</span>
                           <span style={{ fontSize: "0.82rem", color: "var(--muted)", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", maxWidth: "300px" }}>
                             {item.summary}
                           </span>
@@ -610,7 +610,7 @@ export default function NewsManager() {
                         <div style={{ display: "flex", gap: "0.2rem", flexWrap: "wrap", maxWidth: "160px" }}>
                           {item.tags && item.tags.length > 0 ? (
                             item.tags.map((t) => (
-                              <span key={t.id} style={{ fontSize: "0.72rem", background: "#f1f5f9", padding: "0.15rem 0.45rem", borderRadius: "0.25rem", color: "#475569" }}>
+                              <span key={t.id} style={{ fontSize: "0.72rem", background: "var(--public-surface-soft, #f1f5f9)", padding: "0.15rem 0.45rem", borderRadius: "0.25rem", color: "var(--public-text, #475569)" }}>
                                 {t.name}
                               </span>
                             ))

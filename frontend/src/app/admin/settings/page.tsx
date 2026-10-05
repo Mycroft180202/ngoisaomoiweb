@@ -195,7 +195,7 @@ export default function AdminSettings() {
       <form onSubmit={handleSave} className="auth-form" style={{ gap: "2rem" }}>
         {/* Banner Hero Settings */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <h4 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "0.5rem", color: "#0f172a" }}>🌅 Cấu hình Banner Hero</h4>
+          <h4 style={{ borderBottom: "1px solid var(--public-border, #e2e8f0)", paddingBottom: "0.5rem", color: "var(--public-text-strong, #0f172a)" }}>🌅 Cấu hình Banner Hero</h4>
 
           <div className="form-group">
             <label htmlFor="heroTitle">Tiêu đề chính (Title)</label>
@@ -222,7 +222,7 @@ export default function AdminSettings() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontFamily: "inherit",
                 fontSize: "0.98rem",
               }}
@@ -245,8 +245,8 @@ export default function AdminSettings() {
               <label
                 style={{
                   padding: "0.75rem 1.25rem",
-                  background: "#f1f5f9",
-                  border: "1px solid #cbd5e1",
+                  background: "var(--public-surface-soft, #f1f5f9)",
+                  border: "1px solid var(--public-border, #cbd5e1)",
                   borderRadius: "0.5rem",
                   cursor: "pointer",
                   fontSize: "0.88rem",
@@ -270,7 +270,7 @@ export default function AdminSettings() {
                 <img
                   src={heroBgImage}
                   alt="Preview bg"
-                  style={{ width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "0.5rem", border: "1px solid #e2e8f0" }}
+                  style={{ width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "0.5rem", border: "1px solid var(--public-border, #e2e8f0)" }}
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1100&q=80";
                   }}
@@ -282,7 +282,7 @@ export default function AdminSettings() {
 
         {/* Color Palette Settings */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", marginTop: "1.5rem" }}>
-          <h4 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "0.5rem", color: "#0f172a" }}>🎨 Tông màu chủ đạo (Branding Colors)</h4>
+          <h4 style={{ borderBottom: "1px solid var(--public-border, #e2e8f0)", paddingBottom: "0.5rem", color: "var(--public-text-strong, #0f172a)" }}>🎨 Tông màu chủ đạo (Branding Colors)</h4>
           
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
             <div className="form-group">

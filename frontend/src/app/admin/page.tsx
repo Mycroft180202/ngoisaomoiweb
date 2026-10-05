@@ -124,7 +124,7 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="admin-panel error-panel" style={{ color: "#ef4444", borderLeft: "4px solid #ef4444" }}>
+      <div className="admin-panel error-panel" style={{ color: "var(--public-error-text, #ef4444)", borderLeft: "4px solid var(--public-error-border, #ef4444)" }}>
         <h4>⚠️ Đã xảy ra lỗi</h4>
         <p>{error}</p>
         <button onClick={fetchDashboardData} className="admin-btn-primary" style={{ marginTop: "1rem" }}>
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
                             title="Xác nhận đơn"
                             className="btn-action"
                             onClick={() => handleUpdateStatus(booking.id, "confirmed")}
-                            style={{ color: "#15803d", borderColor: "#bbf7d0" }}
+                            style={{ color: "var(--public-success-text, #15803d)", borderColor: "var(--public-success-border, #bbf7d0)" }}
                           >
                             ✓
                           </button>
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
             <ul style={{ listStyle: "none", padding: 0 }}>
               {news.slice(0, 5).map((item) => (
                 <li key={item.id} style={{ padding: "0.75rem 0", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "between", alignItems: "center" }}>
-                  <span style={{ fontWeight: 500, color: "#334155" }}>{item.title}</span>
+                  <span style={{ fontWeight: 500, color: "var(--public-text-strong, #334155)" }}>{item.title}</span>
                 </li>
               ))}
             </ul>
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
             <Link href="/admin/tours?action=add" className="admin-btn-primary" style={{ justifyContent: "center" }}>
               ✈️ Tạo tour du lịch mới
             </Link>
-            <Link href="/admin/settings" className="admin-btn-primary" style={{ justifyContent: "center", background: "#334155" }}>
+            <Link href="/admin/settings" className="admin-btn-primary" style={{ justifyContent: "center", background: "var(--public-background, #334155)" }}>
               🎨 Thiết lập giao diện CMS
             </Link>
             <Link href="/" target="_blank" className="admin-btn-primary" style={{ justifyContent: "center", background: "#64748b" }}>

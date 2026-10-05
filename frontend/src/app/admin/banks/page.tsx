@@ -207,12 +207,12 @@ export default function BanksManager() {
           {banks.map((item) => (
             <div key={item.id} className="admin-card" style={{
               display: "flex", flexDirection: "column", border: "1px solid var(--border)",
-              borderRadius: "0.85rem", overflow: "hidden", background: "white"
+              borderRadius: "0.85rem", overflow: "hidden", background: "var(--public-surface, white)"
             }}>
               {item.qr_code_url ? (
-                <img src={item.qr_code_url} alt="QR Code" style={{ width: "100%", height: "200px", objectFit: "contain", background: "#f8fafc", padding: "1rem" }} />
+                <img className="admin-qr-surface" src={item.qr_code_url} alt="QR Code" style={{ width: "100%", height: "200px", objectFit: "contain", background: "var(--public-surface-soft, #f8fafc)", padding: "1rem" }} />
               ) : (
-                <div style={{ height: "200px", display: "flex", justifyContent: "center", alignItems: "center", background: "#f1f5f9", color: "var(--muted)" }}>
+                <div style={{ height: "200px", display: "flex", justifyContent: "center", alignItems: "center", background: "var(--public-surface-soft, #f1f5f9)", color: "var(--muted)" }}>
                   Chưa có mã QR
                 </div>
               )}
@@ -276,7 +276,7 @@ export default function BanksManager() {
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   <input type="text" value={qrCodeUrl} onChange={(e) => setQrCodeUrl(e.target.value)} placeholder="Đường dẫn ảnh QR..." style={{ flexGrow: 1 }} />
                   <label style={{
-                    padding: "0.75rem 1.25rem", background: "#f1f5f9", border: "1px solid #cbd5e1",
+                    padding: "0.75rem 1.25rem", background: "var(--public-surface-soft, #f1f5f9)", border: "1px solid var(--public-border, #cbd5e1)",
                     borderRadius: "0.5rem", cursor: "pointer", fontSize: "0.88rem", fontWeight: 600,
                     whiteSpace: "nowrap"
                   }}>

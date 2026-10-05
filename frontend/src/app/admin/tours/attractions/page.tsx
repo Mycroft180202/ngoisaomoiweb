@@ -193,7 +193,7 @@ export default function AttractionsAdmin() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontSize: "0.98rem",
               }}
               required
@@ -232,7 +232,7 @@ export default function AttractionsAdmin() {
                 borderRadius: "0.85rem",
                 border: "1px solid var(--border-strong)",
                 padding: "0.9rem 1.1rem",
-                background: "white",
+                background: "var(--public-surface, white)",
                 fontFamily: "inherit",
                 fontSize: "0.98rem",
               }}
@@ -270,7 +270,7 @@ export default function AttractionsAdmin() {
                       <td><strong>#{item.id}</strong></td>
                       <td>
                         {item.image ? (
-                          <img src={item.image} alt={item.name} style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "0.25rem", border: "1px solid #cbd5e1" }} />
+                          <img src={item.image} alt={item.name} style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "0.25rem", border: "1px solid var(--public-border, #cbd5e1)" }} />
                         ) : (
                           <span style={{ fontSize: "0.8rem", color: "var(--muted)" }}>Không có</span>
                         )}

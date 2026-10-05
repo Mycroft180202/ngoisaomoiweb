@@ -101,12 +101,12 @@ function GoogleCallbackContent() {
   }, [router]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80vh", padding: "2rem", textAlign: "center" }}>
+    <div className="auth-callback-state" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80vh", padding: "2rem", textAlign: "center" }}>
       <div className="surface-panel" style={{ padding: "3rem", borderRadius: "1rem", maxWidth: "480px", width: "100%", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)" }}>
         {error ? (
-          <div>
+          <div className="auth-callback-error">
             <span style={{ fontSize: "3rem", display: "block", marginBottom: "1rem" }}>❌</span>
-            <h3 style={{ color: "#ef4444", marginBottom: "1rem", fontWeight: 700 }}>Xác thực thất bại</h3>
+            <h3 style={{ color: "var(--public-error-text, #ef4444)", marginBottom: "1rem", fontWeight: 700 }}>Xác thực thất bại</h3>
             <p style={{ color: "var(--muted)", fontSize: "0.95rem", marginBottom: "2rem" }}>{error}</p>
             <button
               onClick={() => router.push("/login")}

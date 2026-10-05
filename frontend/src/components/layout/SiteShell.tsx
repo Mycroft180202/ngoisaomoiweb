@@ -29,7 +29,7 @@ export default function SiteShell({
 }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
-  const isAuth = pathname === "/login" || pathname === "/admin-login" || pathname === "/register";
+  const isAuth = pathname === "/login" || pathname === "/admin-login" || pathname === "/register" || pathname === "/auth/callback/google";
   const [maintenance, setMaintenance] = useState<MaintenanceConfig | null>(null);
   const [configLoaded, setConfigLoaded] = useState(false);
   const [uiVersion, setUiVersion] = useState<SiteUiVersion>(initialUiVersion);
@@ -79,7 +79,7 @@ export default function SiteShell({
   }, [isAdmin, isAuth, uiVersion, viewportMode]);
 
   if (isAdmin) {
-    return <div className="admin-shell">{children}</div>;
+    return <div className="admin-shell site-frame--v2 admin-theme">{children}</div>;
   }
 
   if (!isAuth && configLoaded && maintenance?.enabled) {

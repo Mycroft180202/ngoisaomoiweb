@@ -118,7 +118,7 @@ export default function ConfigLinksPage() {
       {error && <div className="auth-message error" style={{ marginBottom: "1.5rem" }}>{error}</div>}
       {success && <div className="auth-message success" style={{ marginBottom: "1.5rem" }}>{success}</div>}
 
-      <div className="admin-card" style={{ padding: "1.5rem", border: "1px solid var(--border)", borderRadius: "0.85rem", background: "white", marginBottom: "2rem" }}>
+      <div className="admin-card" style={{ padding: "1.5rem", border: "1px solid var(--border)", borderRadius: "0.85rem", background: "var(--public-surface, white)", marginBottom: "2rem" }}>
         <h4 style={{ margin: "0 0 1rem", fontWeight: 700 }}>Thêm liên kết mới</h4>
         <form onSubmit={handleAddLink} style={{ display: "flex", gap: "1rem", alignItems: "flex-end", flexWrap: "wrap" }}>
           <div className="form-group" style={{ flexGrow: 1, marginBottom: 0, minWidth: "180px" }}>
@@ -133,7 +133,7 @@ export default function ConfigLinksPage() {
         </form>
       </div>
 
-      <div className="admin-table-container" style={{ background: "white" }}>
+      <div className="admin-table-container" style={{ background: "var(--public-surface, white)" }}>
         <table className="admin-table">
           <thead>
             <tr>
