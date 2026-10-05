@@ -1,0 +1,21 @@
+{
+  "name": "travelops",
+  "version": "1.0.0",
+  "description": "TravelOps - Hệ thống quản lý công ty du lịch",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:desktop": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run start:desktop\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "start:desktop": "node -e \"setTimeout(() => { process.env.ELECTRON_START_URL='http://localhost:5173'; require('child_process').execSync('npm run start', {cwd: 'desktop', stdio: 'inherit'}); }, 4000)\"",
+    "seed": "cd server && npm run seed",
+    "build": "cd client && npm run build",
+    "build:desktop": "node desktop/build-desktop.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}

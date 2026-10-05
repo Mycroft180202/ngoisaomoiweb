@@ -1,0 +1,48 @@
+services:
+  mongodb:
+    image: mongo:6-jammy
+    container_name: travelops_mongodb
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    expose:
+      - "27017"
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: travelops_backend
+    restart: always
+    depends_on:
+      - mongodb
+    ports:
+      - "127.0.0.1:3001:3001"
+    env_file:
+      - ./server/.env
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/travelops
+    volumes:
+      - ./server/uploads:/app/uploads
+    networks:
+      - default
+      - newstartour_internal
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=https://api.newstartour.vn/quanly/api
+    container_name: travelops_frontend
+    restart: always
+    ports:
+      - "127.0.0.1:3005:80"
+
+volumes:
+  mongo_data:
+
+networks:
+  newstartour_internal:
+    external: true

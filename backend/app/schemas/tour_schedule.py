@@ -1,0 +1,27 @@
+from pydantic import BaseModel, Field
+from typing import Literal, Optional
+from datetime import date
+
+class TourScheduleBase(BaseModel):
+    departure_date: date
+    max_capacity: int = Field(default=30, ge=1, le=5000)
+    booked_seats: int = Field(default=0, ge=0, le=5000)
+    status: Literal["active", "locked", "cancelled"] = "active"
+
+class TourScheduleCreate(TourScheduleBase):
+    tour_id: int
+
+class TourScheduleUpdate(BaseModel):
+    departure_date: Optional[date] = None
+    max_capacity: Optional[int] = Field(default=None, ge=1, le=5000)
+    booked_seats: Optional[int] = Field(default=None, ge=0, le=5000)
+    status: Optional[Literal["active", "locked", "cancelled"]] = None
+
+class TourScheduleResponse(TourScheduleBase):
+    id: int
+    tour_id: int
+    departure_code: Optional[str] = None
+    crm_departure_id: Optional[str] = None
+
+    class Config:
+        from_attributes = True

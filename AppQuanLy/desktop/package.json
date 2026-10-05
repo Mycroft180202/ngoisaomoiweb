@@ -1,0 +1,46 @@
+{
+  "name": "travelops-desktop",
+  "version": "1.0.2",
+  "description": "NewStarTour CRM Desktop App - Quản lý công ty du lịch",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "dependencies": {
+    "electron-updater": "^6.2.1"
+  },
+  "devDependencies": {
+    "electron": "^32.0.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.newstartour.crm",
+    "productName": "NewStarTour CRM",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "updater.js",
+      "assets/**/*",
+      "dist/**/*"
+    ],
+    "publish": {
+      "provider": "generic",
+      "url": "https://api.newstartour.vn/quanly/updates"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "NewStarTour CRM"
+    }
+  }
+}

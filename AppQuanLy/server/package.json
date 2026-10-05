@@ -1,0 +1,26 @@
+{
+  "name": "travelops-server",
+  "version": "1.0.0",
+  "description": "TravelOps Backend API - Quản lý công ty du lịch",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "seed": "node src/seed.js",
+    "init-db": "node src/init-db.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.5.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.1",
+    "morgan": "^1.10.0",
+    "multer": "^2.2.0",
+    "node-cron": "^4.5.0",
+    "nodemailer": "^9.0.1",
+    "socket.io": "^4.8.3"
+  }
+}
