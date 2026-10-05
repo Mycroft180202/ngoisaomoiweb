@@ -1,7 +1,7 @@
 "use client";
 
 import { Component, useEffect, useMemo, useRef, useState } from "react";
-import type { ErrorInfo, ReactNode } from "react";
+import type { ComponentRef, ErrorInfo, ReactNode, RefObject } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Html, OrbitControls, Sparkles, Stars } from "@react-three/drei";
@@ -23,11 +23,11 @@ interface TravelGlobeProps {
 
 const GLOBE_RADIUS = 2;
 const MARKER_RADIUS = GLOBE_RADIUS + 0.018;
-const COASTLINE_DATA_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json";
+const COASTLINE_DATA_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json";
 
 /**
  * WGS84 latitude/longitude to the single right-handed coordinate system used
- * by the globe: +Y North, +X Greenwich (0°), +Z 90° East.
+ * by the globe: +Y North, +X Greenwich (0°), -Z 90° East.
  */
 export const latLngToVector3 = (lat: number, lng: number, radius = MARKER_RADIUS) => {
   const latRadians = lat * (Math.PI / 180);
@@ -35,7 +35,7 @@ export const latLngToVector3 = (lat: number, lng: number, radius = MARKER_RADIUS
   return new THREE.Vector3(
     radius * Math.cos(latRadians) * Math.cos(lngRadians),
     radius * Math.sin(latRadians),
-    radius * Math.cos(latRadians) * Math.sin(lngRadians),
+    -radius * Math.cos(latRadians) * Math.sin(lngRadians),
   );
 };
 
@@ -43,10 +43,12 @@ function DestinationMarker({
   destination,
   active,
   onSelect,
+  surfaceRef,
 }: {
   destination: GlobeDestination;
   active: boolean;
   onSelect: () => void;
+  surfaceRef: RefObject<THREE.Mesh>;
 }) {
   const haloRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
@@ -85,7 +87,7 @@ function DestinationMarker({
         />
       </mesh>
       {active && (
-        <Html position={[0, 0, 0]} center={false} distanceFactor={8} zIndexRange={[20, 0]}>
+        <Html position={[0, 0, 0]} center={false} occlude={[surfaceRef]} zIndexRange={[20, 0]}>
           <article className="v2-globe-card" aria-live="polite">
             <span className="v2-globe-card__connector" aria-hidden="true" />
             <small>{destination.eyebrow}</small>
@@ -207,6 +209,7 @@ function GlobeMesh({
   reduceMotion,
 }: TravelGlobeProps & { reduceMotion: boolean }) {
   const globeRef = useRef<THREE.Group>(null);
+  const surfaceRef = useRef<THREE.Mesh>(null!);
   const selectedDestination = destinations.find((destination) => destination.key === activeKey) || destinations[0];
   const targetRotationY = useMemo(() => {
     if (!selectedDestination) return 0;
@@ -234,7 +237,7 @@ function GlobeMesh({
   return (
     <Float speed={reduceMotion ? 0 : 1.15} rotationIntensity={reduceMotion ? 0 : 0.08} floatIntensity={reduceMotion ? 0 : 0.22}>
       <group ref={globeRef} rotation={[0, 0, 0]}>
-        <mesh castShadow receiveShadow>
+        <mesh ref={surfaceRef} castShadow receiveShadow>
           <sphereGeometry args={[GLOBE_RADIUS, 72, 72]} />
           <meshStandardMaterial
             color="#063b69"
@@ -273,6 +276,7 @@ function GlobeMesh({
             destination={destination}
             active={destination.key === activeKey}
             onSelect={() => onSelect(destination.key)}
+            surfaceRef={surfaceRef}
           />
         ))}
       </group>
@@ -281,8 +285,14 @@ function GlobeMesh({
 }
 
 function GlobeCanvas(props: TravelGlobeProps & { reduceMotion: boolean }) {
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
   const [isInteracting, setIsInteracting] = useState(false);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const selectedDestination = props.destinations.find((destination) => destination.key === props.activeKey);
+
+  useEffect(() => {
+    controlsRef.current?.reset();
+  }, [props.activeKey, selectedDestination?.lat, selectedDestination?.lng]);
 
   useEffect(() => () => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
@@ -301,7 +311,7 @@ function GlobeCanvas(props: TravelGlobeProps & { reduceMotion: boolean }) {
   return (
     <Canvas
       dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 6.3], fov: 42 }}
+      camera={{ position: [0, 0, 7], fov: 42 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       shadows={false}
     >
@@ -313,6 +323,7 @@ function GlobeCanvas(props: TravelGlobeProps & { reduceMotion: boolean }) {
       <Sparkles count={36} scale={7} size={1.5} speed={props.reduceMotion ? 0 : 0.22} color="#75e8ff" opacity={0.45} />
       <GlobeMesh {...props} />
       <OrbitControls
+        ref={controlsRef}
         enablePan={false}
         enableZoom={false}
         enableDamping
