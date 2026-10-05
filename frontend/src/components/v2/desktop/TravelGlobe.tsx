@@ -60,7 +60,7 @@ function DestinationMarker({
   useFrame(({ clock }) => {
     if (!haloRef.current) return;
     const pulse = 1 + Math.sin(clock.elapsedTime * 3.2 + destination.lat) * 0.22;
-    haloRef.current.scale.setScalar((active ? 1.35 : 1) * (hovered ? 1.2 : 1) * pulse);
+    haloRef.current.scale.setScalar((active ? 1.2 : 1) * (hovered ? 1.2 : 1) * pulse);
   });
 
   return (
@@ -73,11 +73,11 @@ function DestinationMarker({
         onPointerEnter={() => { setHovered(true); document.body.style.cursor = "pointer"; }}
         onPointerLeave={() => { setHovered(false); document.body.style.cursor = ""; }}
       >
-        <sphereGeometry args={[active ? 0.082 : hovered ? 0.059 : 0.046, 20, 20]} />
+        <sphereGeometry args={[active ? 0.06 : hovered ? 0.059 : 0.046, 20, 20]} />
         <meshBasicMaterial color={active ? "#ff8a4c" : "#53ddf4"} toneMapped={false} />
       </mesh>
       <mesh ref={haloRef}>
-        <sphereGeometry args={[active ? 0.15 : 0.088, 16, 16]} />
+        <sphereGeometry args={[active ? 0.11 : 0.088, 16, 16]} />
         <meshBasicMaterial
           color={active ? "#ff6b35" : "#00d4d0"}
           transparent
@@ -231,7 +231,7 @@ function GlobeMesh({
       targetRotationY - currentRotationY + Math.PI,
       Math.PI * 2,
     ) - Math.PI;
-    globeRef.current.rotation.y = currentRotationY + shortestDelta * (1 - Math.exp(-3.2 * delta));
+    globeRef.current.rotation.y = currentRotationY + shortestDelta * (1 - Math.exp(-2.6 * delta));
   });
 
   return (
@@ -288,11 +288,6 @@ function GlobeCanvas(props: TravelGlobeProps & { reduceMotion: boolean }) {
   const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
   const [isInteracting, setIsInteracting] = useState(false);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const selectedDestination = props.destinations.find((destination) => destination.key === props.activeKey);
-
-  useEffect(() => {
-    controlsRef.current?.reset();
-  }, [props.activeKey, selectedDestination?.lat, selectedDestination?.lng]);
 
   useEffect(() => () => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);

@@ -245,7 +245,7 @@
 .v2-globe-canvas canvas { cursor: grab; touch-action: none; }
 .v2-globe-canvas canvas:active { cursor: grabbing; }
 .v2-globe-card { position: relative; width: 182px; padding: 16px 17px 15px; border: 1px solid rgba(100,210,240,.22); border-radius: 11px; color: #edfaff; background: rgba(4,23,39,.88); box-shadow: 0 17px 42px rgba(0,0,0,.3), inset 0 1px rgba(220,250,255,.05); backdrop-filter: blur(14px); pointer-events: none; transform: translate(22px, -118%); }
-.v2-globe-card__connector { position: absolute; top: 50%; right: 100%; width: 31px; height: 1px; background: linear-gradient(90deg, rgba(97,230,240,.74), rgba(97,230,240,.05)); transform: translateY(-50%); }
+.v2-globe-card__connector { position: absolute; top: 100%; left: 0; width: 27px; height: 1px; background: linear-gradient(90deg, rgba(97,230,240,.78), rgba(97,230,240,.12)); transform: rotate(146deg); transform-origin: left center; }
 .v2-globe-card small { display: block; color: #7899ae; font-size: .59rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
 .v2-globe-card strong { display: block; margin-top: 6px; color: #f5faff; font-size: .96rem; white-space: nowrap; }
 .v2-globe-card p { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; color: #77a99e; font-size: .61rem; white-space: nowrap; }.v2-globe-card p i { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #36d5c5; box-shadow: 0 0 9px #36d5c5; }
