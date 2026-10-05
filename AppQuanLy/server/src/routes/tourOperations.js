@@ -7,6 +7,7 @@ const Carrier = require('../models/Carrier');
 const Vehicle = require('../models/Vehicle');
 const Tour = require('../models/Tour');
 const TourDeparture = require('../models/TourDeparture');
+const RouteSchedule = require('../models/RouteSchedule');
 const { generateCode } = require('../utils/codeGenerator');
 const uploadTourDocument = require('../middleware/tourDocumentUpload');
 const { UPLOAD_DIR } = require('../middleware/tourDocumentUpload');
@@ -41,8 +42,28 @@ const requireTourOperations = (req, res, next) => {
   return res.status(403).json({ error: 'Bạn không có quyền điều hành Tour' });
 };
 
+const validateRouteSchedule = (stops = [], services = []) => {
+  if (stops.length < 2) return 'Tuyến cần ít nhất hai điểm dừng';
+  const stopCodes = new Set(stops.map(stop => String(stop.code || '').trim().toUpperCase()).filter(Boolean));
+  if (stopCodes.size !== stops.length) return 'Mã điểm dừng không được trùng hoặc để trống';
+  const sequenceByCode = new Map(stops.map((stop, index) => [String(stop.code).toUpperCase(), Number.isFinite(Number(stop.sequence)) ? Number(stop.sequence) : index]));
+  const serviceCodes = new Set();
+  for (const service of services) {
+    const code = String(service.code || '').trim().toUpperCase();
+    const origin = String(service.originStopCode || '').toUpperCase();
+    const destination = String(service.destinationStopCode || '').toUpperCase();
+    if (!code || serviceCodes.has(code)) return 'Mã chặng không được trùng hoặc để trống';
+    if (!stopCodes.has(origin) || !stopCodes.has(destination)) return 'Chặng trong lịch không thuộc các điểm dừng của tuyến';
+    if (origin === destination || sequenceByCode.get(origin) >= sequenceByCode.get(destination)) return 'Điểm đi phải đứng trước điểm đến trong tuyến';
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(service.departureTime) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(service.arrivalTime)) return 'Giờ đi và giờ đến không hợp lệ';
+    serviceCodes.add(code);
+  }
+  return null;
+};
+
 const populateDeparture = (query) => query
   .populate('tour', 'code name destination durationDays durationNights')
+  .populate('routeSegment.routeSchedule', 'code name stops services')
   .populate('manager', 'fullName phone')
   .populate('createdBy', 'fullName')
   .populate('programDocuments.uploadedBy', 'fullName')
@@ -196,6 +217,75 @@ router.get('/overview', async (req, res) => {
     populateDeparture(TourDeparture.find().sort({ startDate: -1 }).limit(100))
   ]);
   res.json({ carriers, vehicles, departures, canManage: canManage(req) });
+});
+
+router.get('/route-schedules/:tourId', async (req, res) => {
+  const schedules = await RouteSchedule.find({ tour: req.params.tourId }).populate('services.defaultVehicle', 'plateNumber name seatCapacity').sort({ active: -1, name: 1 });
+  res.json({ schedules });
+});
+
+router.post('/route-schedules', requireTourOperations, async (req, res) => {
+  try {
+    const { tour, code, name, stops = [], services = [], transferMinutes, autoSuggest, active } = req.body;
+    if (!tour || !code || !name) return res.status(400).json({ error: 'Tuyến cần Tour, mã và tên' });
+    const validationError = validateRouteSchedule(stops, services);
+    if (validationError) return res.status(400).json({ error: validationError });
+    const schedule = await RouteSchedule.create({ tour, code, name, stops, services, transferMinutes, autoSuggest, active, createdBy: req.user._id });
+    res.status(201).json({ schedule, message: 'Đã tạo lịch tuyến cố định' });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể tạo lịch tuyến' }); }
+});
+
+router.put('/route-schedules/:id', requireTourOperations, async (req, res) => {
+  try {
+    const schedule = await RouteSchedule.findById(req.params.id);
+    if (!schedule) return res.status(404).json({ error: 'Không tìm thấy lịch tuyến' });
+    const fields = ['code', 'name', 'stops', 'services', 'transferMinutes', 'autoSuggest', 'active'];
+    fields.forEach(field => { if (req.body[field] !== undefined) schedule[field] = req.body[field]; });
+    const validationError = validateRouteSchedule(schedule.stops, schedule.services);
+    if (validationError) return res.status(400).json({ error: validationError });
+    await schedule.save();
+    res.json({ schedule, message: 'Đã cập nhật lịch tuyến cố định' });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể cập nhật lịch tuyến' }); }
+});
+
+router.get('/route-schedules/:tourId/suggestions', async (req, res) => {
+  const { origin, destination, date } = req.query;
+  if (!origin || !destination || !date) return res.status(400).json({ error: 'Cần origin, destination và date' });
+  const travelDate = new Date(`${date}T00:00:00+07:00`);
+  if (Number.isNaN(travelDate.getTime())) return res.status(400).json({ error: 'Ngày đi không hợp lệ' });
+  const dayOfWeek = travelDate.getDay();
+  const schedules = await RouteSchedule.find({ tour: req.params.tourId, active: true, autoSuggest: true }).lean();
+  const services = schedules.flatMap(schedule => {
+    const stopMap = new Map(schedule.stops.map(stop => [stop.code, stop]));
+    const activeServices = schedule.services.filter(service => service.active && service.daysOfWeek.includes(dayOfWeek));
+    return activeServices.map(service => ({ schedule, stopMap, service }));
+  });
+  const originCode = String(origin).toUpperCase();
+  const destinationCode = String(destination).toUpperCase();
+  const toMinutes = value => { const [hours, minutes] = value.split(':').map(Number); return hours * 60 + minutes; };
+  const suggestions = [];
+  const walk = (currentStop, arrivalMinutes, path, visited) => {
+    if (path.length >= 4) return;
+    services.filter(item => item.service.originStopCode === currentStop && !visited.has(`${item.schedule._id}:${item.service.code}`))
+      .forEach(item => {
+        const departureMinutes = toMinutes(item.service.departureTime);
+        const transferMinutes = path.length ? (item.schedule.transferMinutes || 0) : 0;
+        if (path.length && departureMinutes < arrivalMinutes + transferMinutes) return;
+        const nextPath = [...path, item];
+        if (item.service.destinationStopCode === destinationCode) {
+          suggestions.push({
+            legs: nextPath.map(leg => ({ scheduleId: leg.schedule._id, scheduleName: leg.schedule.name, service: leg.service, origin: leg.stopMap.get(leg.service.originStopCode), destination: leg.stopMap.get(leg.service.destinationStopCode) })),
+            transferRequired: nextPath.length > 1
+          });
+          return;
+        }
+        const nextVisited = new Set(visited).add(`${item.schedule._id}:${item.service.code}`);
+        walk(item.service.destinationStopCode, toMinutes(item.service.arrivalTime), nextPath, nextVisited);
+      });
+  };
+  walk(originCode, 0, [], new Set());
+  suggestions.sort((first, second) => first.legs.length - second.legs.length);
+  res.json({ suggestions });
 });
 
 // API key này được giới hạn theo HTTP referrer trong Google Cloud nên chỉ có

@@ -1,5 +1,20 @@
 const mongoose = require('mongoose');
 
+const journeySegmentSchema = new mongoose.Schema({
+  routeSchedule: { type: mongoose.Schema.Types.ObjectId, ref: 'RouteSchedule', required: true },
+  serviceCode: { type: String, required: true, uppercase: true, trim: true },
+  travelDate: { type: Date, required: true },
+  originStopCode: { type: String, required: true, uppercase: true, trim: true },
+  destinationStopCode: { type: String, required: true, uppercase: true, trim: true },
+  departure: { type: mongoose.Schema.Types.ObjectId, ref: 'TourDeparture' },
+  vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle' },
+  seatNumbers: { type: [String], default: [] },
+  status: { type: String, enum: ['suggested', 'assigned', 'boarded', 'completed', 'cancelled'], default: 'suggested' },
+  assignmentSource: { type: String, enum: ['schedule', 'manual'], default: 'schedule' },
+  transferStatus: { type: String, enum: ['not_required', 'pending', 'ready', 'missed'], default: 'not_required' },
+  note: { type: String, default: '' }
+}, { _id: true });
+
 const bookingSchema = new mongoose.Schema({
   code: {
     type: String,
@@ -39,6 +54,7 @@ const bookingSchema = new mongoose.Schema({
     min: 0
   },
   infants: { type: Number, default: 0, min: 0 },
+  journeySegments: { type: [journeySegmentSchema], default: [] },
   websiteSource: {
     bookingId: { type: Number },
     bookingCode: { type: String },

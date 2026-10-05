@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const routeSegmentSchema = new mongoose.Schema({
+  routeSchedule: { type: mongoose.Schema.Types.ObjectId, ref: 'RouteSchedule' },
+  serviceCode: { type: String, uppercase: true, trim: true },
+  originStopCode: { type: String, uppercase: true, trim: true },
+  destinationStopCode: { type: String, uppercase: true, trim: true },
+  runDate: Date
+}, { _id: false });
+
 const stopSchema = new mongoose.Schema({
   type: {
     type: String,
@@ -97,6 +105,7 @@ const attendanceSessionSchema = new mongoose.Schema({
 const tourDepartureSchema = new mongoose.Schema({
   code: { type: String, required: true, unique: true, uppercase: true, trim: true },
   tour: { type: mongoose.Schema.Types.ObjectId, ref: 'Tour', required: true },
+  routeSegment: { type: routeSegmentSchema, default: undefined },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   status: {

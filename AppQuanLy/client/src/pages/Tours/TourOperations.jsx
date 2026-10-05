@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
-  ArrowLeft, Bus, CalendarDays, CheckCircle2, ChevronRight, ClipboardCheck, Download, Edit3, Eye, FileText,
+  ArrowLeft, Bus, CalendarDays, CheckCircle2, ChevronRight, ClipboardCheck, Clock3, Download, Edit3, Eye, FileText,
   MapPin, Navigation, Plus, Route, Trash2, Upload, UserRound, Users, X
 } from 'lucide-react';
 import api from '../../services/api';
@@ -10,6 +10,8 @@ import { useConfirm } from '../../contexts/ConfirmContext';
 import TourRouteMap from './TourRouteMap';
 import GooglePlaceInput from '../../components/ui/GooglePlaceInput';
 import './TourOperations.css';
+import RouteSchedulesPanel from './RouteSchedulesPanel';
+import BookingJourneyPanel from './BookingJourneyPanel';
 
 const departureStatus = {
   planning: 'Đang lập kế hoạch', open: 'Mở bán', confirmed: 'Đã xác nhận',
@@ -25,6 +27,7 @@ const emptyCarrier = { name: '', contactName: '', phone: '', email: '', address:
 const emptyVehicle = { carrier: '', plateNumber: '', name: '', vehicleType: 'Xe du lịch', seatCapacity: 29, driverName: '', driverPhone: '', note: '' };
 const emptyDeparture = { tour: '', startDate: '', endDate: '', departurePoint: '', manager: '', status: 'planning', note: '', assignedVehicles: [] };
 const emptyPassenger = { sourceTour: '', fullName: '', phone: '', idNumber: '', passengerType: 'adult', vehicle: '', seatNumber: '', pickupStopId: '', dropoffStopId: '', pickupNote: '', dropoffNote: '', allocationStatus: 'confirmed', status: 'waiting' };
+const emptyRouteSchedule = { tour: '', code: '', name: '', transferMinutes: 45, autoSuggest: true, active: true, stops: [{ code: 'HN', name: 'Hà Nội', address: '', latitude: '', longitude: '', sequence: 0 }, { code: 'HUE', name: 'Huế', address: '', latitude: '', longitude: '', sequence: 1 }], services: [{ code: 'S1', originStopCode: 'HN', destinationStopCode: 'HUE', departureTime: '06:00', arrivalTime: '18:00', daysOfWeek: [1, 2, 3, 4, 5, 6, 0], defaultVehicle: '', active: true }] };
 const newStop = () => ({ type: 'pickup', name: '', address: '', placeId: '', plannedTime: '', latitude: '', longitude: '', note: '' });
 const emptyDay = () => ({ day: 1, date: '', title: '', description: '', stops: [newStop()] });
 
@@ -51,6 +54,11 @@ export default function TourOperations() {
   const [submittingDay, setSubmittingDay] = useState(false);
   const [editingDay, setEditingDay] = useState(null);
   const [editingPassenger, setEditingPassenger] = useState(null);
+  const [routeSchedules, setRouteSchedules] = useState([]);
+  const [routeScheduleTour, setRouteScheduleTour] = useState('');
+  const [routeScheduleForm, setRouteScheduleForm] = useState(emptyRouteSchedule);
+  const [editingRouteSchedule, setEditingRouteSchedule] = useState(null);
+  const [routeScheduleLoading, setRouteScheduleLoading] = useState(false);
 
   const loadData = async (keepSelectedId) => {
     try {
@@ -71,6 +79,20 @@ export default function TourOperations() {
   };
 
   useEffect(() => { loadData(); }, []);
+
+  useEffect(() => {
+    if (tab !== 'schedules' || !routeScheduleTour) {
+      setRouteSchedules([]);
+      return;
+    }
+    let cancelled = false;
+    setRouteScheduleLoading(true);
+    api.get(`/tour-operations/route-schedules/${routeScheduleTour}`)
+      .then(result => { if (!cancelled) setRouteSchedules(result.schedules || []); })
+      .catch(error => { if (!cancelled) toast.error(error.message); })
+      .finally(() => { if (!cancelled) setRouteScheduleLoading(false); });
+    return () => { cancelled = true; };
+  }, [tab, routeScheduleTour]);
 
   const activeVehicles = overview.vehicles.filter(item => item.status === 'active');
   const availableStops = useMemo(() => (
@@ -278,6 +300,43 @@ export default function TourOperations() {
     setEditing(item); setVehicleForm({ carrier: item.carrier?._id || '', plateNumber: item.plateNumber, name: item.name || '', vehicleType: item.vehicleType || '', seatCapacity: item.seatCapacity, driverName: item.driverName || '', driverPhone: item.driverPhone || '', note: item.note || '', status: item.status }); setModal('vehicle');
   };
 
+  const openRouteSchedule = schedule => {
+    setEditingRouteSchedule(schedule);
+    setRouteScheduleForm({
+      tour: schedule.tour?._id || routeScheduleTour,
+      code: schedule.code || '', name: schedule.name || '',
+      transferMinutes: schedule.transferMinutes ?? 45,
+      autoSuggest: schedule.autoSuggest !== false, active: schedule.active !== false,
+      stops: (schedule.stops || []).map((stop, index) => ({ ...stop, sequence: index, latitude: stop.latitude ?? '', longitude: stop.longitude ?? '' })),
+      services: (schedule.services || []).map(service => ({ ...service, defaultVehicle: service.defaultVehicle?._id || service.defaultVehicle || '', daysOfWeek: service.daysOfWeek || [], active: service.active !== false }))
+    });
+  };
+
+  const newRouteSchedule = () => {
+    setEditingRouteSchedule(null);
+    setRouteScheduleForm({ ...emptyRouteSchedule, tour: routeScheduleTour, stops: emptyRouteSchedule.stops.map(stop => ({ ...stop })), services: emptyRouteSchedule.services.map(service => ({ ...service, daysOfWeek: [...service.daysOfWeek] })) });
+  };
+
+  const saveRouteSchedule = async event => {
+    event.preventDefault();
+    try {
+      const payload = {
+        ...routeScheduleForm,
+        tour: routeScheduleTour,
+        transferMinutes: Number(routeScheduleForm.transferMinutes),
+        stops: routeScheduleForm.stops.map((stop, index) => ({ ...stop, sequence: index, latitude: stop.latitude === '' ? undefined : Number(stop.latitude), longitude: stop.longitude === '' ? undefined : Number(stop.longitude) })),
+        services: routeScheduleForm.services.map(service => ({ ...service, daysOfWeek: service.daysOfWeek.map(Number), defaultVehicle: service.defaultVehicle || undefined }))
+      };
+      const result = editingRouteSchedule
+        ? await api.put(`/tour-operations/route-schedules/${editingRouteSchedule._id}`, payload)
+        : await api.post('/tour-operations/route-schedules', payload);
+      setRouteSchedules(current => editingRouteSchedule ? current.map(item => item._id === result.schedule._id ? result.schedule : item) : [result.schedule, ...current]);
+      setEditingRouteSchedule(null);
+      setRouteScheduleForm({ ...emptyRouteSchedule, tour: routeScheduleTour });
+      toast.success(editingRouteSchedule ? 'Đã cập nhật lịch tuyến' : 'Đã thêm lịch tuyến cố định');
+    } catch (error) { toast.error(error.message); }
+  };
+
   if (loading) return <div className="loading-overlay"><div className="loading-spinner" /></div>;
 
   return (
@@ -300,6 +359,8 @@ export default function TourOperations() {
       <div className="ops-tabs">
         <button className={tab === 'departures' ? 'active' : ''} onClick={() => setTab('departures')}><Route size={17} /> Chuyến khởi hành</button>
         <button className={tab === 'fleet' ? 'active' : ''} onClick={() => setTab('fleet')}><Bus size={17} /> Nhà xe & phương tiện</button>
+        <button className={tab === 'schedules' ? 'active' : ''} onClick={() => setTab('schedules')}><Clock3 size={17} /> Lịch tuyến cố định</button>
+        <button className={tab === 'journeys' ? 'active' : ''} onClick={() => setTab('journeys')}><ClipboardCheck size={17} /> Hành trình booking</button>
       </div>
 
       {tab === 'departures' ? (
@@ -333,7 +394,7 @@ export default function TourOperations() {
           ))}
           {!overview.departures.length && <div className="ops-empty"><Route size={42} /><h3>Chưa có chuyến khởi hành</h3><p>Tạo chuyến đầu tiên từ một Tour mẫu đang có.</p></div>}
         </div>
-      ) : (
+      ) : tab === 'fleet' ? (
         <div className="fleet-layout">
           <section className="ops-panel">
             <div className="ops-panel-title"><div><h2>Nhà xe</h2><p>Đơn vị cung cấp phương tiện</p></div>{overview.canManage && <button className="btn btn-secondary btn-sm" onClick={() => { setEditing(null); setCarrierForm(emptyCarrier); setModal('carrier'); }}><Plus size={15} /> Thêm</button>}</div>
@@ -344,6 +405,25 @@ export default function TourOperations() {
             <div className="fleet-list">{overview.vehicles.map(item => <div className="vehicle-row" key={item._id}><div className="vehicle-icon"><Bus size={20} /></div><div><b>{item.plateNumber} {item.name && `· ${item.name}`}</b><small>{item.carrier?.name} · {item.seatCapacity} chỗ · {item.driverName || 'Chưa gán tài xế'}</small></div><span className={`fleet-state ${item.status}`}>{item.status === 'active' ? 'Sẵn sàng' : item.status === 'maintenance' ? 'Bảo trì' : 'Tạm ngừng'}</span>{overview.canManage && <button className="btn btn-icon btn-ghost btn-sm" onClick={() => openEditVehicle(item)}><Edit3 size={15} /></button>}</div>)}</div>
           </section>
         </div>
+      ) : tab === 'schedules' ? (
+        <RouteSchedulesPanel
+          tours={tours}
+          vehicles={activeVehicles}
+          canManage={overview.canManage}
+          schedules={routeSchedules}
+          selectedTour={routeScheduleTour}
+          setSelectedTour={setRouteScheduleTour}
+          loading={routeScheduleLoading}
+          form={routeScheduleForm}
+          setForm={setRouteScheduleForm}
+          editing={editingRouteSchedule}
+          onNew={newRouteSchedule}
+          onEdit={openRouteSchedule}
+          onSubmit={saveRouteSchedule}
+          onCancel={() => { setEditingRouteSchedule(null); setRouteScheduleForm({ ...emptyRouteSchedule, tour: routeScheduleTour }); }}
+        />
+      ) : (
+        <BookingJourneyPanel vehicles={activeVehicles} />
       )}
 
       {selected && <DepartureDetail departure={selected} canManage={overview.canManage} onDepartureChange={setSelected} onClose={() => setSelected(null)} onAddDay={() => { setEditingDay(null); setModalDepartureId(selected._id); setDayForm({ ...emptyDay(), day: Math.max(0, ...(selected.itineraryDays || []).map(day => day.day)) + 1 }); setModal('day'); }} onEditDay={openEditDay} onRemoveDay={removeItineraryDay} onAddPassenger={() => { const stops = availableStops; setEditingPassenger(null); setModalDepartureId(selected._id); setPassengerForm({ ...emptyPassenger, sourceTour: selected.tour?._id || '', vehicle: selected.assignedVehicles?.[0]?.vehicle?._id || '', pickupStopId: stops[0]?._id || '', dropoffStopId: stops.at(-1)?._id || '' }); setModal('passenger'); }} onEditPassenger={openEditPassenger} onRemovePassenger={removePassenger} onUploadProgram={uploadProgram} onViewProgram={viewProgram} onDownloadProgram={downloadProgram} onRemoveProgram={removeProgram} />}

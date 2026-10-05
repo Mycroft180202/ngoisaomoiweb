@@ -6,6 +6,7 @@ const Notification = require('../models/Notification');
 const { requireDepartment } = require('../middleware/rbac');
 const { generateCode } = require('../utils/codeGenerator');
 const { updateWebsiteBookingStatus } = require('../services/websiteBookingSync');
+const RouteSchedule = require('../models/RouteSchedule');
 
 /**
  * GET /api/bookings
@@ -168,6 +169,38 @@ router.patch('/:id/status', requireDepartment('director', 'sale'), async (req, r
   } catch (error) {
     res.status(error.status || 500).json({ error: error.status ? error.message : 'Lỗi server' });
   }
+});
+
+router.put('/:id/journey-segments', requireDepartment('director', 'sale'), async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ error: 'Không tìm thấy booking' });
+    if (!Array.isArray(req.body.segments) || !req.body.segments.length) return res.status(400).json({ error: 'Booking cần ít nhất một chặng' });
+    const segments = req.body.segments.map(segment => ({
+      routeSchedule: segment.routeSchedule,
+      serviceCode: String(segment.serviceCode || '').toUpperCase(),
+      travelDate: segment.travelDate,
+      originStopCode: String(segment.originStopCode || '').toUpperCase(),
+      destinationStopCode: String(segment.destinationStopCode || '').toUpperCase(),
+      departure: segment.departure || undefined,
+      vehicle: segment.vehicle || undefined,
+      seatNumbers: segment.seatNumbers || [],
+      status: segment.status || (segment.vehicle ? 'assigned' : 'suggested'),
+      assignmentSource: segment.assignmentSource || 'schedule',
+      transferStatus: segment.transferStatus || 'not_required',
+      note: segment.note || ''
+    }));
+    const scheduleIds = [...new Set(segments.map(segment => String(segment.routeSchedule)))];
+    const validSchedules = await RouteSchedule.countDocuments({ _id: { $in: scheduleIds }, tour: booking.tour, active: true });
+    if (validSchedules !== scheduleIds.length) return res.status(400).json({ error: 'Có lịch tuyến không thuộc Tour của booking hoặc đã ngừng hoạt động' });
+    booking.journeySegments = segments;
+    await booking.save();
+    const populated = await Booking.findById(booking._id)
+      .populate('tour', 'name code destination')
+      .populate('journeySegments.routeSchedule', 'code name stops services')
+      .populate('journeySegments.vehicle', 'plateNumber name seatCapacity');
+    res.json({ booking: populated, message: 'Đã lưu kế hoạch hành trình nhiều chặng' });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể lưu kế hoạch chặng' }); }
 });
 
 module.exports = router;
