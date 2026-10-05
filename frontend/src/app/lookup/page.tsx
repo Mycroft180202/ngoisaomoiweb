@@ -4,9 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCms } from "@/components/cms/CmsProvider";
+import { getApiUrl } from "@/utils/api";
 
 interface BookingResult {
   id: number;
+  booking_code?: string;
   tour_title: string;
   full_name: string;
   email: string;
@@ -34,21 +36,21 @@ export default function BookingLookupPage() {
     setResult(null);
     setLoading(true);
 
-    const cleanBookingId = parseInt(bookingId.replace(/#/g, "").trim());
-    if (isNaN(cleanBookingId)) {
-      setError("Mã đơn hàng phải là số hợp lệ.");
+    const identifier = bookingId.replace(/^#/, "").trim().toUpperCase();
+    if (!identifier) {
+      setError("Vui lòng nhập mã đơn hàng.");
       setLoading(false);
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/bookings/lookup", {
+      const response = await fetch(getApiUrl("bookings/lookup"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          booking_id: cleanBookingId,
+          ...(/^\d+$/.test(identifier) ? { booking_id: Number(identifier) } : { booking_code: identifier }),
           email_or_phone: emailOrPhone.trim(),
         }),
       });
@@ -111,7 +113,7 @@ export default function BookingLookupPage() {
                 <input
                   type="text"
                   id="bookingId"
-                  placeholder="Ví dụ: 12 hoặc #12"
+                  placeholder="Ví dụ: NST-20261005-000012 hoặc #12"
                   value={bookingId}
                   onChange={(e) => setBookingId(e.target.value)}
                   required
@@ -150,7 +152,7 @@ export default function BookingLookupPage() {
                 gap: "0.5rem"
               }}>
                 <h4 style={{ margin: "0 0 0.5rem 0", color: "var(--public-text-strong, #0f172a)", fontSize: "1.1rem", fontWeight: 800 }}>
-                  Thông tin đơn đặt: #{result.id}
+                  Thông tin đơn đặt: {result.booking_code || `#${result.id}`}
                 </h4>
                 <div>📍 <strong>Tour đặt:</strong> {result.tour_title}</div>
                 <div>👤 <strong>Khách hàng:</strong> {result.full_name}</div>

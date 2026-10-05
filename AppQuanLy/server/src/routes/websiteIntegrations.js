@@ -11,7 +11,7 @@ const authorizeWebsite = (req, res, next) => {
   const configuredKey = process.env.WEBSITE_INTEGRATION_KEY;
   if (!configuredKey) return res.status(503).json({ error: 'WEBSITE_INTEGRATION_KEY chưa được cấu hình' });
   const supplied = (req.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  if (!supplied || supplied.length !== configuredKey.length || !crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(configuredKey))) {
+  if (!supplied || Buffer.byteLength(supplied) !== Buffer.byteLength(configuredKey) || !crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(configuredKey))) {
     return res.status(401).json({ error: 'Integration key không hợp lệ' });
   }
   next();
@@ -33,26 +33,37 @@ router.post('/tours', authorizeWebsite, async (req, res) => {
     if (!systemUser) return res.status(503).json({ error: 'CRM chưa có tài khoản hệ thống để ghi nhận tour' });
     const itinerary = (data.itinerary || []).map(item => ({
       day: Math.max(1, Number(item.day) || 1), title: item.title || `Ngày ${item.day}`,
-      description: item.description || '', meals: item.meals ? String(item.meals).split(',').map(v => v.trim()).filter(Boolean) : []
+      description: item.description || '', meals: item.meals ? String(item.meals).split(',').map(v => v.trim()).filter(Boolean) : [],
+      overnight: item.overnight || ''
     }));
     const duration = durationNumbers(data.duration, itinerary);
     const firstDeparture = (data.departures || []).map(item => item.date).filter(Boolean).sort()[0];
+    const linkedTour = await Tour.findOne({ 'websiteSource.tourId': Number(data.tour_id) });
+    const codeTour = await Tour.findOne({ code: String(data.tour_code).toUpperCase() });
+    if ((linkedTour && codeTour && String(linkedTour._id) !== String(codeTour._id)) ||
+        (codeTour?.websiteSource?.tourId && codeTour.websiteSource.tourId !== Number(data.tour_id))) {
+      return res.status(409).json({ error: 'Mã tour đã liên kết với tour CMS khác. Cần xử lý xung đột trước khi đồng bộ.' });
+    }
     const update = {
       code: String(data.tour_code).toUpperCase(), name: data.name, destination: data.destination || data.name,
       description: data.description || '', durationDays: duration.days, durationNights: duration.nights,
-      price: { adult: Number(data.price?.adult) || 0, child: Number(data.price?.child) || 0, surcharge: 0 },
-      status: data.is_active ? 'active' : 'draft', departureDate: firstDeparture || null,
-      maxGuests: Math.max(1, ...((data.departures || []).map(item => Number(item.max_capacity) || 0)), 30),
-      itinerary, images: data.images || [], createdBy: systemUser._id,
+      'price.adult': Number(data.price?.adult) || 0, 'price.child': Number(data.price?.child) || 0,
+      itinerary, images: data.images || [],
+      includes: data.price_includes ? [data.price_includes] : [],
+      excludes: data.price_excludes ? [data.price_excludes] : [],
       websiteSource: {
         tourId: Number(data.tour_id), slug: data.slug || '', documentUrl: data.document_url || '',
         isInternational: Boolean(data.is_international), infantPrice: Number(data.price?.infant) || 0,
-        promotionPrice: Number(data.price?.promotion) || 0, departures: data.departures || [], lastSyncedAt: new Date()
+        promotionPrice: Number(data.price?.promotion) || 0, thumbnail: data.thumbnail || data.images?.[0] || '',
+        snapshot: data, departures: data.departures || [], lastSyncedAt: new Date()
       }
     };
     const tour = await Tour.findOneAndUpdate(
-      { $or: [{ 'websiteSource.tourId': Number(data.tour_id) }, { code: String(data.tour_code).toUpperCase() }] },
-      { $set: update }, { new: true, upsert: true, setDefaultsOnInsert: true }
+      linkedTour || codeTour ? { _id: (linkedTour || codeTour)._id } : { 'websiteSource.tourId': Number(data.tour_id) },
+      { $set: update, $setOnInsert: {
+        createdBy: systemUser._id, status: data.is_active ? 'active' : 'draft', departureDate: firstDeparture || null,
+        maxGuests: Math.max(1, ...((data.departures || []).map(item => Number(item.max_capacity) || 0)), 30)
+      } }, { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true }
     );
     res.json({ tour_id: String(tour._id), code: tour.code, status: 'synced' });
   } catch (error) {
@@ -81,8 +92,16 @@ router.post('/bookings', authorizeWebsite, async (req, res) => {
       { code: String(data.booking_code).toUpperCase() },
       { $set: { tour: tour._id, customerName: customerData.full_name, customerPhone: customerData.phone, customerEmail: customerData.email,
         adults: Math.max(1, Number(data.passenger_counts?.adults) || 1), children: Number(data.passenger_counts?.children) || 0,
-        totalPrice: Number(data.quoted_total) || 0, status: mappedStatus, note: data.notes || '', createdBy: systemUser._id } },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+        infants: Number(data.passenger_counts?.infants) || 0,
+        totalPrice: Number(data.quoted_total) || 0, status: mappedStatus, note: data.notes || '',
+        websiteSource: {
+          bookingId: Number(data.booking_id), bookingCode: String(data.booking_code).toUpperCase(),
+          departureId: data.departure_id, departureCode: data.departure_code, departureDate: data.departure_date,
+          bookingStatus: data.booking_status, paymentStatus: data.payment_status,
+          discountCode: data.discount_code, discountAmount: Number(data.discount_amount) || 0, lastSyncedAt: new Date()
+        }
+      }, $setOnInsert: { createdBy: systemUser._id } },
+      { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true }
     );
     res.json({ booking_id: String(booking._id), customer_id: String(customer._id), status: 'synced' });
   } catch (error) {

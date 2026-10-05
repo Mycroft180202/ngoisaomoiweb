@@ -2,19 +2,57 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import date
+import hmac
 
 from app.core.database import get_db
 from app.crud.booking import get_booking, get_bookings, create_booking, update_booking
-from app.schemas.booking import BookingResponse, BookingCreate, BookingUpdate, PaymentProofSubmit, BookingLookup
+from app.schemas.booking import BookingResponse, BookingCreate, BookingUpdate, PaymentProofSubmit, BookingLookup, CrmBookingStatusUpdate
+from app.core.config import settings
 from app.routers.auth import get_current_user, get_optional_current_user
 from app.models.user import User
 from app.services.mail import send_booking_email, send_booking_confirmed_email, send_booking_cancelled_email
-from app.core.rate_limit import booking_rate_limiter
+from app.core.rate_limit import booking_rate_limiter, booking_lookup_rate_limiter
 from app.services.crm_sync import sync_booking_to_crm
 from app.services.payment_config import online_payments_enabled
 
 
 router = APIRouter(prefix="/bookings", tags=["Bookings Management"])
+
+
+@router.post("/integrations/crm/status")
+def update_status_from_crm(
+    request: Request,
+    update: CrmBookingStatusUpdate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    from app.models.booking import Booking
+
+    if not settings.CRM_CALLBACK_KEY:
+        raise HTTPException(status_code=503, detail="CRM_CALLBACK_KEY chưa được cấu hình.")
+    supplied = request.headers.get("authorization", "")
+    if not hmac.compare_digest(supplied.encode(), f"Bearer {settings.CRM_CALLBACK_KEY}".encode()):
+        raise HTTPException(status_code=401, detail="Integration key không hợp lệ.")
+    booking = db.query(Booking).filter(
+        Booking.id == update.booking_id,
+        Booking.booking_code == update.booking_code.strip().upper(),
+    ).with_for_update().first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Không tìm thấy đơn hàng CMS.")
+    if booking.crm_booking_id and booking.crm_booking_id != update.crm_booking_id:
+        raise HTTPException(status_code=409, detail="Đơn hàng không khớp với liên kết CRM.")
+    if (booking.status, booking.payment_status) != (update.expected_status, update.expected_payment_status):
+        if (booking.status, booking.payment_status) != (update.status, update.payment_status):
+            raise HTTPException(status_code=409, detail="Đơn đã thay đổi trên CMS. Vui lòng đồng bộ lại trước khi duyệt.")
+        return {"booking_id": booking.id, "booking_code": booking.booking_code,
+                "status": booking.status, "payment_status": booking.payment_status}
+    booking.crm_booking_id = update.crm_booking_id
+    updated = _apply_booking_update(
+        booking.id, BookingUpdate(status=update.status, payment_status=update.payment_status),
+        background_tasks, db,
+    )
+    return {"booking_id": updated.id, "booking_code": updated.booking_code,
+            "status": updated.status, "payment_status": updated.payment_status}
 
 @router.post("/", response_model=BookingResponse)
 def make_booking(
@@ -96,6 +134,15 @@ def edit_booking(
 ):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
+    return _apply_booking_update(booking_id, booking_in, background_tasks, db)
+
+
+def _apply_booking_update(
+    booking_id: int,
+    booking_in: BookingUpdate,
+    background_tasks: BackgroundTasks,
+    db: Session,
+):
     db_booking = get_booking(db, booking_id=booking_id)
     if not db_booking:
         raise HTTPException(status_code=404, detail="Booking not found")
@@ -242,21 +289,27 @@ def submit_payment_proof(
 
 @router.post("/lookup", response_model=BookingResponse)
 def lookup_booking(
+    request: Request,
     lookup_in: BookingLookup,
     db: Session = Depends(get_db)
 ):
     from app.models.booking import Booking
     
-    booking = db.query(Booking).filter(Booking.id == lookup_in.booking_id).first()
+    booking_lookup_rate_limiter.check_rate_limit(request)
+    query = db.query(Booking)
+    booking = query.filter(
+        Booking.booking_code == lookup_in.booking_code.strip().upper()
+        if lookup_in.booking_code else Booking.id == lookup_in.booking_id
+    ).first()
     if not booking:
-        raise HTTPException(status_code=404, detail="Không tìm thấy đơn hàng với mã này.")
+        raise HTTPException(status_code=404, detail="Không tìm thấy đơn hàng khớp với thông tin tra cứu.")
         
     email_or_phone = lookup_in.email_or_phone.strip().lower()
     booking_email = booking.email.strip().lower()
     booking_phone = booking.phone.strip()
     
     if booking_email != email_or_phone and booking_phone != email_or_phone:
-        raise HTTPException(status_code=404, detail="Thông tin email hoặc số điện thoại không khớp.")
+        raise HTTPException(status_code=404, detail="Không tìm thấy đơn hàng khớp với thông tin tra cứu.")
         
     return booking
 

@@ -3,7 +3,7 @@ import hmac
 import json
 from datetime import datetime, timezone
 from urllib.error import HTTPError, URLError
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse, parse_qs
 from urllib.request import Request, urlopen
 
 from app.core.config import settings
@@ -70,6 +70,15 @@ def sync_booking_to_crm(booking_id: int) -> None:
             db.commit()
             return
 
+        if booking.tour and not booking.tour.crm_tour_id:
+            tour_result = sync_tour_to_crm(booking.tour_id)
+            if tour_result.get("status") != "synced":
+                booking.crm_sync_status = "failed"
+                booking.crm_last_error = f"Chưa đồng bộ được tour: {tour_result.get('error') or tour_result.get('status')}"[:1000]
+                db.commit()
+                return
+            db.refresh(booking.tour)
+
         payload = _booking_payload(booking)
         body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         signature = hmac.new(
@@ -109,6 +118,27 @@ def sync_booking_to_crm(booking_id: int) -> None:
 
 
 def _tour_payload(tour: Tour) -> dict:
+    def public_url(value):
+        if not value:
+            return ""
+        return urljoin(settings.BACKEND_URL.rstrip("/") + "/", value)
+
+    def image_url(value):
+        url = public_url(value)
+        parsed = urlparse(url)
+        if parsed.hostname == "drive.google.com":
+            file_id = parse_qs(parsed.query).get("id", [None])[0]
+            if parsed.path.startswith("/file/d/"):
+                file_id = parsed.path.split("/file/d/", 1)[1].split("/", 1)[0]
+            if file_id:
+                return f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
+        return url
+
+    images = sorted(tour.images, key=lambda item: item.order_index or 0)
+    primary = next((item for item in images if item.is_primary), None)
+    primary = primary or next((item for item in images if item.image_type == "banner"), None)
+    thumbnail = image_url(primary.url if primary else images[0].url if images else tour.image)
+    image_urls = list(dict.fromkeys([url for url in [thumbnail, *[image_url(item.url) for item in images]] if url]))
     return {
         "event": "tour.upserted",
         "event_id": f"tour-{tour.id}-{int(datetime.now(timezone.utc).timestamp())}",
@@ -123,12 +153,16 @@ def _tour_payload(tour: Tour) -> dict:
             "description": tour.description,
             "duration": tour.duration,
             "price": {
-                "adult": tour.price_daily or tour.price,
+                "adult": tour.price_daily if (tour.is_daily or tour.recurring_days) and tour.price_daily else tour.price,
                 "child": tour.price_child or 0,
                 "infant": tour.price_infant or 0,
                 "promotion": tour.price_promo_daily or 0,
                 "min_group_size": tour.min_group_size or 1,
                 "accommodation_options": tour.accommodation_prices or [],
+                "base_adult": tour.price,
+                "daily_adult": tour.price_daily,
+                "group_discount": tour.group_discount,
+                "user_discount_percent": tour.user_discount_percent,
             },
             "price_includes": tour.price_includes,
             "price_excludes": tour.price_excludes,
@@ -137,8 +171,27 @@ def _tour_payload(tour: Tour) -> dict:
             "important_note": tour.important_note,
             "is_active": tour.is_active,
             "is_international": tour.is_international,
-            "document_url": tour.document_url,
-            "images": [image.url for image in tour.images],
+            "document_url": public_url(tour.document_url),
+            "thumbnail": thumbnail,
+            "images": image_urls,
+            "image_details": [
+                {"id": item.id, "url": image_url(item.url), "image_type": item.image_type,
+                 "is_primary": item.is_primary, "order_index": item.order_index}
+                for item in images
+            ],
+            "is_daily": tour.is_daily,
+            "is_promo": tour.is_promo,
+            "recurring_days": tour.recurring_days or [],
+            "custom_departures": tour.custom_departures or [],
+            "sort_order": tour.sort_order,
+            "category": tour.category,
+            "region": tour.region,
+            "categories": [{"id": item.id, "name": item.name, "slug": item.slug} for item in tour.categories],
+            "tags": [{"id": item.id, "name": item.name, "slug": item.slug} for item in tour.tags],
+            "guides": [{"id": item.id, "name": item.name} for item in tour.guides],
+            "departure_point": {"id": tour.departure_point.id, "name": tour.departure_point.name} if tour.departure_point else None,
+            "destination_domestic": {"id": tour.destination_domestic.id, "name": tour.destination_domestic.name} if tour.destination_domestic else None,
+            "destination_foreign": {"id": tour.destination_foreign.id, "name": tour.destination_foreign.name} if tour.destination_foreign else None,
             "itinerary": [
                 {"day": item.day, "title": item.title, "description": item.content, "meals": item.meals, "overnight": item.overnight}
                 for item in sorted(tour.itinerary, key=lambda value: (value.sort_order or value.day, value.day))
@@ -167,6 +220,9 @@ def sync_tour_to_crm(tour_id: int) -> dict:
             return {"tour_id": tour_id, "status": "not_found"}
         if not settings.CRM_API_URL:
             return {"tour_id": tour_id, "tour_code": tour.tour_code, "status": "not_configured", "error": "CRM_API_URL chưa được cấu hình"}
+        if not tour.tour_code:
+            tour.tour_code = f"TOUR-{tour.id:06d}"
+            db.commit()
         payload = _tour_payload(tour)
         body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         signature = hmac.new(settings.CRM_WEBHOOK_SECRET.encode("utf-8"), body, hashlib.sha256).hexdigest() if settings.CRM_WEBHOOK_SECRET else ""

@@ -63,6 +63,101 @@ function formatDate(dateStr: string): string {
   return `${day}/${month}/${year}`;
 }
 
+function dateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateKey(value: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const [year, month, day] = value.split("-").map(Number);
+  const parsed = new Date(year, month - 1, day);
+  return parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day ? parsed : null;
+}
+
+function CalendarPicker({
+  value,
+  minDate,
+  onChange,
+}: {
+  value: string;
+  minDate: string;
+  onChange: (value: string) => void;
+}) {
+  const minimumDate = parseDateKey(minDate) || new Date();
+  const selectedDate = parseDateKey(value);
+  const [visibleMonth, setVisibleMonth] = useState(() => {
+    const initialDate = selectedDate || minimumDate;
+    return new Date(initialDate.getFullYear(), initialDate.getMonth(), 1);
+  });
+
+  const monthLabel = new Intl.DateTimeFormat("vi-VN", { month: "long", year: "numeric" }).format(visibleMonth);
+  const firstDay = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1).getDay();
+  const daysInMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0).getDate();
+  const calendarCells = Array.from({ length: firstDay + daysInMonth }, (_, index) =>
+    index < firstDay ? null : new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), index - firstDay + 1)
+  );
+  const previousMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1);
+  const isPreviousMonthDisabled = previousMonth < new Date(minimumDate.getFullYear(), minimumDate.getMonth(), 1);
+
+  return (
+    <div className="checkout-calendar" aria-label="Chọn ngày khởi hành">
+      <div className="checkout-calendar__topbar">
+        <div>
+          <span className="checkout-calendar__eyebrow">Ngày khởi hành</span>
+          <strong>{value ? formatDate(value) : "Chọn ngày của bạn"}</strong>
+        </div>
+        <span className="checkout-calendar__icon" aria-hidden>📅</span>
+      </div>
+      <div className="checkout-calendar__monthbar">
+        <button
+          type="button"
+          onClick={() => setVisibleMonth(previousMonth)}
+          disabled={isPreviousMonthDisabled}
+          aria-label="Tháng trước"
+        >
+          ‹
+        </button>
+        <strong>{monthLabel}</strong>
+        <button
+          type="button"
+          onClick={() => setVisibleMonth(new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1))}
+          aria-label="Tháng sau"
+        >
+          ›
+        </button>
+      </div>
+      <div className="checkout-calendar__weekdays" aria-hidden>
+        {['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'].map((day) => <span key={day}>{day}</span>)}
+      </div>
+      <div className="checkout-calendar__days">
+        {calendarCells.map((day, index) => {
+          if (!day) return <span key={`empty-${index}`} className="checkout-calendar__empty" />;
+          const valueKey = dateKey(day);
+          const isPast = valueKey < dateKey(minimumDate);
+          const isSelected = valueKey === value;
+          return (
+            <button
+              key={valueKey}
+              type="button"
+              className={isSelected ? "is-selected" : ""}
+              disabled={isPast}
+              onClick={() => onChange(valueKey)}
+              aria-label={`Chọn ngày ${formatDate(valueKey)}`}
+              aria-pressed={isSelected}
+            >
+              {day.getDate()}
+            </button>
+          );
+        })}
+      </div>
+      <p className="checkout-calendar__hint">Định dạng ngày: ngày / tháng / năm</p>
+    </div>
+  );
+}
+
 function GuestStepper({ label, count, setCount, min = 0 }: { label: string; count: number; setCount: (c: number) => void; min?: number }) {
   return (
     <div className="checkout-field">
@@ -106,7 +201,7 @@ export default function CheckoutClient() {
 
   // Promo code
   const [discountCode, setDiscountCode] = useState("");
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount_type: string; value: number; min_value: number } | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
   const [promoSuccess, setPromoSuccess] = useState<string | null>(null);
   const [promoLoading, setPromoLoading] = useState(false);
@@ -236,7 +331,8 @@ export default function CheckoutClient() {
     return []; // Free input mode
   }, [tour]);
 
-  const useFreeInput = availableDates.length === 0 && !tourLoading;
+  const hasConfiguredDepartures = Boolean(tour?.schedules?.length || tour?.custom_departures?.length || tour?.recurring_days?.length);
+  const useFreeInput = !hasConfiguredDepartures && !tourLoading;
 
   // Helper: get per-date price from custom_departures (may have promo_price)
   const priceForDate = useCallback((dateStr: string): { price: number; promoPrice: number } | null => {
@@ -246,7 +342,9 @@ export default function CheckoutClient() {
         (d) => (typeof d === "string" ? d : d?.date) === dateStr
       );
       if (entry && typeof entry !== "string") {
-        return { price: entry.price || 0, promoPrice: entry.promo_price || 0 };
+        const fallbackPrice = (tour.is_daily || tour.recurring_days?.length) && tour.price_daily ? tour.price_daily : tour.price;
+        const fallbackPromo = (tour.is_daily || tour.recurring_days?.length || tour.is_promo) ? tour.price_promo_daily || 0 : 0;
+        return { price: entry.price || fallbackPrice, promoPrice: entry.promo_price || (!entry.price ? fallbackPromo : 0) };
       }
     }
     // Check if daily or weekly recurring price is configured
@@ -276,6 +374,11 @@ export default function CheckoutClient() {
   const childSubtotal = (tour && tour.price_child > 0) ? tour.price_child * childrenCount : 0;
   const infantSubtotal = (tour && tour.price_infant > 0) ? tour.price_infant * infantCount : 0;
   const subtotal = adultSubtotal + childSubtotal + infantSubtotal;
+  const discountAmount = useMemo(() => {
+    if (!appliedPromo || appliedPromo.code !== discountCode.trim().toUpperCase() || subtotal < appliedPromo.min_value) return 0;
+    const amount = appliedPromo.discount_type === "percentage" ? subtotal * appliedPromo.value / 100 : appliedPromo.value;
+    return Math.min(amount, subtotal);
+  }, [appliedPromo, discountCode, subtotal]);
   const total = Math.max(0, subtotal - discountAmount);
 
   const handleApplyPromo = async () => {
@@ -292,18 +395,11 @@ export default function CheckoutClient() {
         throw new Error(`Mã giảm giá chỉ áp dụng cho đơn từ ${formatCurrency(data.min_value)}.`);
       }
 
-      let amount = 0;
-      if (data.discount_type === "percentage") {
-        amount = subtotal * (data.value / 100);
-      } else if (data.discount_type === "fixed") {
-        amount = data.value;
-      }
-      amount = Math.min(amount, subtotal);
-      setDiscountAmount(amount);
-      setPromoSuccess(`Giảm ${formatCurrency(amount)} thành công! Mã: ${data.code}`);
+      setAppliedPromo(data);
+      setPromoSuccess(`Đã áp dụng mã ${data.code}. Mức giảm được cập nhật theo tổng tiền hiện tại.`);
     } catch (err: any) {
       setPromoError(err.message || "Không thể áp dụng mã giảm giá.");
-      setDiscountAmount(0);
+      setAppliedPromo(null);
     } finally {
       setPromoLoading(false);
     }
@@ -314,6 +410,14 @@ export default function CheckoutClient() {
     setErrorMsg(null);
 
     if (submittingRef.current) return;
+    if (!tour || tourLoading) {
+      setErrorMsg("Vui lòng chọn một tour hợp lệ và chờ tải xong thông tin trước khi đặt.");
+      return;
+    }
+    if (hasConfiguredDepartures && !availableDates.includes(selectedDateStr)) {
+      setErrorMsg("Vui lòng chọn ngày khởi hành đang được mở bán.");
+      return;
+    }
 
     if (!fullName.trim() || !email.trim() || !phone.trim()) {
       setErrorMsg("Vui lòng điền đầy đủ Họ tên, Email và Số điện thoại.");
@@ -349,7 +453,7 @@ export default function CheckoutClient() {
         children_count: childrenCount,
         infants_count: infantCount,
         notes: (guestNotes + (notes.trim() || "")).trim() || null,
-        discount_code: discountCode.trim() ? discountCode.trim().toUpperCase() : null,
+        discount_code: appliedPromo && discountAmount > 0 && appliedPromo.code === discountCode.trim().toUpperCase() ? appliedPromo.code : null,
         total_amount: total > 0 ? total : null,
         discount_amount: discountAmount > 0 ? discountAmount : 0,
       };
@@ -510,22 +614,20 @@ export default function CheckoutClient() {
                         );
                       })}
                     </div>
-                  ) : (
-                    /* ── Free date input ── */
+                  ) : useFreeInput ? (
+                    /* ── Free date picker ── */
                     <div className="checkout-field">
                       <label style={{ fontSize: "0.82rem", color: "var(--public-muted, #64748b)", marginBottom: "0.35rem", fontWeight: 400 }}>
                         Tour này chưa có lịch cố định, vui lòng chọn ngày dự kiến khởi hành:
                       </label>
-                      <input
-                        type="date"
+                      <CalendarPicker
                         value={selectedDateStr}
-                        onChange={(e) => setSelectedDateStr(e.target.value)}
-                        min={new Date().toISOString().split("T")[0]}
-                        required
-                        className="checkout-input"
-                        style={{ cursor: "pointer" }}
+                        minDate={new Date().toISOString().split("T")[0]}
+                        onChange={setSelectedDateStr}
                       />
                     </div>
+                  ) : (
+                    <p style={{ color: "var(--public-muted, #64748b)" }}>Tour hiện chưa có ngày khởi hành mở bán. Vui lòng liên hệ để được tư vấn.</p>
                   )}
 
                   {!selectedDateStr && !tourLoading && (
@@ -547,7 +649,7 @@ export default function CheckoutClient() {
                         <span className="guest-subtitle">Từ 12 tuổi trở lên</span>
                       </div>
                       <div className="guest-price-col">
-                        <span className="guest-price">{formatCurrency(tour ? tour.price : 0)}</span>
+                        <span className="guest-price">{formatCurrency(currentAdultPrice)}</span>
                       </div>
                       <div className="checkout-stepper-wrapper">
                         <div className="checkout-stepper">
@@ -649,7 +751,7 @@ export default function CheckoutClient() {
                 </div>
 
                 {/* Submit */}
-                <button type="submit" disabled={isSubmitting} className="checkout-submit-btn">
+                <button type="submit" disabled={isSubmitting || tourLoading || !tour || (hasConfiguredDepartures && availableDates.length === 0)} className="checkout-submit-btn">
                   {isSubmitting ? (
                     <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
                       <span className="search-spinner" style={{ position: "static", transform: "none", borderColor: "rgba(255,255,255,0.3)", borderTopColor: "white" }} />

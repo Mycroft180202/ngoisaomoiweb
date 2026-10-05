@@ -4,7 +4,8 @@ const itinerarySchema = new mongoose.Schema({
   day: { type: Number, required: true },
   title: { type: String, required: true },
   description: { type: String, default: '' },
-  meals: [{ type: String }]
+  meals: [{ type: String }],
+  overnight: { type: String, default: '' }
 }, { _id: false });
 
 const tourSchema = new mongoose.Schema({
@@ -89,6 +90,8 @@ const tourSchema = new mongoose.Schema({
     isInternational: { type: Boolean, default: false },
     infantPrice: { type: Number, default: 0 },
     promotionPrice: { type: Number, default: 0 },
+    thumbnail: { type: String, default: '' },
+    snapshot: { type: mongoose.Schema.Types.Mixed, default: {} },
     departures: { type: [mongoose.Schema.Types.Mixed], default: [] },
     lastSyncedAt: { type: Date }
   }

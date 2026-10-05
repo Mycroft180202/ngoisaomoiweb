@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from typing import Literal, Optional
 from datetime import date, datetime
 
@@ -61,6 +61,23 @@ class PaymentProofSubmit(BaseModel):
     payment_ref: Optional[str] = None
 
 class BookingLookup(BaseModel):
-    booking_id: int
-    email_or_phone: str
+    booking_id: Optional[int] = Field(default=None, ge=1)
+    booking_code: Optional[str] = Field(default=None, min_length=1, max_length=80)
+    email_or_phone: str = Field(min_length=1, max_length=254)
+
+    @model_validator(mode="after")
+    def require_identifier(self):
+        if (self.booking_id is None) == (self.booking_code is None):
+            raise ValueError("Cần cung cấp mã đơn hàng hoặc ID đơn hàng.")
+        return self
+
+
+class CrmBookingStatusUpdate(BaseModel):
+    booking_id: int = Field(ge=1)
+    booking_code: str = Field(min_length=1, max_length=80)
+    crm_booking_id: str = Field(min_length=1, max_length=80)
+    status: Literal["pending", "confirmed", "cancelled"]
+    payment_status: Literal["unpaid", "pending", "paid"]
+    expected_status: Literal["pending", "confirmed", "cancelled"]
+    expected_payment_status: Literal["unpaid", "pending", "paid"]
 

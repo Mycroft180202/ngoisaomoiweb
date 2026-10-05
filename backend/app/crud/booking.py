@@ -24,12 +24,14 @@ def create_booking(db: Session, booking: BookingCreate):
     if guests_count != booking.guests_count:
         raise HTTPException(status_code=400, detail="Tổng số khách không khớp với chi tiết hành khách.")
     adult_price = tour.price
+    if (tour.is_daily or tour.recurring_days) and tour.price_daily:
+        adult_price = tour.price_promo_daily or tour.price_daily
+    elif tour.is_promo and tour.price_promo_daily:
+        adult_price = tour.price_promo_daily
     for item in tour.custom_departures or []:
         if isinstance(item, dict) and str(item.get("date")) == booking.departure_date.isoformat():
             adult_price = item.get("promo_price") or item.get("price") or adult_price
             break
-    if tour.is_daily and tour.price_daily:
-        adult_price = tour.price_promo_daily or tour.price_daily
 
     subtotal = (
         adult_price * booking.adults_count
@@ -59,6 +61,17 @@ def create_booking(db: Session, booking: BookingCreate):
             schedule.booked_seats += booking.guests_count
         elif tour.schedules:
             raise HTTPException(status_code=400, detail="Ngày khởi hành này chưa được mở bán.")
+        elif not tour.is_daily:
+            custom_dates = {
+                str(item.get("date")) if isinstance(item, dict) else str(item)
+                for item in tour.custom_departures or []
+            }
+            recurring_day = (booking.departure_date.weekday() + 1) % 7
+            if (custom_dates or tour.recurring_days) and (
+                booking.departure_date.isoformat() not in custom_dates
+                and recurring_day not in (tour.recurring_days or [])
+            ):
+                raise HTTPException(status_code=400, detail="Ngày khởi hành này chưa được mở bán.")
 
     discount_amount = 0.0
     applied_code = None
@@ -95,7 +108,7 @@ def create_booking(db: Session, booking: BookingCreate):
 
     db_booking = Booking(
         tour_id=booking.tour_id,
-        tour_title=booking.tour_title,
+        tour_title=tour.title,
         full_name=booking.full_name,
         email=booking.email,
         phone=booking.phone,
@@ -121,20 +134,33 @@ def create_booking(db: Session, booking: BookingCreate):
 
 def update_booking(db: Session, db_booking: Booking, booking: BookingUpdate):
     from app.models.tour import TourSchedule
+    db_booking = db.query(Booking).filter(Booking.id == db_booking.id).with_for_update().populate_existing().one()
     old_status = db_booking.status
     old_guests_count = db_booking.guests_count
     
     update_data = booking.model_dump(exclude_unset=True)
+    if any(update_data.get(field) is None for field in ("status", "payment_status", "guests_count", "departure_date") if field in update_data):
+        raise HTTPException(status_code=400, detail="Trạng thái, số khách và ngày khởi hành không được để trống.")
     
     # 1. Nếu thay đổi số khách hoặc đổi trạng thái hủy/kích hoạt lại
     new_status = update_data.get("status", old_status)
     new_guests = update_data.get("guests_count", old_guests_count)
+    new_payment_status = update_data.get("payment_status", db_booking.payment_status)
+    if new_payment_status == "paid" and new_status != "confirmed":
+        raise HTTPException(status_code=400, detail="Cần xác nhận đơn trước khi đánh dấu đã thanh toán.")
+    if db_booking.payment_status == "paid" and new_payment_status != "paid":
+        raise HTTPException(status_code=400, detail="Đơn đã thanh toán cần xử lý hoàn tiền riêng, không được đặt lại trạng thái thanh toán.")
+    counts = [update_data.get(field, getattr(db_booking, field)) for field in ("adults_count", "children_count", "infants_count")]
+    if any(count is None for count in counts) or new_guests != sum(counts):
+        raise HTTPException(status_code=400, detail="Tổng số khách không khớp với chi tiết hành khách.")
+    if update_data.get("departure_date", db_booking.departure_date) != db_booking.departure_date:
+        raise HTTPException(status_code=400, detail="Đổi ngày khởi hành cần xử lý chuyển chỗ và báo giá riêng.")
     
     if db_booking.tour_id:
         schedule = db.query(TourSchedule).filter(
             TourSchedule.tour_id == db_booking.tour_id,
             TourSchedule.departure_date == db_booking.departure_date
-        ).first()
+        ).with_for_update().first()
         
         if schedule:
             # Trường hợp 1: Huỷ đơn hàng -> Trả lại chỗ
@@ -142,6 +168,8 @@ def update_booking(db: Session, db_booking: Booking, booking: BookingUpdate):
                 schedule.booked_seats = max(0, schedule.booked_seats - old_guests_count)
             # Trường hợp 2: Khôi phục đơn hàng đã huỷ -> Kiểm tra lại chỗ
             elif old_status == "cancelled" and new_status != "cancelled":
+                if schedule.status != "active":
+                    raise HTTPException(status_code=400, detail="Ngày khởi hành đã đóng, không thể khôi phục đơn.")
                 if schedule.booked_seats + new_guests > schedule.max_capacity:
                     raise HTTPException(
                         status_code=400,

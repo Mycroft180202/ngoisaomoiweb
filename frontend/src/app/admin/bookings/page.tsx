@@ -3,6 +3,7 @@
 
 import { appToast, appConfirm } from "@/components/ui/AppDialogProvider";
 import { useEffect, useState } from "react";
+import { getApiUrl } from "@/utils/api";
 
 interface Tour {
   id: number;
@@ -64,12 +65,12 @@ export default function BookingsManager() {
 
     try {
       // Fetch Tours (for pricing lookup)
-      const toursRes = await fetch("http://localhost:8000/api/tours/");
+      const toursRes = await fetch(getApiUrl("tours/"));
       const toursData = toursRes.ok ? await toursRes.json() : [];
       setTours(toursData);
 
       // Fetch Bookings
-      const bookingsRes = await fetch("http://localhost:8000/api/bookings/", {
+      const bookingsRes = await fetch(getApiUrl("bookings/"), {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -96,7 +97,7 @@ export default function BookingsManager() {
     if (!token) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/bookings/${bookingId}`, {
+      const res = await fetch(getApiUrl(`bookings/${bookingId}`), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +127,7 @@ export default function BookingsManager() {
     if (!token) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/bookings/${bookingId}`, {
+      const res = await fetch(getApiUrl(`bookings/${bookingId}`), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -154,7 +155,7 @@ export default function BookingsManager() {
   const handleRetryCrmSync = async (bookingId: number) => {
     const token = localStorage.getItem("admin_token");
     if (!token) return;
-    const res = await fetch(`http://localhost:8000/api/bookings/${bookingId}/sync-crm`, {
+    const res = await fetch(getApiUrl(`bookings/${bookingId}/sync-crm`), {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     });

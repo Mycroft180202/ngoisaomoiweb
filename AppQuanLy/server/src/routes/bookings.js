@@ -5,6 +5,7 @@ const Tour = require('../models/Tour');
 const Notification = require('../models/Notification');
 const { requireDepartment } = require('../middleware/rbac');
 const { generateCode } = require('../utils/codeGenerator');
+const { updateWebsiteBookingStatus } = require('../services/websiteBookingSync');
 
 /**
  * GET /api/bookings
@@ -114,6 +115,9 @@ router.put('/:id', requireDepartment('director', 'sale'), async (req, res) => {
     }
 
     const allowedFields = ['customerName', 'customerPhone', 'customerEmail', 'adults', 'children', 'totalPrice', 'note'];
+    if (booking.websiteSource?.bookingId) {
+      return res.status(409).json({ error: 'Đơn website cần sửa thông tin và báo giá trên CMS để tránh lệch dữ liệu.' });
+    }
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
         booking[field] = req.body[field];
@@ -143,11 +147,7 @@ router.patch('/:id/status', requireDepartment('director', 'sale'), async (req, r
       return res.status(400).json({ error: 'Trạng thái không hợp lệ' });
     }
 
-    const booking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    )
+    let booking = await Booking.findById(req.params.id)
       .populate('tour', 'name code')
       .populate('createdBy', 'fullName');
 
@@ -155,9 +155,18 @@ router.patch('/:id/status', requireDepartment('director', 'sale'), async (req, r
       return res.status(404).json({ error: 'Không tìm thấy booking' });
     }
 
+    if (booking.websiteSource?.bookingId) {
+      booking = await updateWebsiteBookingStatus(booking, status);
+    } else if (/^NST-\d{8}-\d+$/.test(booking.code)) {
+      return res.status(409).json({ error: 'Đơn website cũ cần đồng bộ lại từ CMS trước khi duyệt trên CRM.' });
+    } else {
+      booking.status = status;
+      await booking.save();
+    }
+
     res.json({ booking, message: 'Đã cập nhật trạng thái' });
   } catch (error) {
-    res.status(500).json({ error: 'Lỗi server' });
+    res.status(error.status || 500).json({ error: error.status ? error.message : 'Lỗi server' });
   }
 });
 

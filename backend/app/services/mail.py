@@ -21,7 +21,7 @@ def send_booking_email(
         
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"[TravelSite] Xác nhận yêu cầu đặt tour: {tour_title}"
+        msg["Subject"] = f"[NewStarTour] Xác nhận yêu cầu đặt tour: {tour_title}"
         msg["From"] = settings.MAIL_FROM or settings.MAIL_USERNAME
         msg["To"] = to_email
 
@@ -32,7 +32,7 @@ def send_booking_email(
         <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                    <h2 style="color: #319795; text-align: center; margin-bottom: 20px;">Cảm ơn bạn đã đặt tour tại TravelSite!</h2>
+                    <h2 style="color: #319795; text-align: center; margin-bottom: 20px;">Cảm ơn bạn đã đặt tour tại NewStarTour!</h2>
                     <p>Chào <strong>{full_name}</strong>,</p>
                     <p>Chúng tôi đã nhận được yêu cầu đặt tour của bạn. Dưới đây là thông tin chi tiết hành trình:</p>
                     <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -60,11 +60,11 @@ def send_booking_email(
                         <a href="{success_url}">{success_url}</a>
                     </p>
 
-                    <p>Đội ngũ chuyên viên tư vấn của TravelSite sẽ nhanh chóng liên hệ trực tiếp với bạn qua điện thoại để xác nhận chỗ và hướng dẫn các bước tiếp theo.</p>
+                    <p>Đội ngũ chuyên viên tư vấn của NewStarTour sẽ nhanh chóng liên hệ trực tiếp với bạn qua điện thoại để xác nhận chỗ và hướng dẫn các bước tiếp theo.</p>
                     <hr style="border: 0; border-top: 1px solid #edf2f7; margin: 30px 0;" />
                     <div style="text-align: center; font-size: 12px; color: #a0aec0;">
                         <p>Đây là thư thông báo tự động. Vui lòng không trả lời thư này.</p>
-                        <p>© 2026 TravelSite. Bảo lưu mọi quyền.</p>
+                        <p>© 2026 NewStarTour. Bảo lưu mọi quyền.</p>
                     </div>
                 </div>
             </body>
@@ -99,7 +99,7 @@ def send_payment_confirmation_email(
 
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"[TravelSite] Thông tin thanh toán tour: {tour_title}"
+        msg["Subject"] = f"[NewStarTour] Thông tin thanh toán tour: {tour_title}"
         msg["From"] = settings.MAIL_FROM or settings.MAIL_USERNAME
         msg["To"] = to_email
 
@@ -147,7 +147,7 @@ def send_payment_confirmation_email(
                     <hr style="border: 0; border-top: 1px solid #edf2f7; margin: 30px 0;" />
                     <div style="text-align: center; font-size: 12px; color: #a0aec0;">
                         <p>Đây là thư thông báo tự động. Vui lòng không trả lời thư này.</p>
-                        <p>© 2026 TravelSite. Bảo lưu mọi quyền.</p>
+                        <p>© 2026 NewStarTour. Bảo lưu mọi quyền.</p>
                     </div>
                 </div>
             </body>
@@ -174,7 +174,7 @@ def send_verification_email(to_email: str, code: str) -> bool:
 
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"[TravelSite] Mã xác thực tài khoản của bạn: {code}"
+        msg["Subject"] = f"[NewStarTour] Mã xác thực tài khoản của bạn: {code}"
         msg["From"] = settings.MAIL_FROM or settings.MAIL_USERNAME
         msg["To"] = to_email
 
@@ -184,7 +184,7 @@ def send_verification_email(to_email: str, code: str) -> bool:
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
                     <h2 style="color: #319795; text-align: center; margin-bottom: 20px;">Xác thực địa chỉ Email của bạn</h2>
                     <p>Xin chào,</p>
-                    <p>Bạn đã yêu cầu xác thực địa chỉ email tại TravelSite. Vui lòng sử dụng mã xác thực dưới đây để hoàn tất quá trình:</p>
+                    <p>Bạn đã yêu cầu xác thực địa chỉ email tại NewStarTour. Vui lòng sử dụng mã xác thực dưới đây để hoàn tất quá trình:</p>
                     <div style="text-align: center; margin: 30px 0;">
                         <span style="font-size: 24px; font-weight: bold; color: #2b6cb0; letter-spacing: 5px; border: 2px dashed #cbd5e0; padding: 10px 20px; border-radius: 4px; background-color: #f7fafc;">
                             {code}
@@ -194,7 +194,7 @@ def send_verification_email(to_email: str, code: str) -> bool:
                     <hr style="border: 0; border-top: 1px solid #edf2f7; margin: 30px 0;" />
                     <div style="text-align: center; font-size: 12px; color: #a0aec0;">
                         <p>Đây là thư thông báo tự động. Vui lòng không trả lời thư này.</p>
-                        <p>© 2026 TravelSite. Bảo lưu mọi quyền.</p>
+                        <p>© 2026 NewStarTour. Bảo lưu mọi quyền.</p>
                     </div>
                 </div>
             </body>
@@ -227,7 +227,7 @@ def send_payment_success_email(
 
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"[TravelSite] Xác nhận thanh toán thành công tour: {tour_title}"
+        msg["Subject"] = f"[NewStarTour] Xác nhận thanh toán thành công tour: {tour_title}"
         msg["From"] = settings.MAIL_FROM or settings.MAIL_USERNAME
         msg["To"] = to_email
 
@@ -264,12 +264,12 @@ def send_payment_success_email(
                     </div>
 
                     <p>Đơn đặt tour của bạn hiện đã được xác nhận chính thức trên hệ thống. Chúng tôi sẽ gửi thông tin hướng dẫn chuẩn bị trước chuyến đi và liên hệ HDV cho bạn qua điện thoại hoặc email trước ngày khởi hành.</p>
-                    <p>Chúc bạn có một chuyến đi tuyệt vời cùng TravelSite!</p>
+                    <p>Chúc bạn có một chuyến đi tuyệt vời cùng NewStarTour!</p>
 
                     <hr style="border: 0; border-top: 1px solid #edf2f7; margin: 30px 0;" />
                     <div style="text-align: center; font-size: 12px; color: #a0aec0;">
                         <p>Đây là thư thông báo tự động. Vui lòng không trả lời thư này.</p>
-                        <p>© 2026 TravelSite. Bảo lưu mọi quyền.</p>
+                        <p>© 2026 NewStarTour. Bảo lưu mọi quyền.</p>
                     </div>
                 </div>
             </body>
@@ -308,7 +308,7 @@ def send_booking_confirmed_email(
 
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"[TravelSite] Đơn đặt tour đã được xác nhận: {tour_title}"
+        msg["Subject"] = f"[NewStarTour] Đơn đặt tour đã được xác nhận: {tour_title}"
         msg["From"] = settings.MAIL_FROM or settings.MAIL_USERNAME
         msg["To"] = to_email
 
@@ -393,7 +393,7 @@ def send_booking_cancelled_email(
 
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"[TravelSite] Đơn đặt tour đã bị hủy: {tour_title}"
+        msg["Subject"] = f"[NewStarTour] Đơn đặt tour đã bị hủy: {tour_title}"
         msg["From"] = settings.MAIL_FROM or settings.MAIL_USERNAME
         msg["To"] = to_email
 

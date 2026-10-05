@@ -202,6 +202,15 @@ export default function TourList() {
               position: 'relative'
             }}>
               <MapPin size={32} style={{ color: 'var(--text-muted)', opacity: 0.5 }} />
+              {(tour.websiteSource?.thumbnail || tour.images?.[0]) && (
+                <img
+                  src={tour.websiteSource?.thumbnail || tour.images[0]}
+                  alt={tour.name}
+                  loading="lazy"
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={event => { event.currentTarget.hidden = true; }}
+                />
+              )}
               <div style={{ position: 'absolute', top: 10, right: 10 }}>
                 <span className={`badge badge-${tourStatusMap[tour.status]?.color}`}>
                   {tourStatusMap[tour.status]?.label}
@@ -281,6 +290,15 @@ export default function TourList() {
               <button className="modal-close" onClick={() => setViewTour(null)}><X size={20} /></button>
             </div>
             <div className="modal-body">
+              {viewTour.images?.length > 0 && (
+                <div style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 16 }}>
+                  {viewTour.images.map((url, index) => (
+                    <img key={`${url}-${index}`} src={url} alt={`${viewTour.name} - ảnh ${index + 1}`}
+                      loading="lazy" style={{ width: 180, height: 120, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }}
+                      onError={event => { event.currentTarget.hidden = true; }} />
+                  ))}
+                </div>
+              )}
               <div className="form-row" style={{ marginBottom: 16 }}>
                 <div>
                   <div className="text-xs text-muted mb-8">Mã tour</div>

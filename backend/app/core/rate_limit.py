@@ -45,3 +45,4 @@ otp_rate_limiter = InMemoryRateLimiter(requests_limit=5, window_seconds=60)
 
 # Limit booking creation requests to 5 per minute per IP to prevent spamming
 booking_rate_limiter = InMemoryRateLimiter(requests_limit=5, window_seconds=60)
+booking_lookup_rate_limiter = InMemoryRateLimiter(requests_limit=10, window_seconds=60)

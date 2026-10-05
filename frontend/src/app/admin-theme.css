@@ -478,6 +478,56 @@
   margin-bottom: 1rem;
 }
 
+.admin-theme .tour-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.admin-theme .tour-pricing-grid > div {
+  min-width: 0;
+}
+
+.admin-theme .tour-pricing-grid input {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.admin-theme .tour-pricing-grid > div > label {
+  min-height: 3rem;
+}
+
+.admin-theme .tour-document-field {
+  grid-column: 1 / -1;
+}
+
+.admin-theme .tour-document-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.admin-theme .tour-document-controls > input {
+  width: 0;
+  min-width: 0;
+  flex: 1 1 180px;
+}
+
+@media (max-width: 620px) {
+  .admin-theme .tour-pricing-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-theme .tour-document-field {
+    grid-column: auto;
+  }
+
+  .admin-theme .tour-pricing-grid > div > label {
+    min-height: 0;
+  }
+}
+
 .admin-theme .tour-list-header h2 {
   margin: 0 0 .35rem;
 }

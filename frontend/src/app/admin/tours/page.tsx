@@ -1545,7 +1545,7 @@ function ToursManagerContent() {
                 {/* Standard Pricing Card */}
                 <div className="modern-card">
                   <h4 style={{ margin: "0 0 1rem 0", color: "var(--public-text-strong, #0f172a)", fontSize: "1.1rem", fontWeight: 800 }}>💵 Cấu hình giá cơ bản</h4>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.25rem" }}>
+                  <div className="tour-pricing-grid">
                     <div>
                       <label style={{ display: "block", marginBottom: "0.4rem", fontWeight: 700, color: "var(--public-text-strong, #1e293b)" }}>Giá người lớn mặc định (VNĐ) *</label>
                       <CurrencyInput
@@ -1604,9 +1604,9 @@ function ToursManagerContent() {
                         style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.75rem", border: "1px solid var(--public-border, #cbd5e1)" }}
                       />
                     </div>
-                    <div>
+                    <div className="tour-document-field">
                       <label style={{ display: "block", marginBottom: "0.4rem", fontWeight: 700, color: "var(--public-text-strong, #1e293b)" }}>Tài liệu chương trình Tour (PDF/Word)</label>
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <div className="tour-document-controls">
                         <input
                           type="text"
                           value={documentUrl}

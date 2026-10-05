@@ -38,6 +38,19 @@ const bookingSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
+  infants: { type: Number, default: 0, min: 0 },
+  websiteSource: {
+    bookingId: { type: Number },
+    bookingCode: { type: String },
+    departureId: { type: Number },
+    departureCode: { type: String },
+    departureDate: { type: Date },
+    bookingStatus: { type: String, enum: ['pending', 'confirmed', 'cancelled'] },
+    paymentStatus: { type: String, enum: ['unpaid', 'pending', 'paid'] },
+    discountCode: { type: String },
+    discountAmount: { type: Number, default: 0 },
+    lastSyncedAt: { type: Date }
+  },
   totalPrice: {
     type: Number,
     required: true,

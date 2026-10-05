@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     CRM_TOUR_ENDPOINT: str = "/api/integrations/website/tours"
     CRM_API_KEY: str = ""
     CRM_WEBHOOK_SECRET: str = ""
+    CRM_CALLBACK_KEY: str = ""
 
     FRONTEND_URL: str = "http://localhost:3000"
     BACKEND_URL: str = "http://localhost:8000"

@@ -143,7 +143,9 @@ def create_tour(db: Session, tour: TourCreate, created_by_id: Optional[int] = No
             content=item.content,
             title_en=item.title_en,
             icon=item.icon,
-            sort_order=item.sort_order if item.sort_order is not None else item.day
+            sort_order=item.sort_order if item.sort_order is not None else item.day,
+            meals=item.meals,
+            overnight=item.overnight
         )
         db.add(db_itinerary)
 
@@ -200,7 +202,9 @@ def update_tour(db: Session, db_tour: Tour, tour: TourUpdate):
                 content=item["content"],
                 title_en=item.get("title_en"),
                 icon=item.get("icon"),
-                sort_order=item.get("sort_order") if item.get("sort_order") is not None else item["day"]
+                sort_order=item.get("sort_order") if item.get("sort_order") is not None else item["day"],
+                meals=item.get("meals"),
+                overnight=item.get("overnight")
             )
             db.add(db_itinerary)
 
