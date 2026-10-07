@@ -22,6 +22,8 @@ router.get('/:token', async (req, res) => {
   res.json({ mapsApiKey: String(process.env.GOOGLE_MAPS_API_KEY || ''),
     departure: {
       code: departure.code, tour: departure.tour, startDate: departure.startDate, endDate: departure.endDate,
+      departureTime: departure.departureTime, returnTime: departure.returnTime,
+      actualStartAt: departure.actualStartAt, actualEndAt: departure.actualEndAt,
       status: departure.status, departurePoint: departure.departurePoint, manager: departure.manager,
       itineraryDays: departure.itineraryDays, liveLocation: departure.liveLocation, publicProgress: departure.publicProgress, vehicles,
       programDocuments: (departure.programDocuments || []).map(document => ({ _id: document._id, title: document.title, originalName: document.originalName, size: document.size }))

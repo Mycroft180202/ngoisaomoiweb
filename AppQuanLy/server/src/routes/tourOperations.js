@@ -7,6 +7,7 @@ const Carrier = require('../models/Carrier');
 const Vehicle = require('../models/Vehicle');
 const Tour = require('../models/Tour');
 const TourDeparture = require('../models/TourDeparture');
+const User = require('../models/User');
 const RouteSchedule = require('../models/RouteSchedule');
 const { generateCode } = require('../utils/codeGenerator');
 const uploadTourDocument = require('../middleware/tourDocumentUpload');
@@ -33,7 +34,11 @@ const normalizeUploadName = value => {
 
 const canManage = (req) => (
   req.user?.role === 'director' ||
-  req.user?.department === 'sale' ||
+  req.user?.department === 'operations' ||
+  /^operations?_/.test(req.user?.role || '') ||
+  req.user?.role === 'tour_operator' ||
+  /điều hành|operations?/i.test(req.user?.position || '') ||
+  req.user?.permissions?.includes('tour_operations.manage') ||
   req.user?.username?.toLowerCase() === 'admin'
 );
 
@@ -65,6 +70,7 @@ const populateDeparture = (query) => query
   .populate('tour', 'code name destination durationDays durationNights')
   .populate('routeSegment.routeSchedule', 'code name stops services')
   .populate('manager', 'fullName phone')
+  .populate('assignedGuides.guide', 'fullName phone email department role status')
   .populate('createdBy', 'fullName')
   .populate('programDocuments.uploadedBy', 'fullName')
   .populate('attendanceSessions.createdBy', 'fullName')
@@ -87,7 +93,62 @@ const normalizeVehicleIds = (assignedVehicles = []) => (
   assignedVehicles.map(item => String(item.vehicle?._id || item.vehicle)).filter(Boolean)
 );
 
-const validateVehicleAssignments = async ({ assignedVehicles, startDate, endDate, excludeDepartureId }) => {
+const normalizeGuideIds = (assignedGuides = []) => (
+  assignedGuides.map(item => String(item.guide?._id || item.guide)).filter(Boolean)
+);
+
+const toDateTime = (date, time, fallbackTime) => {
+  if (!date) return null;
+  const value = new Date(date);
+  if (Number.isNaN(value.getTime())) return null;
+  const [hours, minutes] = String(time || fallbackTime).split(':').map(Number);
+  value.setHours(Number.isFinite(hours) ? hours : 0, Number.isFinite(minutes) ? minutes : 0, 0, 0);
+  return value;
+};
+
+const operationalRange = ({ startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt }) => ({
+  start: operationalStartAt ? new Date(operationalStartAt) : toDateTime(startDate, departureTime, '00:00'),
+  end: operationalEndAt ? new Date(operationalEndAt) : toDateTime(endDate, returnTime, '23:59')
+});
+
+const validateGuideAssignments = async ({ assignedGuides = [], startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt, excludeDepartureId }) => {
+  const guideIds = normalizeGuideIds(assignedGuides);
+  if (new Set(guideIds).size !== guideIds.length) return 'Một hướng dẫn viên không thể được phân công hai lần trong cùng chuyến';
+  if (!guideIds.length) return null;
+  const guides = await User.find({ _id: { $in: guideIds } }).select('_id fullName status');
+  if (guides.length !== guideIds.length) return 'Có hướng dẫn viên không tồn tại';
+  const inactive = guides.find(guide => guide.status !== 'active');
+  if (inactive) return `Hướng dẫn viên ${inactive.fullName} hiện không hoạt động`;
+  const range = operationalRange({ startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt });
+  if (!range.start || !range.end || range.end < range.start) return 'Khoảng thời gian điều hành không hợp lệ';
+  const conflicts = await TourDeparture.find({
+    _id: excludeDepartureId ? { $ne: excludeDepartureId } : { $exists: true },
+    status: { $nin: ['cancelled', 'completed'] },
+    'assignedGuides.guide': { $in: guideIds }
+  }).select('code tour startDate endDate departureTime returnTime operationalStartAt operationalEndAt assignedGuides').populate('tour', 'name code');
+  const conflict = conflicts.find(item => {
+    return item.assignedGuides.some(existing => {
+      const existingId = String(existing.guide?._id || existing.guide);
+      if (!guideIds.includes(existingId)) return false;
+      const current = assignedGuides.find(candidate => String(candidate.guide?._id || candidate.guide) === existingId);
+      const currentRange = current?.startAt && current?.endAt
+        ? { start: new Date(current.startAt), end: new Date(current.endAt) }
+        : range;
+      const other = existing.startAt && existing.endAt
+        ? { start: new Date(existing.startAt), end: new Date(existing.endAt) }
+        : operationalRange(item);
+      return other.start <= currentRange.end && other.end >= currentRange.start;
+    });
+  });
+  if (conflict) {
+    const guideId = normalizeGuideIds(conflict.assignedGuides).find(id => guideIds.includes(id));
+    const guide = guides.find(item => String(item._id) === guideId);
+    return `Hướng dẫn viên ${guide?.fullName || ''} đã được phân công cho ${conflict.tour?.name || conflict.code} trong khoảng thời gian này`;
+  }
+  return null;
+};
+
+const validateVehicleAssignments = async ({ assignedVehicles, startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt, excludeDepartureId }) => {
   const vehicleIds = normalizeVehicleIds(assignedVehicles);
   if (new Set(vehicleIds).size !== vehicleIds.length) {
     return 'Một xe không thể được phân công hai lần trong cùng chuyến';
@@ -103,14 +164,18 @@ const validateVehicleAssignments = async ({ assignedVehicles, startDate, endDate
     _id: excludeDepartureId ? { $ne: excludeDepartureId } : { $exists: true },
     status: { $nin: ['cancelled', 'completed'] },
     'assignedVehicles.vehicle': { $in: vehicleIds },
-    // Khoảng ngày là bao hàm: xe kết thúc và khởi hành chuyến khác trong
-    // cùng một ngày vẫn được xem là trùng lịch.
+    // Lọc nhanh theo ngày trước, sau đó kiểm tra chính xác theo giờ điều hành.
     startDate: { $lte: new Date(endDate) },
     endDate: { $gte: new Date(startDate) }
   };
-  const conflict = await TourDeparture.findOne(conflictFilter)
+  const candidates = await TourDeparture.find(conflictFilter)
     .populate('tour', 'name code')
     .populate('assignedVehicles.vehicle', 'plateNumber');
+  const range = operationalRange({ startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt });
+  const conflict = candidates.find(item => {
+    const other = operationalRange(item);
+    return other.start <= range.end && other.end >= range.start;
+  });
   if (conflict) {
     const conflicted = conflict.assignedVehicles.find(item => vehicleIds.includes(String(item.vehicle?._id)));
     return `Xe ${conflicted?.vehicle?.plateNumber || ''} đã được xếp cho ${conflict.tour?.name || conflict.code} trong khoảng thời gian này`;
@@ -513,17 +578,20 @@ router.put('/vehicles/:id', requireTourOperations, async (req, res) => {
 
 router.post('/departures', requireTourOperations, async (req, res) => {
   try {
-    const { tour, startDate, endDate, departurePoint, manager, assignedVehicles = [], itineraryDays = [], note, status } = req.body;
+    const { tour, startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt, departurePoint, manager, assignedVehicles = [], assignedGuides = [], itineraryDays = [], note, status } = req.body;
     if (!tour || !startDate || !endDate) return res.status(400).json({ error: 'Vui lòng chọn Tour và ngày đi/về' });
     if (new Date(endDate) < new Date(startDate)) return res.status(400).json({ error: 'Ngày về không được trước ngày khởi hành' });
     if (!await Tour.exists({ _id: tour })) return res.status(404).json({ error: 'Không tìm thấy Tour mẫu' });
-    const assignmentError = await validateVehicleAssignments({ assignedVehicles, startDate, endDate });
+    const assignmentError = await validateVehicleAssignments({ assignedVehicles, startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt });
     if (assignmentError) return res.status(400).json({ error: assignmentError });
+    const guideError = await validateGuideAssignments({ assignedGuides, startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt });
+    if (guideError) return res.status(400).json({ error: guideError });
 
     const code = await generateCode('TRIP', 4);
     const departure = await TourDeparture.create({
-      code, tour, startDate, endDate, departurePoint, manager: manager || null,
-      assignedVehicles, itineraryDays, note, status: status || 'planning', createdBy: req.user._id
+      code, tour, startDate, endDate, departureTime, returnTime, operationalStartAt, operationalEndAt,
+      departurePoint, manager: manager || null, assignedVehicles, assignedGuides, itineraryDays,
+      note, status: status || 'planning', createdBy: req.user._id
     });
     const populated = await populateDeparture(TourDeparture.findById(departure._id));
     res.status(201).json({ departure: populated, message: 'Đã tạo chuyến khởi hành' });
@@ -553,9 +621,16 @@ router.put('/departures/:id', requireTourOperations, async (req, res) => {
     const nextStart = req.body.startDate || departure.startDate;
     const nextEnd = req.body.endDate || departure.endDate;
     const nextVehicles = req.body.assignedVehicles || departure.assignedVehicles;
+    const nextGuides = req.body.assignedGuides || departure.assignedGuides;
+    const nextDepartureTime = req.body.departureTime || departure.departureTime;
+    const nextReturnTime = req.body.returnTime || departure.returnTime;
+    const nextOperationalStartAt = req.body.operationalStartAt || departure.operationalStartAt;
+    const nextOperationalEndAt = req.body.operationalEndAt || departure.operationalEndAt;
     if (new Date(nextEnd) < new Date(nextStart)) return res.status(400).json({ error: 'Ngày về không được trước ngày khởi hành' });
-    const assignmentError = await validateVehicleAssignments({ assignedVehicles: nextVehicles, startDate: nextStart, endDate: nextEnd, excludeDepartureId: departure._id });
+    const assignmentError = await validateVehicleAssignments({ assignedVehicles: nextVehicles, startDate: nextStart, endDate: nextEnd, departureTime: nextDepartureTime, returnTime: nextReturnTime, operationalStartAt: nextOperationalStartAt, operationalEndAt: nextOperationalEndAt, excludeDepartureId: departure._id });
     if (assignmentError) return res.status(400).json({ error: assignmentError });
+    const guideError = await validateGuideAssignments({ assignedGuides: nextGuides, startDate: nextStart, endDate: nextEnd, departureTime: nextDepartureTime, returnTime: nextReturnTime, operationalStartAt: nextOperationalStartAt, operationalEndAt: nextOperationalEndAt, excludeDepartureId: departure._id });
+    if (guideError) return res.status(400).json({ error: guideError });
     const departureValue = departure.toObject();
     const passengerError = await validatePassengers({
       ...departureValue,
@@ -564,7 +639,7 @@ router.put('/departures/:id', requireTourOperations, async (req, res) => {
     }, departure.passengers);
     if (passengerError) return res.status(400).json({ error: passengerError });
 
-    const fields = ['tour', 'startDate', 'endDate', 'status', 'departurePoint', 'manager', 'assignedVehicles', 'itineraryDays', 'note'];
+    const fields = ['tour', 'startDate', 'endDate', 'departureTime', 'returnTime', 'operationalStartAt', 'operationalEndAt', 'actualStartAt', 'actualEndAt', 'status', 'departurePoint', 'manager', 'assignedVehicles', 'assignedGuides', 'itineraryDays', 'note'];
     fields.forEach(field => { if (req.body[field] !== undefined) departure[field] = req.body[field]; });
     await departure.save();
     const populated = await populateDeparture(TourDeparture.findById(departure._id));
@@ -572,6 +647,27 @@ router.put('/departures/:id', requireTourOperations, async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message || 'Không thể cập nhật chuyến' });
   }
+});
+
+router.post('/departures/:id/lifecycle', requireTourOperations, async (req, res) => {
+  try {
+    const departure = await TourDeparture.findById(req.params.id);
+    if (!departure) return res.status(404).json({ error: 'Không tìm thấy chuyến' });
+    const action = String(req.body.action || '').toLowerCase();
+    const transitions = {
+      start: { from: ['planning', 'open', 'confirmed'], status: 'departing', field: 'actualStartAt', message: 'Đã bắt đầu chuyến' },
+      complete: { from: ['departing'], status: 'completed', field: 'actualEndAt', message: 'Đã kết thúc chuyến' },
+      cancel: { from: ['planning', 'open', 'confirmed', 'departing'], status: 'cancelled', field: null, message: 'Đã hủy chuyến' }
+    };
+    const transition = transitions[action];
+    if (!transition) return res.status(400).json({ error: 'Thao tác vòng đời không hợp lệ' });
+    if (!transition.from.includes(departure.status)) return res.status(400).json({ error: `Không thể chuyển chuyến từ trạng thái ${departure.status}` });
+    departure.status = transition.status;
+    if (transition.field) departure[transition.field] = req.body.at ? new Date(req.body.at) : new Date();
+    await departure.save();
+    const populated = await populateDeparture(TourDeparture.findById(departure._id));
+    res.json({ departure: populated, message: transition.message });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể cập nhật trạng thái chuyến' }); }
 });
 
 router.post('/departures/:id/itinerary-days', requireTourOperations, async (req, res) => {

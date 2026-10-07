@@ -39,6 +39,16 @@ const assignedVehicleSchema = new mongoose.Schema({
   note: { type: String, trim: true, default: '' }
 });
 
+const assignedGuideSchema = new mongoose.Schema({
+  guide: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  role: { type: String, enum: ['lead', 'assistant'], default: 'lead' },
+  startAt: { type: Date },
+  endAt: { type: Date },
+  fee: { type: Number, min: 0, default: 0 },
+  allowance: { type: Number, min: 0, default: 0 },
+  note: { type: String, trim: true, default: '' }
+});
+
 const passengerSchema = new mongoose.Schema({
   booking: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
   sourceTour: { type: mongoose.Schema.Types.ObjectId, ref: 'Tour' },
@@ -108,6 +118,12 @@ const tourDepartureSchema = new mongoose.Schema({
   routeSegment: { type: routeSegmentSchema, default: undefined },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
+  departureTime: { type: String, match: /^([01]\d|2[0-3]):[0-5]\d$/, default: '00:00' },
+  returnTime: { type: String, match: /^([01]\d|2[0-3]):[0-5]\d$/, default: '23:59' },
+  operationalStartAt: { type: Date },
+  operationalEndAt: { type: Date },
+  actualStartAt: { type: Date },
+  actualEndAt: { type: Date },
   status: {
     type: String,
     enum: ['planning', 'open', 'confirmed', 'departing', 'completed', 'cancelled'],
@@ -116,6 +132,7 @@ const tourDepartureSchema = new mongoose.Schema({
   departurePoint: { type: String, trim: true, default: '' },
   manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   assignedVehicles: [assignedVehicleSchema],
+  assignedGuides: [assignedGuideSchema],
   itineraryDays: [itineraryDaySchema],
   passengers: [passengerSchema],
   attendanceSessions: [attendanceSessionSchema],
@@ -144,5 +161,6 @@ const tourDepartureSchema = new mongoose.Schema({
 
 tourDepartureSchema.index({ tour: 1, startDate: 1 });
 tourDepartureSchema.index({ 'assignedVehicles.vehicle': 1, startDate: 1, endDate: 1, status: 1 });
+tourDepartureSchema.index({ 'assignedGuides.guide': 1, startDate: 1, endDate: 1, status: 1 });
 
 module.exports = mongoose.model('TourDeparture', tourDepartureSchema);

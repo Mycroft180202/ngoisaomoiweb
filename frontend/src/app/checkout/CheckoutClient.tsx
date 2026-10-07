@@ -832,7 +832,7 @@ export default function CheckoutClient() {
                   {/* Price breakdown */}
                   <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.88rem", color: "var(--public-muted, #64748b)" }}>
-                      <span>{formatCurrency(tour.price)} × {adultsCount} người lớn</span>
+                      <span>{formatCurrency(currentAdultPrice)} × {adultsCount} người lớn</span>
                       <span>{formatCurrency(adultSubtotal)}</span>
                     </div>
                     {childrenCount > 0 && tour.price_child > 0 && (

@@ -25,7 +25,7 @@ const stopTypes = {
 
 const emptyCarrier = { name: '', contactName: '', phone: '', email: '', address: '', note: '' };
 const emptyVehicle = { carrier: '', plateNumber: '', name: '', vehicleType: 'Xe du lịch', seatCapacity: 29, driverName: '', driverPhone: '', note: '' };
-const emptyDeparture = { tour: '', startDate: '', endDate: '', departurePoint: '', manager: '', status: 'planning', note: '', assignedVehicles: [] };
+const emptyDeparture = { tour: '', startDate: '', endDate: '', departureTime: '05:30', returnTime: '19:30', departurePoint: '', manager: '', status: 'planning', note: '', assignedVehicles: [], assignedGuides: [] };
 const emptyPassenger = { sourceTour: '', fullName: '', phone: '', idNumber: '', passengerType: 'adult', vehicle: '', seatNumber: '', pickupStopId: '', dropoffStopId: '', pickupNote: '', dropoffNote: '', allocationStatus: 'confirmed', status: 'waiting' };
 const emptyRouteSchedule = { tour: '', code: '', name: '', transferMinutes: 45, autoSuggest: true, active: true, stops: [{ code: 'HN', name: 'Hà Nội', address: '', latitude: '', longitude: '', sequence: 0 }, { code: 'HUE', name: 'Huế', address: '', latitude: '', longitude: '', sequence: 1 }], services: [{ code: 'S1', originStopCode: 'HN', destinationStopCode: 'HUE', departureTime: '06:00', arrivalTime: '18:00', daysOfWeek: [1, 2, 3, 4, 5, 6, 0], defaultVehicle: '', active: true }] };
 const newStop = () => ({ type: 'pickup', name: '', address: '', placeId: '', plannedTime: '', latitude: '', longitude: '', note: '' });
@@ -104,12 +104,19 @@ export default function TourOperations() {
     setDepartureForm(departure ? {
       tour: departure.tour?._id || departure.tour,
       startDate: dateInput(departure.startDate), endDate: dateInput(departure.endDate),
+      departureTime: departure.departureTime || '05:30', returnTime: departure.returnTime || '19:30',
       departurePoint: departure.departurePoint || '', manager: departure.manager?._id || '',
       status: departure.status, note: departure.note || '',
       assignedVehicles: (departure.assignedVehicles || []).map(item => ({
         vehicle: item.vehicle?._id || item.vehicle,
         driverName: item.driverName || item.vehicle?.driverName || '',
         driverPhone: item.driverPhone || item.vehicle?.driverPhone || ''
+      })),
+      assignedGuides: (departure.assignedGuides || []).map(item => ({
+        guide: item.guide?._id || item.guide, role: item.role || 'lead',
+        startAt: item.startAt ? new Date(item.startAt).toISOString().slice(0, 16) : '',
+        endAt: item.endAt ? new Date(item.endAt).toISOString().slice(0, 16) : '',
+        fee: item.fee || 0, allowance: item.allowance || 0, note: item.note || ''
       }))
     } : emptyDeparture);
     setModal('departure');
@@ -300,6 +307,15 @@ export default function TourOperations() {
     setEditing(item); setVehicleForm({ carrier: item.carrier?._id || '', plateNumber: item.plateNumber, name: item.name || '', vehicleType: item.vehicleType || '', seatCapacity: item.seatCapacity, driverName: item.driverName || '', driverPhone: item.driverPhone || '', note: item.note || '', status: item.status }); setModal('vehicle');
   };
 
+  const toggleGuide = guide => {
+    setDepartureForm(current => {
+      const exists = current.assignedGuides.some(item => item.guide === guide._id);
+      return { ...current, assignedGuides: exists
+        ? current.assignedGuides.filter(item => item.guide !== guide._id)
+        : [...current.assignedGuides, { guide: guide._id, role: 'lead', startAt: '', endAt: '', fee: 0, allowance: 0, note: '' }] };
+    });
+  };
+
   const openRouteSchedule = schedule => {
     setEditingRouteSchedule(schedule);
     setRouteScheduleForm({
@@ -374,9 +390,9 @@ export default function TourOperations() {
               <h3>{item.tour?.name}</h3>
               <p><MapPin size={14} /> {item.departurePoint || item.tour?.destination || 'Chưa có điểm khởi hành'}</p>
               <div className="departure-dates">
-                <div><small>Ngày đi</small><b>{displayDate(item.startDate)}</b></div>
+                <div><small>Ngày đi</small><b>{displayDate(item.startDate)} · {item.departureTime || '--:--'}</b></div>
                 <ChevronRight size={18} />
-                <div><small>Ngày về</small><b>{displayDate(item.endDate)}</b></div>
+                <div><small>Ngày về</small><b>{displayDate(item.endDate)} · {item.returnTime || '--:--'}</b></div>
               </div>
               <div className="departure-counts">
                 <span><Bus size={15} /> {item.assignedVehicles?.length || 0} xe</span>
@@ -434,7 +450,7 @@ export default function TourOperations() {
         <div className="modal-header"><h2>{modal === 'carrier' ? (editing ? 'Sửa nhà xe' : 'Thêm nhà xe') : modal === 'vehicle' ? (editing ? 'Sửa phương tiện' : 'Thêm phương tiện') : modal === 'departure' ? (editing ? 'Sửa chuyến khởi hành' : 'Tạo chuyến khởi hành') : modal === 'day' ? (editingDay ? 'Sửa lịch trình ngày' : 'Thêm lịch trình ngày') : 'Xếp khách lên xe'}</h2><button className="modal-close" onClick={() => setModal(null)}><X size={20} /></button></div>
         {modal === 'carrier' && <CarrierForm form={carrierForm} setForm={setCarrierForm} onSubmit={saveCarrier} editing={editing} />}
         {modal === 'vehicle' && <VehicleForm form={vehicleForm} setForm={setVehicleForm} carriers={overview.carriers} onSubmit={saveVehicle} editing={editing} />}
-        {modal === 'departure' && <DepartureForm form={departureForm} setForm={setDepartureForm} tours={tours} users={users} vehicles={activeVehicles} onToggleVehicle={toggleVehicle} onSubmit={saveDeparture} editing={editing} />}
+        {modal === 'departure' && <DepartureForm form={departureForm} setForm={setDepartureForm} tours={tours} users={users} vehicles={activeVehicles} onToggleVehicle={toggleVehicle} onToggleGuide={toggleGuide} onSubmit={saveDeparture} editing={editing} />}
         {modal === 'day' && <DayForm form={dayForm} setForm={setDayForm} onSubmit={saveItineraryDay} submitting={submittingDay} editing={Boolean(editingDay)} />}
         {modal === 'passenger' && <PassengerForm form={passengerForm} setForm={setPassengerForm} departure={selected} tours={tours} stops={availableStops} onSubmit={savePassenger} editing={Boolean(editingPassenger)} />}
       </div></div>}
@@ -448,7 +464,7 @@ function CarrierForm({ form, setForm, onSubmit, editing }) { return <form onSubm
 
 function VehicleForm({ form, setForm, carriers, onSubmit, editing }) { return <form onSubmit={onSubmit}><div className="modal-body ops-form"><div className="form-row"><label>Nhà xe *<select className="form-control" required value={form.carrier} onChange={e => setForm({ ...form, carrier: e.target.value })}><option value="">Chọn nhà xe</option>{carriers.map(item => <option key={item._id} value={item._id}>{item.name}</option>)}</select></label><label>Biển số *<input className="form-control" required value={form.plateNumber} onChange={e => setForm({ ...form, plateNumber: e.target.value.toUpperCase() })} /></label></div><div className="form-row-3"><label>Tên xe<input className="form-control" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label><label>Loại xe<input className="form-control" value={form.vehicleType} onChange={e => setForm({ ...form, vehicleType: e.target.value })} /></label><label>Số chỗ *<input type="number" min="1" className="form-control" required value={form.seatCapacity} onChange={e => setForm({ ...form, seatCapacity: e.target.value })} /></label></div><div className="form-row"><label>Tài xế mặc định<input className="form-control" value={form.driverName} onChange={e => setForm({ ...form, driverName: e.target.value })} /></label><label>SĐT tài xế<input className="form-control" value={form.driverPhone} onChange={e => setForm({ ...form, driverPhone: e.target.value })} /></label></div>{editing && <label>Trạng thái<select className="form-control" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}><option value="active">Sẵn sàng</option><option value="maintenance">Bảo trì</option><option value="inactive">Tạm ngừng</option></select></label>}<label>Ghi chú<textarea className="form-control" rows="2" value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} /></label></div><FormFooter label={editing ? 'Lưu thay đổi' : 'Thêm phương tiện'} /></form>; }
 
-function DepartureForm({ form, setForm, tours, users, vehicles, onToggleVehicle, onSubmit, editing }) { return <form onSubmit={onSubmit}><div className="modal-body ops-form"><label>Tour mẫu *<select className="form-control" required value={form.tour} onChange={e => setForm({ ...form, tour: e.target.value })}><option value="">Chọn Tour</option>{tours.map(item => <option key={item._id} value={item._id}>{item.code} · {item.name}</option>)}</select></label><div className="form-row"><label>Ngày khởi hành *<input type="date" className="form-control" required value={form.startDate} onChange={e => setForm({ ...form, startDate: e.target.value })} /></label><label>Ngày kết thúc *<input type="date" className="form-control" required value={form.endDate} onChange={e => setForm({ ...form, endDate: e.target.value })} /></label></div><div className="form-row"><label>Điểm khởi hành<input className="form-control" placeholder="VD: Văn phòng Hà Nội" value={form.departurePoint} onChange={e => setForm({ ...form, departurePoint: e.target.value })} /></label><label>Người điều hành<select className="form-control" value={form.manager} onChange={e => setForm({ ...form, manager: e.target.value })}><option value="">Chưa phân công</option>{users.map(item => <option key={item._id} value={item._id}>{item.fullName}</option>)}</select></label></div><label>Trạng thái<select className="form-control" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>{Object.entries(departureStatus).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label><div><span className="ops-label">Phân công xe</span><div className="vehicle-picker">{vehicles.map(vehicle => { const checked = form.assignedVehicles.some(item => item.vehicle === vehicle._id); return <button type="button" key={vehicle._id} className={checked ? 'selected' : ''} onClick={() => onToggleVehicle(vehicle)}><Bus size={17} /><span><b>{vehicle.plateNumber}</b><small>{vehicle.carrier?.name} · {vehicle.seatCapacity} chỗ</small></span>{checked && <span className="vehicle-check">✓</span>}</button>; })}{!vehicles.length && <p className="text-muted text-sm">Hãy thêm phương tiện trước khi phân công.</p>}</div></div><label>Ghi chú<textarea className="form-control" rows="2" value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} /></label></div><FormFooter label={editing ? 'Lưu chuyến' : 'Tạo chuyến'} /></form>; }
+function DepartureForm({ form, setForm, tours, users, vehicles, onToggleVehicle, onToggleGuide, onSubmit, editing }) { const guideUsers = users.filter(item => item.status !== 'inactive' && (item.department === 'guide' || /guide|hdv|hướng dẫn/i.test(`${item.role} ${item.position}`))); return <form onSubmit={onSubmit}><div className="modal-body ops-form"><label>Tour mẫu *<select className="form-control" required value={form.tour} onChange={e => setForm({ ...form, tour: e.target.value })}><option value="">Chọn Tour</option>{tours.map(item => <option key={item._id} value={item._id}>{item.code} · {item.name}</option>)}</select></label><div className="form-row"><label>Ngày khởi hành *<input type="date" className="form-control" required value={form.startDate} onChange={e => setForm({ ...form, startDate: e.target.value })} /></label><label>Ngày kết thúc *<input type="date" className="form-control" required value={form.endDate} onChange={e => setForm({ ...form, endDate: e.target.value })} /></label></div><div className="form-row"><label>Giờ đón khách *<input type="time" className="form-control" required value={form.departureTime} onChange={e => setForm({ ...form, departureTime: e.target.value })} /></label><label>Giờ kết thúc dự kiến *<input type="time" className="form-control" required value={form.returnTime} onChange={e => setForm({ ...form, returnTime: e.target.value })} /></label></div><div className="form-row"><label>Điểm khởi hành<input className="form-control" placeholder="VD: Văn phòng Hà Nội" value={form.departurePoint} onChange={e => setForm({ ...form, departurePoint: e.target.value })} /></label><label>Người điều hành<select className="form-control" value={form.manager} onChange={e => setForm({ ...form, manager: e.target.value })}><option value="">Chưa phân công</option>{users.map(item => <option key={item._id} value={item._id}>{item.fullName}</option>)}</select></label></div><label>Trạng thái<select className="form-control" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>{Object.entries(departureStatus).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label><div><span className="ops-label">Phân công xe</span><div className="vehicle-picker">{vehicles.map(vehicle => { const checked = form.assignedVehicles.some(item => item.vehicle === vehicle._id); return <button type="button" key={vehicle._id} className={checked ? 'selected' : ''} onClick={() => onToggleVehicle(vehicle)}><Bus size={17} /><span><b>{vehicle.plateNumber}</b><small>{vehicle.carrier?.name} · {vehicle.seatCapacity} chỗ</small></span>{checked && <span className="vehicle-check">✓</span>}</button>; })}{!vehicles.length && <p className="text-muted text-sm">Hãy thêm phương tiện trước khi phân công.</p>}</div></div><div><span className="ops-label">Phân công hướng dẫn viên</span><div className="vehicle-picker">{guideUsers.map(guide => { const checked = form.assignedGuides.some(item => item.guide === guide._id); return <button type="button" key={guide._id} className={checked ? 'selected' : ''} onClick={() => onToggleGuide(guide)}><UserRound size={17} /><span><b>{guide.fullName}</b><small>{guide.phone || guide.position || 'HDV'}</small></span>{checked && <span className="vehicle-check">✓</span>}</button>; })}{!guideUsers.length && <p className="text-muted text-sm">Chưa có người dùng có vai trò HDV. Có thể tạo tài khoản HDV ở phần nhân sự.</p>}</div>{form.assignedGuides.map((assignment, index) => <div className="form-row" key={assignment.guide}><label>Vai trò<select className="form-control" value={assignment.role} onChange={e => setForm({ ...form, assignedGuides: form.assignedGuides.map((item, i) => i === index ? { ...item, role: e.target.value } : item) })}><option value="lead">HDV chính</option><option value="assistant">HDV phụ</option></select></label><label>Phí HDV<input type="number" min="0" className="form-control" value={assignment.fee} onChange={e => setForm({ ...form, assignedGuides: form.assignedGuides.map((item, i) => i === index ? { ...item, fee: e.target.value } : item) })} /></label></div>)}</div><label>Ghi chú<textarea className="form-control" rows="2" value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} /></label></div><FormFooter label={editing ? 'Lưu chuyến' : 'Tạo chuyến'} /></form>; }
 
 function DayForm({ form, setForm, onSubmit, submitting, editing }) {
   const updateStop = (index, changes) => setForm({
@@ -526,6 +542,13 @@ function DepartureDetail({ departure, canManage, onDepartureChange, onClose, onA
     } catch (error) { toast.error(error.message); }
   };
 
+  const updateLifecycle = async action => {
+    try {
+      const result = await api.post(`/tour-operations/departures/${departure._id}/lifecycle`, { action });
+      onDepartureChange(result.departure); toast.success(result.message);
+    } catch (error) { toast.error(error.message); }
+  };
+
   const passengerRow = passenger => <div className="passenger-row" key={passenger._id}>
     <span className="passenger-avatar">{passenger.fullName.charAt(0)}</span>
     <div><b>{passenger.fullName}</b><small>{passenger.phone || 'Chưa có SĐT'} · {passenger.passengerType === 'child' ? 'Trẻ em' : 'Người lớn'}</small></div>
@@ -580,7 +603,7 @@ function DepartureDetail({ departure, canManage, onDepartureChange, onClose, onA
   const toggleVehiclePassengers = vehicleId => setExpandedVehicles(current => { const next = new Set(current); if (next.has(vehicleId)) next.delete(vehicleId); else next.add(vehicleId); return next; });
 
   return <div className="ops-detail-overlay"><main className="ops-detail ops-detail-page">
-    <header><div><button className="ops-detail-back" onClick={onClose}><ArrowLeft size={16} /> Danh sách chuyến</button><span>{departure.code}</span><h2>{departure.tour?.name}</h2><p>{displayDate(departure.startDate)} – {displayDate(departure.endDate)}</p></div></header>
+    <header><div><button className="ops-detail-back" onClick={onClose}><ArrowLeft size={16} /> Danh sách chuyến</button><span>{departure.code}</span><h2>{departure.tour?.name}</h2><p>{displayDate(departure.startDate)} {departure.departureTime || ''} – {displayDate(departure.endDate)} {departure.returnTime || ''}</p><p className="ops-form-note"><Clock3 size={15} /> Dự kiến: {departure.departureTime || '--:--'} khởi hành · {departure.returnTime || '--:--'} kết thúc · {departure.assignedGuides?.length || 0} HDV</p>{canManage && <div className="departure-lifecycle-actions">{['planning', 'open', 'confirmed'].includes(departure.status) && <button className="btn btn-primary btn-sm" onClick={() => updateLifecycle('start')}>Bắt đầu tour</button>}{departure.status === 'departing' && <button className="btn btn-success btn-sm" onClick={() => updateLifecycle('complete')}>Kết thúc tour</button>}{!['completed', 'cancelled'].includes(departure.status) && <button className="btn btn-danger btn-sm" onClick={() => updateLifecycle('cancel')}>Hủy chuyến</button>}</div>}</div></header>
     <div className="ops-detail-grid">
       <div className="ops-detail-column">
         <section className="ops-detail-section ops-map-section"><div className="ops-detail-title"><h3><MapPin size={17} /> Bản đồ hành trình</h3></div><TourRouteMap itineraryDays={departure.itineraryDays || []} selectedDay={mapDay} onSelectedDayChange={setMapDay} /></section>
