@@ -72,5 +72,5 @@ def finance_report(from_date: Optional[date] = Query(None, alias="from"), to_dat
         rows.append({"id": f"{key[0]}-{key[1]}", "code": schedule.departure_code if schedule else f"{tour.tour_code} · {key[1]:%d/%m/%Y}",
                      "tour": {"id": tour.id, "title": tour.title}, "startDate": key[1],
                      "status": "Đang mở" if not schedule or schedule.status == "active" else "Đã khóa", "configured": bool(tour.financial_config), **figures})
-    totals = {field: round(sum(row[field] for row in rows), 2) for field in ("revenue", "cost", "commission", "profit")}
+    totals = {field: round(sum(row[field] for row in rows), 2) for field in ("revenue", "cost", "commission", "partner_commission", "own_commission", "profit")}
     return {"rows": rows, "totals": totals}

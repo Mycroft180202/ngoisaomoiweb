@@ -4918,3 +4918,7 @@ body:has(.admin-layout) {
 
 
 
+
+.admin-finance-form fieldset { min-width: 0; padding: 1rem; border: 1px solid #cbd5e1; border-radius: .6rem; }
+.admin-finance-form fieldset + fieldset { margin-top: .75rem; }
+.admin-finance-form legend { font-weight: 700; padding: 0 .35rem; }

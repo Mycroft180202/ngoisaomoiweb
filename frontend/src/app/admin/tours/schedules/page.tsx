@@ -57,10 +57,10 @@ export default function TourSchedulesPage() {
 
   return <div className="admin-panel admin-schedules-page">
     <div className="admin-panel-header"><div><h3>📅 Lịch khởi hành & sức chứa</h3><p style={{ color: "var(--muted)", margin: "0.35rem 0 0" }}>Cấu hình sức chứa riêng cho từng ngày, không dùng một mức 30 khách cho mọi tour.</p></div></div>
-    <form onSubmit={submit} className="auth-form admin-schedule-form">
+    <form onSubmit={submit} className="auth-form admin-schedule-form admin-tour-controls">
       <label>Tour<select value={tourId} onChange={e => setTourId(e.target.value)} required><option value="">Chọn tour</option>{tours.map(tour => <option key={tour.id} value={tour.id}>{tour.tour_code ? `${tour.tour_code} · ` : ""}{tour.title}</option>)}</select></label>
       <AdminDatePicker label="Ngày khởi hành" value={date} onChange={setDate} required />
-      <label>Sức chứa<input type="number" min="1" max="5000" value={capacity} onChange={e => setCapacity(Number(e.target.value))} required /></label>
+      <label>Sức chứa (khách)<input type="number" min="1" max="5000" step="1" value={capacity} onChange={e => setCapacity(e.target.value === "" ? "" : Number(e.target.value))} placeholder="Ví dụ: 30" required /></label>
       <label>Chi phí thực tế (đ)<input type="number" min="0" value={actualCost} onChange={e => setActualCost(e.target.value === "" ? "" : Number(e.target.value))} placeholder="Tùy chọn" /></label>
       <label>Trạng thái<select value={status} onChange={e => setStatus(e.target.value as Schedule["status"])}><option value="active">Đang mở</option><option value="locked">Đã khóa</option><option value="cancelled">Đã hủy</option></select></label>
       <div className="admin-schedule-actions"><button className="admin-btn-primary" type="submit">{editing ? "Lưu" : "Tạo lịch"}</button>{editing && <button className="btn-view-site" type="button" onClick={reset}>Hủy</button>}</div>
