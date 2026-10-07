@@ -76,10 +76,12 @@ router.post('/', requireDepartment('director', 'sale'), async (req, res) => {
     const childrenCount = children || 0;
     const totalPrice = (adultsCount * tour.price.adult) + (childrenCount * tour.price.child);
 
+    const partner = partnerCode ? await TourPartner.findOne({ code: String(partnerCode).toUpperCase(), status: 'active' }) : null;
+    if (partner && (partner.allowedTours || []).length && !partner.allowedTours.some(allowedTour => String(allowedTour) === String(tour._id))) {
+      return res.status(403).json({ error: 'Đại lý này không được phép bán tour đã chọn' });
+    }
     // Auto-generate code (atomic, race-condition safe)
     const code = await generateCode('BK', 3);
-
-    const partner = partnerCode ? await TourPartner.findOne({ code: String(partnerCode).toUpperCase(), status: 'active' }) : null;
     const guestCount = adultsCount + childrenCount;
     const booking = new Booking({
       code,

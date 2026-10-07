@@ -10,9 +10,10 @@ from app.schemas.booking import BookingResponse, BookingCreate, BookingUpdate, P
 from app.core.config import settings
 from app.routers.auth import get_current_user, get_optional_current_user
 from app.models.user import User
+from app.models.tour import Tour
 from app.services.mail import send_booking_email, send_booking_confirmed_email, send_booking_cancelled_email
 from app.core.rate_limit import booking_rate_limiter, booking_lookup_rate_limiter
-from app.services.crm_sync import sync_booking_to_crm
+from app.services.crm_sync import sync_booking_to_crm, validate_partner_tour
 from app.services.payment_config import online_payments_enabled
 
 
@@ -64,7 +65,14 @@ def make_booking(
     booking_rate_limiter.check_rate_limit(request)
     if booking_in.departure_date < date.today():
         raise HTTPException(status_code=400, detail="Ngày khởi hành không thể ở trong quá khứ.")
-        
+
+    if booking_in.partner_code:
+        tour = db.query(Tour).filter(Tour.id == booking_in.tour_id).first() if booking_in.tour_id else None
+        if tour:
+            partner_check = validate_partner_tour(tour.tour_code, booking_in.partner_code)
+            if not partner_check.get("allowed", True):
+                raise HTTPException(status_code=partner_check.get("status", 403), detail=partner_check.get("error"))
+
     db_booking = create_booking(db, booking=booking_in)
     
     background_tasks.add_task(

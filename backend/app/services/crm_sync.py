@@ -12,6 +12,38 @@ from app.models.booking import Booking
 from app.models.tour import Tour, TourSchedule
 
 
+def validate_partner_tour(tour_code: str | None, partner_code: str | None) -> dict:
+    """Validate a partner/tour pair in CRM before accepting a public booking.
+
+    If CRM integration is disabled, the website remains usable and validation is skipped.
+    """
+    if not partner_code or not settings.CRM_API_URL:
+        return {"allowed": True, "skipped": True}
+    body = json.dumps({"tour_code": tour_code, "partner_code": partner_code}, separators=(",", ":")).encode("utf-8")
+    url = urljoin(settings.CRM_API_URL.rstrip("/") + "/", "/api/integrations/website/validate-partner-tour".lstrip("/"))
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    if settings.CRM_API_KEY:
+        headers["Authorization"] = f"Bearer {settings.CRM_API_KEY}"
+    try:
+        request = Request(url, data=body, headers=headers, method="POST")
+        with urlopen(request, timeout=5) as response:
+            return json.loads(response.read().decode("utf-8") or "{}")
+    except HTTPError as exc:
+        if exc.code == 404:
+            # The tour may not have been synced to CRM yet; normal sync will do that first.
+            return {"allowed": True, "skipped": True}
+        if exc.code != 403:
+            return {"allowed": True, "skipped": True}
+        try:
+            payload = json.loads(exc.read().decode("utf-8") or "{}")
+        except (ValueError, UnicodeDecodeError):
+            payload = {}
+        return {"allowed": False, "status": exc.code, "error": payload.get("error") or "Đại lý không được phép bán tour này"}
+    except (URLError, TimeoutError, ValueError):
+        # The existing asynchronous sync still records the failure if CRM is unavailable.
+        return {"allowed": True, "skipped": True}
+
+
 def _booking_payload(booking: Booking) -> dict:
     schedule = None
     if booking.tour_id:

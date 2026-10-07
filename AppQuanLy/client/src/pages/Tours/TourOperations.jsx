@@ -443,7 +443,7 @@ export default function TourOperations() {
           onSubmit={saveRouteSchedule}
           onCancel={() => { setEditingRouteSchedule(null); setRouteScheduleForm({ ...emptyRouteSchedule, tour: routeScheduleTour }); }}
         />
-      ) : tab === 'suppliers' ? <SuppliersPanel /> : tab === 'partners' ? <PartnersPanel /> : tab === 'pricing' ? <PricingPanel tours={tours} canManage={overview.canManage} /> : tab === 'finance' ? <FinanceReportPanel /> : (
+      ) : tab === 'suppliers' ? <SuppliersPanel /> : tab === 'partners' ? <PartnersPanel tours={tours} /> : tab === 'pricing' ? <PricingPanel tours={tours} canManage={overview.canManage} /> : tab === 'finance' ? <FinanceReportPanel /> : (
         <BookingJourneyPanel vehicles={activeVehicles} />
       )}
 

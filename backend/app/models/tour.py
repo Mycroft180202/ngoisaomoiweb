@@ -74,6 +74,7 @@ class Tour(Base):
     payment_terms = Column(String, nullable=True)
     important_note = Column(String, nullable=True)
     accommodation_prices = Column(JSON, default=list)
+    financial_config = Column(JSON, default=dict)
 
     # Relationships
     province = relationship("ProvinceCity", foreign_keys=[province_id], back_populates="tours", lazy="selectin")
@@ -137,6 +138,7 @@ class TourSchedule(Base):
     max_capacity = Column(Integer, nullable=False)
     booked_seats = Column(Integer, nullable=False, default=0)
     status = Column(String, default="active")  # active, locked, cancelled
+    actual_cost = Column(Float, nullable=True)  # Expense total excluding partner commission; None uses estimates.
 
     tour = relationship("Tour", back_populates="schedules")
 

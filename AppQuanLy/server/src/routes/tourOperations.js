@@ -308,9 +308,9 @@ router.put('/suppliers/:id', requireTourOperations, async (req, res) => {
 });
 
 router.get('/partners', requireTourOperations, async (req, res) => {
-  res.json({ partners: await TourPartner.find().sort({ status: 1, name: 1 }) });
+  res.json({ partners: await TourPartner.find().populate('allowedTours', 'code name destination').sort({ status: 1, name: 1 }) });
 });
-const partnerFields = ['code', 'name', 'contactName', 'phone', 'email', 'commissionPerDay', 'note', 'status'];
+const partnerFields = ['code', 'name', 'contactName', 'phone', 'email', 'commissionPerDay', 'note', 'status', 'allowedTours'];
 router.post('/partners', requireTourOperations, async (req, res) => {
   try {
     const data = Object.fromEntries(partnerFields.filter(field => req.body[field] !== undefined).map(field => [field, req.body[field]]));

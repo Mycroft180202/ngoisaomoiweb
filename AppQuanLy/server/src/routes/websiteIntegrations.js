@@ -26,6 +26,22 @@ const durationNumbers = (raw, itinerary = []) => {
   };
 };
 
+router.post('/validate-partner-tour', authorizeWebsite, async (req, res) => {
+  try {
+    const data = req.body?.data || req.body || {};
+    if (!data.tour_code) return res.status(400).json({ error: 'Thiếu mã tour' });
+    const tour = await Tour.findOne({ code: String(data.tour_code).toUpperCase() }).select('_id code');
+    if (!tour) return res.status(404).json({ error: 'Không tìm thấy tour' });
+    const partner = data.partner_code ? await TourPartner.findOne({ code: String(data.partner_code).toUpperCase(), status: 'active' }).select('allowedTours') : null;
+    if (partner && (partner.allowedTours || []).length && !partner.allowedTours.some(allowedTour => String(allowedTour) === String(tour._id))) {
+      return res.status(403).json({ error: 'Đại lý này không được phép bán tour đã chọn' });
+    }
+    res.json({ allowed: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Không thể kiểm tra quyền bán tour' });
+  }
+});
+
 router.post('/tours', authorizeWebsite, async (req, res) => {
   try {
     const data = req.body?.data;
@@ -80,6 +96,10 @@ router.post('/bookings', authorizeWebsite, async (req, res) => {
     const systemUser = await User.findOne({ username: 'admin' }) || await User.findOne({ role: 'director', status: 'active' });
     const tour = await Tour.findOne({ code: String(data.tour_code).toUpperCase() });
     if (!systemUser || !tour) return res.status(409).json({ error: 'Cần đồng bộ tour trước khi đồng bộ booking' });
+    const partner = data.partner_code ? await TourPartner.findOne({ code: String(data.partner_code).toUpperCase(), status: 'active' }) : null;
+    if (partner && (partner.allowedTours || []).length && !partner.allowedTours.some(allowedTour => String(allowedTour) === String(tour._id))) {
+      return res.status(403).json({ error: 'Đại lý này không được phép bán tour đã chọn' });
+    }
     const customerData = data.customer || {};
     let customer = await Customer.findOne({ $or: [{ phone: customerData.phone || '__none__' }, { email: customerData.email || '__none__' }] });
     if (!customer) customer = new Customer({
@@ -89,7 +109,6 @@ router.post('/bookings', authorizeWebsite, async (req, res) => {
     else Object.assign(customer, { name: customerData.full_name || customer.name, email: customerData.email || customer.email, status: 'booked' });
     await customer.save();
     const mappedStatus = data.booking_status === 'cancelled' ? 'cancelled' : data.payment_status === 'paid' ? 'paid' : data.booking_status === 'confirmed' ? 'confirmed' : 'pending';
-    const partner = data.partner_code ? await TourPartner.findOne({ code: String(data.partner_code).toUpperCase(), status: 'active' }) : null;
     const guestCount = Math.max(1, Number(data.passenger_counts?.total) || (Number(data.passenger_counts?.adults) || 1) + (Number(data.passenger_counts?.children) || 0) + (Number(data.passenger_counts?.infants) || 0));
     const partnerCommission = partner ? partner.commissionPerDay * tour.durationDays * guestCount : 0;
     const booking = await Booking.findOneAndUpdate(

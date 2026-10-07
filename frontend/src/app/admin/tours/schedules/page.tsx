@@ -2,6 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { appToast } from "@/components/ui/AppDialogProvider";
+import AdminDatePicker from "@/components/ui/AdminDatePicker";
+import { formatDateVN } from "@/utils/date";
 
 const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
 type Tour = { id: number; title: string; tour_code?: string };
@@ -52,15 +54,15 @@ export default function TourSchedulesPage() {
   };
   const tourName = (id: number) => tours.find(item => item.id === id)?.title || `Tour #${id}`;
 
-  return <div className="admin-panel">
+  return <div className="admin-panel admin-schedules-page">
     <div className="admin-panel-header"><div><h3>📅 Lịch khởi hành & sức chứa</h3><p style={{ color: "var(--muted)", margin: "0.35rem 0 0" }}>Cấu hình sức chứa riêng cho từng ngày, không dùng một mức 30 khách cho mọi tour.</p></div></div>
-    <form onSubmit={submit} className="auth-form" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr auto", gap: "0.75rem", alignItems: "end", marginBottom: "1.5rem" }}>
+    <form onSubmit={submit} className="auth-form admin-schedule-form">
       <label>Tour<select value={tourId} onChange={e => setTourId(e.target.value)} required><option value="">Chọn tour</option>{tours.map(tour => <option key={tour.id} value={tour.id}>{tour.tour_code ? `${tour.tour_code} · ` : ""}{tour.title}</option>)}</select></label>
-      <label>Ngày khởi hành<input type="date" value={date} onChange={e => setDate(e.target.value)} required /></label>
+      <AdminDatePicker label="Ngày khởi hành" value={date} onChange={setDate} required />
       <label>Sức chứa<input type="number" min="1" max="5000" value={capacity} onChange={e => setCapacity(Number(e.target.value))} required /></label>
       <label>Trạng thái<select value={status} onChange={e => setStatus(e.target.value as Schedule["status"])}><option value="active">Đang mở</option><option value="locked">Đã khóa</option><option value="cancelled">Đã hủy</option></select></label>
-      <div style={{ display: "flex", gap: "0.5rem" }}><button className="admin-btn-primary" type="submit">{editing ? "Lưu" : "Tạo lịch"}</button>{editing && <button className="btn-view-site" type="button" onClick={reset}>Hủy</button>}</div>
+      <div className="admin-schedule-actions"><button className="admin-btn-primary" type="submit">{editing ? "Lưu" : "Tạo lịch"}</button>{editing && <button className="btn-view-site" type="button" onClick={reset}>Hủy</button>}</div>
     </form>
-    {loading ? <div className="admin-spinner" /> : <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Mã</th><th>Tour</th><th>Ngày</th><th>Sức chứa</th><th>Đã đặt</th><th>Còn lại</th><th>Trạng thái</th><th /></tr></thead><tbody>{rows.map(row => <tr key={row.id}><td><strong>{row.departure_code || `#${row.id}`}</strong></td><td>{tourName(row.tour_id)}</td><td>{new Date(`${row.departure_date}T00:00:00`).toLocaleDateString("vi-VN")}</td><td><strong>{row.max_capacity}</strong></td><td>{row.booked_seats}</td><td>{Math.max(0, row.max_capacity - row.booked_seats)}</td><td>{row.status === "active" ? "Đang mở" : row.status === "locked" ? "Đã khóa" : "Đã hủy"}</td><td><button className="btn-action" onClick={() => edit(row)}>✏️</button><button className="btn-action btn-delete" onClick={() => remove(row)}>✕</button></td></tr>)}</tbody></table>{!rows.length && <p style={{ textAlign: "center", padding: "2rem", color: "var(--muted)" }}>Chưa có lịch khởi hành.</p>}</div>}
+    {loading ? <div className="admin-spinner" /> : <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Mã</th><th>Tour</th><th>Ngày</th><th>Sức chứa</th><th>Đã đặt</th><th>Còn lại</th><th>Trạng thái</th><th /></tr></thead><tbody>{rows.map(row => <tr key={row.id}><td><strong>{row.departure_code || `#${row.id}`}</strong></td><td>{tourName(row.tour_id)}</td><td>{formatDateVN(row.departure_date)}</td><td><strong>{row.max_capacity}</strong></td><td>{row.booked_seats}</td><td>{Math.max(0, row.max_capacity - row.booked_seats)}</td><td>{row.status === "active" ? "Đang mở" : row.status === "locked" ? "Đã khóa" : "Đã hủy"}</td><td><button type="button" className="btn-action" onClick={() => edit(row)}>✏️</button><button type="button" className="btn-action btn-delete" onClick={() => remove(row)}>✕</button></td></tr>)}</tbody></table>{!rows.length && <p style={{ textAlign: "center", padding: "2rem", color: "var(--muted)" }}>Chưa có lịch khởi hành.</p>}</div>}
   </div>;
 }

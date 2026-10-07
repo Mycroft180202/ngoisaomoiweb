@@ -1,12 +1,43 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useCallback, useEffect, useState } from "react";
 import { appToast } from "@/components/ui/AppDialogProvider";
+import AdminDatePicker from "@/components/ui/AdminDatePicker";
+import { formatDateVN } from "@/utils/date";
+
 const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
-type Row = { _id: string; code: string; tour?: { name?: string }; startDate: string; status: string; revenue: number; cost: number; profit: number };
+type Row = { id: number; code: string; tour?: { title?: string; name?: string }; startDate: string; status: string; revenue: number; cost: number; commission: number; profit: number };
 const money = (value: number) => `${Number(value || 0).toLocaleString("vi-VN")} đ`;
+
 export default function TourReportsPage() {
-  const [rows, setRows] = useState<Row[]>([]); const [totals, setTotals] = useState({ revenue: 0, cost: 0, profit: 0 }); const [loading, setLoading] = useState(true); const [from, setFrom] = useState(""); const [to, setTo] = useState("");
-  const load = () => { setLoading(true); const token = localStorage.getItem("admin_token"); const query = new URLSearchParams(); if (from) query.set("from", from); if (to) query.set("to", to); fetch(`${API}/tour-operations/finance-report?${query}`, { headers: { Authorization: `Bearer ${token || ""}` } }).then(async response => { const data = await response.json(); if (!response.ok) throw new Error(data.error || "Không thể tải báo cáo"); setRows(data.rows || []); setTotals(data.totals || { revenue: 0, cost: 0, profit: 0 }); }).catch(error => appToast(error.message)).finally(() => setLoading(false)); };
-  useEffect(() => { load(); }, []);
-  return <div className="admin-panel"><div className="admin-panel-header"><div><h3>📊 Báo cáo lợi nhuận tour</h3><p style={{ color: "var(--muted)" }}>Tổng hợp doanh thu booking và chi phí thực tế theo từng chuyến điều hành.</p></div></div><div style={{ display: "flex", gap: "0.75rem", alignItems: "end", marginBottom: "1.25rem", flexWrap: "wrap" }}><label>Từ ngày<input type="date" value={from} onChange={event => setFrom(event.target.value)} /></label><label>Đến ngày<input type="date" value={to} onChange={event => setTo(event.target.value)} /></label><button className="admin-btn-primary" onClick={load}>Lọc báo cáo</button><button className="btn-view-site" onClick={() => { setFrom(""); setTo(""); setTimeout(load, 0); }}>Xóa lọc</button></div><div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}><div className="surface-panel"><small>Doanh thu</small><h3>{money(totals.revenue)}</h3></div><div className="surface-panel"><small>Chi phí</small><h3>{money(totals.cost)}</h3></div><div className="surface-panel"><small>Lợi nhuận</small><h3 style={{ color: totals.profit >= 0 ? "#16a34a" : "#dc2626" }}>{money(totals.profit)}</h3></div></div>{loading ? <div className="admin-spinner" /> : <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Chuyến</th><th>Tour</th><th>Ngày đi</th><th>Doanh thu</th><th>Chi phí</th><th>Lợi nhuận</th><th>Trạng thái</th></tr></thead><tbody>{rows.map(row => <tr key={row._id}><td><strong>{row.code}</strong></td><td>{row.tour?.name || "-"}</td><td>{new Date(row.startDate).toLocaleDateString("vi-VN")}</td><td>{money(row.revenue)}</td><td>{money(row.cost)}</td><td style={{ color: row.profit >= 0 ? "#16a34a" : "#dc2626", fontWeight: 700 }}>{money(row.profit)}</td><td>{row.status}</td></tr>)}</tbody></table>{!rows.length && <p style={{ textAlign: "center", padding: "2rem", color: "var(--muted)" }}>Chưa có dữ liệu tài chính.</p>}</div>}</div>;
+  const [rows, setRows] = useState<Row[]>([]);
+  const [totals, setTotals] = useState({ revenue: 0, cost: 0, commission: 0, profit: 0 });
+  const [loading, setLoading] = useState(true);
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("admin_token");
+      const query = new URLSearchParams();
+      if (from) query.set("from", from);
+      if (to) query.set("to", to);
+      const response = await fetch(`${API}/tour-operations/finance-report?${query}`, { headers: { Authorization: `Bearer ${token || ""}` } });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || data.error || "Không thể tải báo cáo");
+      setRows(data.rows || []);
+      setTotals(data.totals || { revenue: 0, cost: 0, commission: 0, profit: 0 });
+    } catch (error: any) { appToast(error.message || "Không thể tải báo cáo"); }
+    finally { setLoading(false); }
+  }, [from, to]);
+
+  useEffect(() => { load(); }, [load]);
+
+  return <div className="admin-panel admin-report-page">
+    <div className="admin-panel-header"><div><h3>📊 Báo cáo lợi nhuận tour</h3><p style={{ color: "var(--muted)" }}>Tổng hợp doanh thu, chi phí, hoa hồng và lợi nhuận theo từng lịch khởi hành.</p></div></div>
+    <div className="admin-report-filters"><AdminDatePicker label="Từ ngày" value={from} onChange={setFrom} /><AdminDatePicker label="Đến ngày" value={to} onChange={setTo} /><div className="admin-report-actions"><button className="admin-btn-primary" type="button" onClick={load}>Lọc báo cáo</button><button className="btn-view-site" type="button" onClick={() => { setFrom(""); setTo(""); }}>Xóa lọc</button></div></div>
+    <div className="admin-report-summary"><div className="surface-panel"><small>Doanh thu</small><h3>{money(totals.revenue)}</h3></div><div className="surface-panel"><small>Chi phí</small><h3>{money(totals.cost)}</h3></div><div className="surface-panel"><small>Hoa hồng</small><h3>{money(totals.commission)}</h3></div><div className="surface-panel"><small>Lợi nhuận</small><h3 className={totals.profit >= 0 ? "profit-positive" : "profit-negative"}>{money(totals.profit)}</h3></div></div>
+    {loading ? <div className="admin-spinner" /> : <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Chuyến</th><th>Tour</th><th>Ngày đi</th><th>Doanh thu</th><th>Chi phí</th><th>Hoa hồng</th><th>Lợi nhuận</th><th>Trạng thái</th></tr></thead><tbody>{rows.map(row => <tr key={row.id}><td><strong>{row.code}</strong></td><td>{row.tour?.title || row.tour?.name || "-"}</td><td>{formatDateVN(row.startDate)}</td><td>{money(row.revenue)}</td><td>{money(row.cost)}</td><td>{money(row.commission)}</td><td className={row.profit >= 0 ? "profit-positive" : "profit-negative"}>{money(row.profit)}</td><td>{row.status}</td></tr>)}</tbody></table>{!rows.length && <p className="admin-empty-state">Chưa có dữ liệu tài chính trong khoảng thời gian này.</p>}</div>}
+  </div>;
 }

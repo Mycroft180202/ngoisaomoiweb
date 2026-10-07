@@ -8,7 +8,7 @@ from app.core.database import engine
 from sqlalchemy import text
 from app.models.base import Base
 from app.models.payment_transaction import PaymentTransaction
-from app.routers import auth, settings, tours, bookings, news, countries, provinces, durations, attractions, reviews, discounts, guides, categories, tags, quick_searches, news_categories, menus, slides, banners, offices, payments, banks, contacts, testimonials, users, tour_schedules, media
+from app.routers import auth, settings, tours, bookings, news, countries, provinces, durations, attractions, reviews, discounts, guides, categories, tags, quick_searches, news_categories, menus, slides, banners, offices, payments, banks, contacts, testimonials, users, tour_schedules, media, tour_finance
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from app.core.config import settings as app_settings
@@ -163,6 +163,8 @@ try:
         """))
         conn.execute(text("ALTER TABLE tour_schedules ADD COLUMN IF NOT EXISTS departure_code VARCHAR"))
         conn.execute(text("ALTER TABLE tour_schedules ADD COLUMN IF NOT EXISTS crm_departure_id VARCHAR"))
+        conn.execute(text("ALTER TABLE tour_schedules ADD COLUMN IF NOT EXISTS actual_cost DOUBLE PRECISION"))
+        conn.execute(text("ALTER TABLE tours ADD COLUMN IF NOT EXISTS financial_config JSON DEFAULT '{}'::json"))
         conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_tour_schedules_departure_code ON tour_schedules (departure_code)"))
 
         # User role and news category_id
@@ -373,6 +375,7 @@ app.include_router(contacts.router, prefix="/api")
 app.include_router(testimonials.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(tour_schedules.router, prefix="/api")
+app.include_router(tour_finance.router, prefix="/api")
 
 
 @app.get("/")

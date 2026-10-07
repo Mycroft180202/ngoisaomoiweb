@@ -5,6 +5,8 @@ const schema = new mongoose.Schema({
   contactName: { type: String, trim: true, default: '' },
   phone: { type: String, trim: true, default: '' },
   email: { type: String, trim: true, default: '' },
+  // Empty means the partner can sell every tour (backwards-compatible default).
+  allowedTours: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tour' }],
   commissionPerDay: { type: Number, min: 0, default: 160000 },
   note: { type: String, trim: true, default: '' },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' }
