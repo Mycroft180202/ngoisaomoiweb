@@ -3,6 +3,7 @@
 
 import { appToast, appConfirm } from "@/components/ui/AppDialogProvider";
 import { useEffect, useState } from "react";
+import AdminDatePicker from "@/components/ui/AdminDatePicker";
 
 interface Discount {
   id: number;
@@ -196,10 +197,7 @@ export default function DiscountsAdmin() {
             <input type="number" id="discountMinVal" value={minValue} onChange={(e) => setMinValue(Number(e.target.value))} min={0} />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="discountExpiry">Ngày hết hạn</label>
-            <input type="date" id="discountExpiry" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
-          </div>
+          <div className="form-group"><AdminDatePicker label="Ngày hết hạn" value={expiryDate} onChange={setExpiryDate} /></div>
 
           <div className="form-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <input type="checkbox" id="discountActive" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} style={{ width: "20px", height: "20px", cursor: "pointer" }} />

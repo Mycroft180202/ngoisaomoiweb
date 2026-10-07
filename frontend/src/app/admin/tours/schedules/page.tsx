@@ -7,7 +7,7 @@ import { formatDateVN } from "@/utils/date";
 
 const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
 type Tour = { id: number; title: string; tour_code?: string };
-type Schedule = { id: number; tour_id: number; departure_date: string; max_capacity: number; booked_seats: number; status: "active" | "locked" | "cancelled"; departure_code?: string };
+type Schedule = { id: number; tour_id: number; departure_date: string; max_capacity: number; booked_seats: number; actual_cost?: number | null; status: "active" | "locked" | "cancelled"; departure_code?: string };
 
 export default function TourSchedulesPage() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -15,6 +15,7 @@ export default function TourSchedulesPage() {
   const [tourId, setTourId] = useState("");
   const [date, setDate] = useState("");
   const [capacity, setCapacity] = useState<number | "">("");
+  const [actualCost, setActualCost] = useState<number | "">("");
   const [status, setStatus] = useState<Schedule["status"]>("active");
   const [editing, setEditing] = useState<Schedule | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,13 +36,13 @@ export default function TourSchedulesPage() {
   };
   useEffect(() => { load(); }, []);
 
-  const reset = () => { setEditing(null); setTourId(""); setDate(""); setCapacity(""); setStatus("active"); };
-  const edit = (row: Schedule) => { setEditing(row); setTourId(String(row.tour_id)); setDate(row.departure_date); setCapacity(row.max_capacity); setStatus(row.status); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const reset = () => { setEditing(null); setTourId(""); setDate(""); setCapacity(""); setActualCost(""); setStatus("active"); };
+  const edit = (row: Schedule) => { setEditing(row); setTourId(String(row.tour_id)); setDate(row.departure_date); setCapacity(row.max_capacity); setActualCost(row.actual_cost ?? ""); setStatus(row.status); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!tourId || !date || !capacity || capacity < 1) return appToast("Vui lòng nhập tour, ngày và sức chứa hợp lệ");
     const url = editing ? `${API}/tour-schedules/${editing.id}` : `${API}/tour-schedules/`;
-    const response = await fetch(url, { method: editing ? "PUT" : "POST", headers: headers(), body: JSON.stringify({ tour_id: Number(tourId), departure_date: date, max_capacity: Number(capacity), status }) });
+    const response = await fetch(url, { method: editing ? "PUT" : "POST", headers: headers(), body: JSON.stringify({ tour_id: Number(tourId), departure_date: date, max_capacity: Number(capacity), actual_cost: actualCost === "" ? null : Number(actualCost), status }) });
     const data = await response.json();
     if (!response.ok) return appToast(data.detail || "Không thể lưu lịch khởi hành");
     appToast(editing ? "Đã cập nhật lịch khởi hành" : "Đã tạo lịch khởi hành"); reset(); load();
@@ -60,6 +61,7 @@ export default function TourSchedulesPage() {
       <label>Tour<select value={tourId} onChange={e => setTourId(e.target.value)} required><option value="">Chọn tour</option>{tours.map(tour => <option key={tour.id} value={tour.id}>{tour.tour_code ? `${tour.tour_code} · ` : ""}{tour.title}</option>)}</select></label>
       <AdminDatePicker label="Ngày khởi hành" value={date} onChange={setDate} required />
       <label>Sức chứa<input type="number" min="1" max="5000" value={capacity} onChange={e => setCapacity(Number(e.target.value))} required /></label>
+      <label>Chi phí thực tế (đ)<input type="number" min="0" value={actualCost} onChange={e => setActualCost(e.target.value === "" ? "" : Number(e.target.value))} placeholder="Tùy chọn" /></label>
       <label>Trạng thái<select value={status} onChange={e => setStatus(e.target.value as Schedule["status"])}><option value="active">Đang mở</option><option value="locked">Đã khóa</option><option value="cancelled">Đã hủy</option></select></label>
       <div className="admin-schedule-actions"><button className="admin-btn-primary" type="submit">{editing ? "Lưu" : "Tạo lịch"}</button>{editing && <button className="btn-view-site" type="button" onClick={reset}>Hủy</button>}</div>
     </form>

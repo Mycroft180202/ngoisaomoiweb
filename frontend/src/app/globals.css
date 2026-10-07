@@ -3124,7 +3124,7 @@ body:has(.admin-layout) {
 .admin-date-picker__grid button:hover:not(:disabled), .admin-date-picker__grid button.is-selected { background: var(--accent, #0ea5e9); color: var(--public-on-accent, #fff); }
 .admin-date-picker__grid button:disabled { color: var(--public-muted, #cbd5e1); cursor: not-allowed; }
 .admin-date-picker__popover small { display: block; margin-top: .65rem; color: var(--public-muted, #64748b); font-size: .7rem; text-align: center; }
-.admin-schedule-form { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(170px, 1fr) minmax(130px, .8fr) minmax(150px, 1fr) auto; gap: .75rem; align-items: end; margin-bottom: 1.5rem; }
+.admin-schedule-form { display: grid; grid-template-columns: minmax(200px, 1.8fr) minmax(160px, 1fr) minmax(120px, .7fr) minmax(150px, 1fr) minmax(150px, 1fr) auto; gap: .75rem; align-items: end; margin-bottom: 1.5rem; }
 .admin-schedule-form > label, .admin-schedule-form > .admin-date-picker { min-width: 0; }
 .admin-schedule-actions { display: flex; align-items: center; gap: .5rem; }
 @media (max-width: 1100px) { .admin-schedule-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-schedule-actions { grid-column: 1 / -1; } }
@@ -3137,6 +3137,17 @@ body:has(.admin-layout) {
 .admin-empty-state { padding: 2rem; color: var(--muted); text-align: center; }
 .profit-positive { color: #16a34a !important; font-weight: 700; }
 .profit-negative { color: #dc2626 !important; font-weight: 700; }
+.admin-finance-config { margin-bottom: 1.25rem; padding: 1rem 1.15rem; border: 1px solid var(--public-border, #e2e8f0); border-radius: .9rem; background: var(--public-surface-soft, #f8fafc); }
+.admin-finance-config summary { cursor: pointer; color: var(--public-text-strong, #0f172a); font-weight: 800; }
+.admin-finance-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; margin-top: 1rem; align-items: end; }
+.admin-finance-form label { display: flex; flex-direction: column; gap: .35rem; font-size: .8rem; font-weight: 700; }
+.admin-finance-form label.cms-check { flex-direction: row; align-items: center; }
+.admin-finance-form label.cms-check input { width: auto; }
+.admin-finance-form select, .admin-finance-form input { width: 100%; box-sizing: border-box; }
+.admin-finance-form button, .admin-finance-note, .admin-finance-form > p { grid-column: 1 / -1; }
+.admin-finance-note { margin: 0; color: var(--public-muted, #64748b); font-size: .78rem; line-height: 1.5; }
+@media (max-width: 900px) { .admin-finance-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .admin-finance-form { grid-template-columns: 1fr; } }
 @media (max-width: 900px) { .admin-report-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-report-actions { grid-column: 1 / -1; } .admin-report-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .admin-report-filters, .admin-report-summary { grid-template-columns: 1fr; } .admin-report-actions { grid-column: auto; } }
 

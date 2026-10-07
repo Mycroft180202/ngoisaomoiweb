@@ -24,6 +24,7 @@ def create_tour_schedule(db: Session, schedule: TourScheduleCreate):
         departure_date=schedule.departure_date,
         max_capacity=schedule.max_capacity,
         booked_seats=schedule.booked_seats,
+        actual_cost=schedule.actual_cost,
         status=schedule.status
     )
     db.add(db_schedule)

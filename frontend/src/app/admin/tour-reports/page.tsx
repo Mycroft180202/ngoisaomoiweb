@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { appToast } from "@/components/ui/AppDialogProvider";
 import AdminDatePicker from "@/components/ui/AdminDatePicker";
-import { formatDateVN } from "@/utils/date";
+import { formatDateVN } from "@/utils/date";`r`nimport TourFinanceConfig from "@/components/ui/TourFinanceConfig";
 
 const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
 type Row = { id: number; code: string; tour?: { title?: string; name?: string }; startDate: string; status: string; revenue: number; cost: number; commission: number; profit: number };
@@ -36,8 +36,9 @@ export default function TourReportsPage() {
 
   return <div className="admin-panel admin-report-page">
     <div className="admin-panel-header"><div><h3>📊 Báo cáo lợi nhuận tour</h3><p style={{ color: "var(--muted)" }}>Tổng hợp doanh thu, chi phí, hoa hồng và lợi nhuận theo từng lịch khởi hành.</p></div></div>
-    <div className="admin-report-filters"><AdminDatePicker label="Từ ngày" value={from} onChange={setFrom} /><AdminDatePicker label="Đến ngày" value={to} onChange={setTo} /><div className="admin-report-actions"><button className="admin-btn-primary" type="button" onClick={load}>Lọc báo cáo</button><button className="btn-view-site" type="button" onClick={() => { setFrom(""); setTo(""); }}>Xóa lọc</button></div></div>
+    <TourFinanceConfig onSaved={load} />`r`n    <div className="admin-report-filters"><AdminDatePicker label="Từ ngày" value={from} onChange={setFrom} /><AdminDatePicker label="Đến ngày" value={to} onChange={setTo} /><div className="admin-report-actions"><button className="admin-btn-primary" type="button" onClick={load}>Lọc báo cáo</button><button className="btn-view-site" type="button" onClick={() => { setFrom(""); setTo(""); }}>Xóa lọc</button></div></div>
     <div className="admin-report-summary"><div className="surface-panel"><small>Doanh thu</small><h3>{money(totals.revenue)}</h3></div><div className="surface-panel"><small>Chi phí</small><h3>{money(totals.cost)}</h3></div><div className="surface-panel"><small>Hoa hồng</small><h3>{money(totals.commission)}</h3></div><div className="surface-panel"><small>Lợi nhuận</small><h3 className={totals.profit >= 0 ? "profit-positive" : "profit-negative"}>{money(totals.profit)}</h3></div></div>
     {loading ? <div className="admin-spinner" /> : <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Chuyến</th><th>Tour</th><th>Ngày đi</th><th>Doanh thu</th><th>Chi phí</th><th>Hoa hồng</th><th>Lợi nhuận</th><th>Trạng thái</th></tr></thead><tbody>{rows.map(row => <tr key={row.id}><td><strong>{row.code}</strong></td><td>{row.tour?.title || row.tour?.name || "-"}</td><td>{formatDateVN(row.startDate)}</td><td>{money(row.revenue)}</td><td>{money(row.cost)}</td><td>{money(row.commission)}</td><td className={row.profit >= 0 ? "profit-positive" : "profit-negative"}>{money(row.profit)}</td><td>{row.status}</td></tr>)}</tbody></table>{!rows.length && <p className="admin-empty-state">Chưa có dữ liệu tài chính trong khoảng thời gian này.</p>}</div>}
   </div>;
 }
+

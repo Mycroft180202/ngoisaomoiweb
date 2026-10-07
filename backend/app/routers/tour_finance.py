@@ -3,7 +3,7 @@ from datetime import date
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session, lazyload
+from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.booking import Booking
@@ -23,7 +23,7 @@ def finance_admin(current_user: User = Depends(get_current_user)):
 
 @router.get("/finance-config")
 def read_configs(db: Session = Depends(get_db), current_user: User = Depends(finance_admin)):
-    tours = db.query(Tour).options(lazyload("*")).order_by(Tour.id.desc()).all()
+    tours = db.query(Tour).order_by(Tour.id.desc()).all()
     return {"tours": [{"id": tour.id, "title": tour.title, "tour_code": tour.tour_code, "price": tour.price,
                        "configured": bool(tour.financial_config), "config": TourFinanceConfig(**(tour.financial_config or {})).model_dump(),
                        "preview": recommended_price(TourFinanceConfig(**(tour.financial_config or {})), duration_days(tour.duration))} for tour in tours]}
@@ -31,7 +31,7 @@ def read_configs(db: Session = Depends(get_db), current_user: User = Depends(fin
 
 @router.put("/finance-config/{tour_id}")
 def save_config(tour_id: int, config: TourFinanceConfig, db: Session = Depends(get_db), current_user: User = Depends(finance_admin)):
-    tour = db.query(Tour).options(lazyload("*")).filter(Tour.id == tour_id).first()
+    tour = db.query(Tour).filter(Tour.id == tour_id).first()
     if not tour:
         raise HTTPException(status_code=404, detail="Không tìm thấy tour")
     tour.financial_config = config.model_dump()
@@ -60,7 +60,7 @@ def finance_report(from_date: Optional[date] = Query(None, alias="from"), to_dat
         groups[(booking.tour_id, booking.departure_date)].append(booking)
     schedules = {(schedule.tour_id, schedule.departure_date): schedule for schedule in schedule_query.all()}
     keys = set(groups) | set(schedules)
-    tours = {tour.id: tour for tour in db.query(Tour).options(lazyload("*")).filter(Tour.id.in_({key[0] for key in keys})).all()}
+    tours = {tour.id: tour for tour in db.query(Tour).filter(Tour.id.in_({key[0] for key in keys})).all()}
     rows = []
     for key in sorted(keys, key=lambda item: (item[1], item[0]), reverse=True):
         tour = tours.get(key[0])

@@ -2,6 +2,7 @@
 
 
 import { appToast, appConfirm } from "@/components/ui/AppDialogProvider";
+import AdminDatePicker from "@/components/ui/AdminDatePicker";
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -1852,12 +1853,7 @@ function ToursManagerContent() {
                       <div style={{ background: "var(--public-surface-soft, #f8fafc)", padding: "1.25rem", borderRadius: "0.75rem", border: "1px solid var(--public-border, #e2e8f0)", marginBottom: "1.25rem", display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr auto", gap: "1rem", alignItems: "end" }}>
                         <div>
                           <label style={{ display: "block", marginBottom: "0.4rem", fontWeight: 700, color: "var(--public-text-strong, #1e293b)" }}>Chọn ngày khởi hành</label>
-                          <input
-                            type="date"
-                            value={customDate}
-                            onChange={(e) => setCustomDate(e.target.value)}
-                            style={{ width: "100%", padding: "0.6rem 0.75rem", borderRadius: "0.5rem", border: "1px solid var(--public-border, #cbd5e1)" }}
-                          />
+                          <AdminDatePicker value={customDate} onChange={setCustomDate} required />
                         </div>
                         <div>
                           <label style={{ display: "block", marginBottom: "0.4rem", fontWeight: 700, color: "var(--public-text-strong, #1e293b)" }}>Giá bán (VNĐ)</label>

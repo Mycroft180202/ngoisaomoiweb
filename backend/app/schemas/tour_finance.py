@@ -10,7 +10,7 @@ class TourFinanceConfig(BaseModel):
     tax_percent: float = Field(default=0, ge=0, le=100, allow_inf_nan=False)
     profit_percent: float = Field(default=0, ge=0, le=100, allow_inf_nan=False)
     commission_type: Literal["per_day", "per_guest", "percentage", "per_booking"] = "per_day"
-    commission_value: float = Field(default=0, ge=0, allow_inf_nan=False)
+    commission_value: float = Field(default=160000, ge=0, allow_inf_nan=False)
     commission_children: bool = True
     commission_infants: bool = False
     revenue_basis: Literal["confirmed", "paid"] = "confirmed"
