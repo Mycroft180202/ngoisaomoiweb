@@ -134,7 +134,7 @@ class TourSchedule(Base):
     crm_departure_id = Column(String, nullable=True)
     tour_id = Column(Integer, ForeignKey("tours.id", ondelete="CASCADE"), nullable=False)
     departure_date = Column(Date, nullable=False, index=True)
-    max_capacity = Column(Integer, nullable=False, default=30)
+    max_capacity = Column(Integer, nullable=False)
     booked_seats = Column(Integer, nullable=False, default=0)
     status = Column(String, default="active")  # active, locked, cancelled
 

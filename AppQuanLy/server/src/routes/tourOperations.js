@@ -7,6 +7,9 @@ const Carrier = require('../models/Carrier');
 const Vehicle = require('../models/Vehicle');
 const Tour = require('../models/Tour');
 const TourDeparture = require('../models/TourDeparture');
+const Booking = require('../models/Booking');
+const TourSupplier = require('../models/TourSupplier');
+const TourPartner = require('../models/TourPartner');
 const User = require('../models/User');
 const RouteSchedule = require('../models/RouteSchedule');
 const { generateCode } = require('../utils/codeGenerator');
@@ -282,6 +285,46 @@ router.get('/overview', async (req, res) => {
     populateDeparture(TourDeparture.find().sort({ startDate: -1 }).limit(100))
   ]);
   res.json({ carriers, vehicles, departures, canManage: canManage(req) });
+});
+
+router.get('/suppliers', requireTourOperations, async (req, res) => {
+  res.json({ suppliers: await TourSupplier.find().sort({ name: 1 }) });
+});
+const supplierFields = ['name', 'category', 'contactName', 'phone', 'email', 'address', 'bankAccount', 'note', 'status'];
+router.post('/suppliers', requireTourOperations, async (req, res) => {
+  try {
+    const data = Object.fromEntries(supplierFields.filter(field => req.body[field] !== undefined).map(field => [field, req.body[field]]));
+    res.status(201).json({ supplier: await TourSupplier.create(data) });
+  } catch (error) { res.status(400).json({ error: error.message }); }
+});
+router.put('/suppliers/:id', requireTourOperations, async (req, res) => {
+  try {
+    const supplier = await TourSupplier.findById(req.params.id);
+    if (!supplier) return res.status(404).json({ error: 'Không tìm thấy nhà cung cấp' });
+    supplierFields.forEach(field => { if (req.body[field] !== undefined) supplier[field] = req.body[field]; });
+    await supplier.save();
+    res.json({ supplier });
+  } catch (error) { res.status(400).json({ error: error.message }); }
+});
+
+router.get('/partners', requireTourOperations, async (req, res) => {
+  res.json({ partners: await TourPartner.find().sort({ status: 1, name: 1 }) });
+});
+const partnerFields = ['code', 'name', 'contactName', 'phone', 'email', 'commissionPerDay', 'note', 'status'];
+router.post('/partners', requireTourOperations, async (req, res) => {
+  try {
+    const data = Object.fromEntries(partnerFields.filter(field => req.body[field] !== undefined).map(field => [field, req.body[field]]));
+    res.status(201).json({ partner: await TourPartner.create(data) });
+  } catch (error) { res.status(400).json({ error: error.message }); }
+});
+router.put('/partners/:id', requireTourOperations, async (req, res) => {
+  try {
+    const partner = await TourPartner.findById(req.params.id);
+    if (!partner) return res.status(404).json({ error: 'Không tìm thấy đại lý/đối tác' });
+    partnerFields.forEach(field => { if (req.body[field] !== undefined) partner[field] = req.body[field]; });
+    await partner.save();
+    res.json({ partner });
+  } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
 router.get('/route-schedules/:tourId', async (req, res) => {
@@ -647,6 +690,81 @@ router.put('/departures/:id', requireTourOperations, async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message || 'Không thể cập nhật chuyến' });
   }
+});
+
+router.get('/departures/:id/unallocated-bookings', requireTourOperations, async (req, res) => {
+  try {
+    const departure = await TourDeparture.findById(req.params.id).select('code tour startDate endDate passengers');
+    if (!departure) return res.status(404).json({ error: 'Không tìm thấy chuyến' });
+    const day = departure.startDate.toISOString().slice(0, 10);
+    const from = new Date(`${day}T00:00:00.000Z`);
+    const to = new Date(from.getTime() + 86400000);
+    const bookings = await Booking.find({ tour: departure.tour, status: { $nin: ['cancelled'] }, $or: [
+      { 'journeySegments.departure': departure._id },
+      { 'websiteSource.departureDate': { $gte: from, $lt: to } }
+    ] }).select('code customerName customerPhone adults children infants totalPrice status websiteSource').sort({ createdAt: 1 });
+    const rows = bookings.map(item => {
+      const assigned = (departure.passengers || []).filter(passenger => String(passenger.booking) === String(item._id) && isActiveAllocation(passenger)).length;
+      const total = item.adults + item.children + item.infants;
+      return { ...item.toObject(), assigned, total, remaining: Math.max(0, total - assigned) };
+    });
+    res.json({ bookings: rows.filter(item => item.remaining > 0) });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể tải booking chưa xếp xe' }); }
+});
+
+router.get('/departures/:id/finance', requireTourOperations, async (req, res) => {
+  try {
+    const departure = await TourDeparture.findById(req.params.id).select('code tour startDate endDate costs assignedGuides');
+    if (!departure) return res.status(404).json({ error: 'Không tìm thấy chuyến' });
+    const bookings = await Booking.find({
+      tour: departure.tour,
+      status: { $nin: ['cancelled'] },
+      $or: [
+        { 'websiteSource.departureCode': departure.code },
+        { 'websiteSource.departureCode': { $exists: false }, createdAt: { $gte: departure.startDate, $lte: departure.endDate } }
+      ]
+    }).select('code customerName adults children infants totalPrice status partnerCommission websiteSource');
+    const revenue = bookings.filter(item => ['confirmed', 'paid', 'completed'].includes(item.status))
+      .reduce((sum, item) => sum + (Number(item.totalPrice) || 0), 0);
+    const costs = (departure.costs || []).filter(item => item.status !== 'cancelled');
+    const partnerCommission = bookings.reduce((sum, item) => sum + (Number(item.partnerCommission) || 0), 0);
+    const costTotal = costs.reduce((sum, item) => sum + (Number(item.totalCost) || (Number(item.quantity) || 0) * (Number(item.unitCost) || 0)), 0) + partnerCommission;
+    res.json({ revenue, costTotal, partnerCommission, profit: revenue - costTotal, bookings, costs });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể tải tài chính chuyến' }); }
+});
+
+router.get('/finance-report', requireTourOperations, async (req, res) => {
+  try {
+    const filter = {};
+    if (req.query.from || req.query.to) filter.startDate = {};
+    if (req.query.from) filter.startDate.$gte = new Date(req.query.from);
+    if (req.query.to) filter.startDate.$lte = new Date(req.query.to);
+    const departures = await TourDeparture.find(filter).populate('tour', 'code name').sort({ startDate: -1 }).limit(500);
+    const rows = await Promise.all(departures.map(async departure => {
+      const bookings = await Booking.find({ tour: departure.tour?._id || departure.tour, status: { $nin: ['cancelled'] }, $or: [{ 'websiteSource.departureCode': departure.code }, { 'websiteSource.departureCode': { $exists: false }, createdAt: { $gte: departure.startDate, $lte: departure.endDate } }] }).select('totalPrice status partnerCommission');
+      const revenue = bookings.filter(item => ['confirmed', 'paid', 'completed'].includes(item.status)).reduce((sum, item) => sum + (Number(item.totalPrice) || 0), 0);
+      const cost = (departure.costs || []).filter(item => item.status !== 'cancelled').reduce((sum, item) => sum + (Number(item.totalCost) || (Number(item.quantity) || 0) * (Number(item.unitCost) || 0)), 0) + bookings.reduce((sum, item) => sum + (Number(item.partnerCommission) || 0), 0);
+      return { _id: departure._id, code: departure.code, tour: departure.tour, startDate: departure.startDate, status: departure.status, revenue, cost, profit: revenue - cost };
+    }));
+    res.json({ rows, totals: rows.reduce((total, row) => ({ revenue: total.revenue + row.revenue, cost: total.cost + row.cost, profit: total.profit + row.profit }), { revenue: 0, cost: 0, profit: 0 }) });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể tải báo cáo tài chính' }); }
+});
+
+router.put('/departures/:id/costs', requireTourOperations, async (req, res) => {
+  try {
+    const departure = await TourDeparture.findById(req.params.id);
+    if (!departure) return res.status(404).json({ error: 'Không tìm thấy chuyến' });
+    if (!Array.isArray(req.body.costs)) return res.status(400).json({ error: 'Danh sách chi phí không hợp lệ' });
+    const costs = req.body.costs.map(item => {
+      const quantity = Number(item.quantity ?? 1);
+      const unitCost = Number(item.unitCost ?? 0);
+      const status = ['estimated', 'approved', 'paid', 'cancelled'].includes(item.status) ? item.status : 'estimated';
+      return { ...item, quantity, unitCost, status, totalCost: Number(item.totalCost ?? quantity * unitCost), createdBy: req.user._id, ...(status === 'approved' || status === 'paid' ? { approvedBy: req.user._id, approvedAt: new Date() } : {}) };
+    });
+    departure.costs = costs;
+    await departure.save();
+    res.json({ costs: departure.costs, message: 'Đã lưu chi phí chuyến' });
+  } catch (error) { res.status(400).json({ error: error.message || 'Không thể lưu chi phí chuyến' }); }
 });
 
 router.post('/departures/:id/lifecycle', requireTourOperations, async (req, res) => {

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   ArrowLeft, Bus, CalendarDays, CheckCircle2, ChevronRight, ClipboardCheck, Clock3, Download, Edit3, Eye, FileText,
-  MapPin, Navigation, Plus, Route, Trash2, Upload, UserRound, Users, X
+  DollarSign, MapPin, Navigation, Plus, Route, Trash2, Upload, UserRound, Users, X
 } from 'lucide-react';
 import api from '../../services/api';
 import { useConfirm } from '../../contexts/ConfirmContext';
@@ -12,6 +12,10 @@ import GooglePlaceInput from '../../components/ui/GooglePlaceInput';
 import './TourOperations.css';
 import RouteSchedulesPanel from './RouteSchedulesPanel';
 import BookingJourneyPanel from './BookingJourneyPanel';
+import SuppliersPanel from './SuppliersPanel';
+import FinanceReportPanel from './FinanceReportPanel';
+import PricingPanel from './PricingPanel';
+import PartnersPanel from './PartnersPanel';
 
 const departureStatus = {
   planning: 'Đang lập kế hoạch', open: 'Mở bán', confirmed: 'Đã xác nhận',
@@ -26,7 +30,7 @@ const stopTypes = {
 const emptyCarrier = { name: '', contactName: '', phone: '', email: '', address: '', note: '' };
 const emptyVehicle = { carrier: '', plateNumber: '', name: '', vehicleType: 'Xe du lịch', seatCapacity: 29, driverName: '', driverPhone: '', note: '' };
 const emptyDeparture = { tour: '', startDate: '', endDate: '', departureTime: '05:30', returnTime: '19:30', departurePoint: '', manager: '', status: 'planning', note: '', assignedVehicles: [], assignedGuides: [] };
-const emptyPassenger = { sourceTour: '', fullName: '', phone: '', idNumber: '', passengerType: 'adult', vehicle: '', seatNumber: '', pickupStopId: '', dropoffStopId: '', pickupNote: '', dropoffNote: '', allocationStatus: 'confirmed', status: 'waiting' };
+const emptyPassenger = { booking: '', sourceTour: '', fullName: '', phone: '', idNumber: '', passengerType: 'adult', vehicle: '', seatNumber: '', pickupStopId: '', dropoffStopId: '', pickupNote: '', dropoffNote: '', allocationStatus: 'confirmed', status: 'waiting' };
 const emptyRouteSchedule = { tour: '', code: '', name: '', transferMinutes: 45, autoSuggest: true, active: true, stops: [{ code: 'HN', name: 'Hà Nội', address: '', latitude: '', longitude: '', sequence: 0 }, { code: 'HUE', name: 'Huế', address: '', latitude: '', longitude: '', sequence: 1 }], services: [{ code: 'S1', originStopCode: 'HN', destinationStopCode: 'HUE', departureTime: '06:00', arrivalTime: '18:00', daysOfWeek: [1, 2, 3, 4, 5, 6, 0], defaultVehicle: '', active: true }] };
 const newStop = () => ({ type: 'pickup', name: '', address: '', placeId: '', plannedTime: '', latitude: '', longitude: '', note: '' });
 const emptyDay = () => ({ day: 1, date: '', title: '', description: '', stops: [newStop()] });
@@ -377,6 +381,7 @@ export default function TourOperations() {
         <button className={tab === 'fleet' ? 'active' : ''} onClick={() => setTab('fleet')}><Bus size={17} /> Nhà xe & phương tiện</button>
         <button className={tab === 'schedules' ? 'active' : ''} onClick={() => setTab('schedules')}><Clock3 size={17} /> Lịch tuyến cố định</button>
         <button className={tab === 'journeys' ? 'active' : ''} onClick={() => setTab('journeys')}><ClipboardCheck size={17} /> Hành trình booking</button>
+        {overview.canManage && <><button className={tab === 'suppliers' ? 'active' : ''} onClick={() => setTab('suppliers')}>Nhà cung cấp</button><button className={tab === 'partners' ? 'active' : ''} onClick={() => setTab('partners')}>Đại lý/đối tác</button><button className={tab === 'pricing' ? 'active' : ''} onClick={() => setTab('pricing')}>Cấu hình giá</button><button className={tab === 'finance' ? 'active' : ''} onClick={() => setTab('finance')}>Báo cáo tài chính</button></>}
       </div>
 
       {tab === 'departures' ? (
@@ -438,11 +443,11 @@ export default function TourOperations() {
           onSubmit={saveRouteSchedule}
           onCancel={() => { setEditingRouteSchedule(null); setRouteScheduleForm({ ...emptyRouteSchedule, tour: routeScheduleTour }); }}
         />
-      ) : (
+      ) : tab === 'suppliers' ? <SuppliersPanel /> : tab === 'partners' ? <PartnersPanel /> : tab === 'pricing' ? <PricingPanel tours={tours} canManage={overview.canManage} /> : tab === 'finance' ? <FinanceReportPanel /> : (
         <BookingJourneyPanel vehicles={activeVehicles} />
       )}
 
-      {selected && <DepartureDetail departure={selected} canManage={overview.canManage} onDepartureChange={setSelected} onClose={() => setSelected(null)} onAddDay={() => { setEditingDay(null); setModalDepartureId(selected._id); setDayForm({ ...emptyDay(), day: Math.max(0, ...(selected.itineraryDays || []).map(day => day.day)) + 1 }); setModal('day'); }} onEditDay={openEditDay} onRemoveDay={removeItineraryDay} onAddPassenger={() => { const stops = availableStops; setEditingPassenger(null); setModalDepartureId(selected._id); setPassengerForm({ ...emptyPassenger, sourceTour: selected.tour?._id || '', vehicle: selected.assignedVehicles?.[0]?.vehicle?._id || '', pickupStopId: stops[0]?._id || '', dropoffStopId: stops.at(-1)?._id || '' }); setModal('passenger'); }} onEditPassenger={openEditPassenger} onRemovePassenger={removePassenger} onUploadProgram={uploadProgram} onViewProgram={viewProgram} onDownloadProgram={downloadProgram} onRemoveProgram={removeProgram} />}
+      {selected && <DepartureDetail departure={selected} canManage={overview.canManage} onDepartureChange={setSelected} onClose={() => setSelected(null)} onAddDay={() => { setEditingDay(null); setModalDepartureId(selected._id); setDayForm({ ...emptyDay(), day: Math.max(0, ...(selected.itineraryDays || []).map(day => day.day)) + 1 }); setModal('day'); }} onEditDay={openEditDay} onRemoveDay={removeItineraryDay} onAddPassenger={() => { const stops = availableStops; setEditingPassenger(null); setModalDepartureId(selected._id); setPassengerForm({ ...emptyPassenger, sourceTour: selected.tour?._id || '', vehicle: selected.assignedVehicles?.[0]?.vehicle?._id || '', pickupStopId: stops[0]?._id || '', dropoffStopId: stops.at(-1)?._id || '' }); setModal('passenger'); }} onAddBooking={booking => { const stops = availableStops; setEditingPassenger(null); setModalDepartureId(selected._id); setPassengerForm({ ...emptyPassenger, booking: booking._id, sourceTour: selected.tour?._id || '', fullName: booking.customerName || '', phone: booking.customerPhone || '', vehicle: selected.assignedVehicles?.[0]?.vehicle?._id || '', pickupStopId: stops[0]?._id || '', dropoffStopId: stops.at(-1)?._id || '' }); setModal('passenger'); }} onEditPassenger={openEditPassenger} onRemovePassenger={removePassenger} onUploadProgram={uploadProgram} onViewProgram={viewProgram} onDownloadProgram={downloadProgram} onRemoveProgram={removeProgram} />}
 
       {pdfViewer && <div className="pdf-viewer-overlay" onClick={() => { URL.revokeObjectURL(pdfViewer.url); setPdfViewer(null); }}><div className="pdf-viewer-modal" onClick={e => e.stopPropagation()}><header><div><FileText size={18} /><b>{pdfViewer.name}</b></div><div className="pdf-viewer-actions"><button className="btn btn-secondary btn-sm" onClick={() => window.open(pdfViewer.url, '_blank')}>Mở toàn màn hình</button><button className="modal-close" onClick={() => { URL.revokeObjectURL(pdfViewer.url); setPdfViewer(null); }}><X size={20} /></button></div></header><object data={pdfViewer.url} type="application/pdf" aria-label={pdfViewer.name}><iframe src={pdfViewer.url} title={pdfViewer.name} /></object></div></div>}
 
@@ -515,7 +520,7 @@ function PassengerForm({ form, setForm, departure, tours, stops, onSubmit, editi
   </div><FormFooter label={editing ? 'Lưu phân bổ khách' : 'Xếp khách vào chặng'} /></form>;
 }
 
-function DepartureDetail({ departure, canManage, onDepartureChange, onClose, onAddDay, onEditDay, onRemoveDay, onAddPassenger, onEditPassenger, onRemovePassenger, onUploadProgram, onViewProgram, onDownloadProgram, onRemoveProgram }) {
+function DepartureDetail({ departure, canManage, onDepartureChange, onClose, onAddDay, onEditDay, onRemoveDay, onAddPassenger, onAddBooking, onEditPassenger, onRemovePassenger, onUploadProgram, onViewProgram, onDownloadProgram, onRemoveProgram }) {
   const [mapDay, setMapDay] = useState('all');
   const [publicToken, setPublicToken] = useState(departure.publicAccess?.token || '');
   const [tracking, setTracking] = useState(false);
@@ -523,6 +528,8 @@ function DepartureDetail({ departure, canManage, onDepartureChange, onClose, onA
   const [openAttendance, setOpenAttendance] = useState('');
   const [expandedVehicles, setExpandedVehicles] = useState(() => new Set());
   const [capacity, setCapacity] = useState([]);
+  const [unallocatedBookings, setUnallocatedBookings] = useState([]);
+  const [finance, setFinance] = useState({ revenue: 0, costTotal: 0, profit: 0, bookings: [], costs: departure.costs || [] });
   const lastGpsSentAt = useRef(0);
   const stopMap = new Map(departure.itineraryDays?.flatMap(day => day.stops.map(stop => [String(stop._id), stop])) || []);
   const passengersForVehicle = vehicleId => departure.passengers?.filter(item => String(item.vehicle?._id || item.vehicle) === String(vehicleId)) || [];
@@ -534,6 +541,33 @@ function DepartureDetail({ departure, canManage, onDepartureChange, onClose, onA
       .catch(() => { if (active) setCapacity([]); });
     return () => { active = false; };
   }, [departure._id, departure.passengers, departure.itineraryDays, departure.assignedVehicles]);
+
+  useEffect(() => {
+    let active = true;
+    api.get(`/tour-operations/departures/${departure._id}/unallocated-bookings`)
+      .then(result => { if (active) setUnallocatedBookings(result.bookings || []); })
+      .catch(() => { if (active) setUnallocatedBookings([]); });
+    return () => { active = false; };
+  }, [departure._id, departure.passengers]);
+
+  useEffect(() => {
+    let active = true;
+    api.get(`/tour-operations/departures/${departure._id}/finance`)
+      .then(result => { if (active) setFinance(result); })
+      .catch(() => { if (active) setFinance(current => ({ ...current, costs: departure.costs || [] })); });
+    return () => { active = false; };
+  }, [departure._id, departure.costs, departure.status]);
+
+  const updateCost = (index, field, value) => setFinance(current => ({ ...current, costs: current.costs.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item) }));
+  const saveCosts = async () => {
+    try {
+      const result = await api.put(`/tour-operations/departures/${departure._id}/costs`, { costs: finance.costs });
+      setFinance(current => ({ ...current, costs: result.costs }));
+      onDepartureChange({ ...departure, costs: result.costs });
+      toast.success(result.message);
+    } catch (error) { toast.error(error.message); }
+  };
+  const addCost = () => setFinance(current => ({ ...current, costs: [...current.costs, { category: 'other', description: '', vendor: '', quantity: 1, unitCost: 0, status: 'estimated', note: '' }] }));
 
   const movePassenger = async (passenger, action) => {
     try {
@@ -620,7 +654,9 @@ function DepartureDetail({ departure, canManage, onDepartureChange, onClose, onA
         <section className="ops-detail-section"><div className="ops-detail-title"><h3><Bus size={17} /> Xe và hành khách ({departure.passengers?.length || 0})</h3>{canManage && !!departure.assignedVehicles?.length && <button className="btn btn-primary btn-sm" onClick={onAddPassenger}><Plus size={15} /> Thêm khách</button>}</div>
           <div className="vehicle-passenger-groups">{departure.assignedVehicles?.map(assignment => { const vehicle = assignment.vehicle; const vehicleId = String(vehicle?._id); const passengers = passengersForVehicle(vehicle?._id); const expanded = expandedVehicles.has(vehicleId); return <details open key={assignment._id}><summary><Bus size={18} /><span><b>{vehicle?.plateNumber}</b><small>{vehicle?.carrier?.name} · {assignment.driverName || vehicle?.driverName || 'Chưa có tài xế'}</small></span><strong>{passengers.length}/{vehicle?.seatCapacity}</strong></summary><div className="passenger-list">{passengers.slice(0, expanded ? passengers.length : 3).map(passengerRow)}{passengers.length > 3 && <button type="button" className="passenger-expand" onClick={() => toggleVehiclePassengers(vehicleId)}>{expanded ? 'Thu gọn danh sách' : `Xem thêm ${passengers.length - 3} hành khách`}</button>}{!passengers.length && <p className="text-muted text-sm">Xe này chưa có hành khách.</p>}</div></details>; })}{!departure.assignedVehicles?.length && <p className="text-muted text-sm">Chưa phân công xe.</p>}</div>
         </section>
+        <section className="ops-detail-section"><div className="ops-detail-title"><h3><Users size={17} /> Booking chưa xếp xe ({unallocatedBookings.length})</h3></div>{unallocatedBookings.length ? <div className="unallocated-booking-list">{unallocatedBookings.map(booking => <div className="unallocated-booking" key={booking._id}><div><b>{booking.code} · {booking.customerName}</b><small>{booking.customerPhone || 'Chưa có SĐT'} · Còn {booking.remaining}/{booking.total} khách · {Number(booking.totalPrice || 0).toLocaleString('vi-VN')} đ</small></div><span className={`booking-payment-status ${booking.status}`}>{booking.status === 'paid' ? 'Đã thanh toán' : booking.status === 'confirmed' ? 'Đã xác nhận' : 'Chờ xử lý'}</span>{canManage && <button className="btn btn-primary btn-sm" onClick={() => onAddBooking(booking)}>Xếp khách</button>}</div>)}</div> : <p className="text-muted text-sm">Tất cả booking của chuyến đã được đưa vào danh sách hành khách hoặc chưa có booking mới.</p>}</section>
         <section className="ops-detail-section capacity-section"><div className="ops-detail-title"><h3><Users size={17} /> Sức chứa theo từng chặng</h3></div><div className="capacity-vehicles">{capacity.map(item => <article key={item.vehicle._id}><header><b>{item.vehicle.plateNumber}</b><span>Còn ít nhất <strong>{item.minimumAvailable}</strong>/{item.vehicle.seatCapacity} ghế</span></header><div>{item.segments.map(segment => <div className={segment.available === 0 ? 'capacity-segment full' : segment.available <= 3 ? 'capacity-segment warning' : 'capacity-segment'} key={`${segment.fromStopId}-${segment.toStopId}`}><span>Ngày {segment.fromDay} · {segment.fromName} → {segment.toName}</span><b>{segment.occupied}/{segment.capacity}</b><small>{segment.available ? `Còn ${segment.available} ghế` : 'Đã hết chỗ'}</small></div>)}</div></article>)}{!capacity.length && <p className="text-muted text-sm">Thêm ít nhất hai điểm hành trình để tính sức chứa theo chặng.</p>}</div></section>
+        <section className="ops-detail-section"><div className="ops-detail-title"><h3><DollarSign size={17} /> Doanh thu, chi phí và lợi nhuận</h3>{canManage && <span><button className="btn btn-secondary btn-sm" onClick={addCost}><Plus size={14} /> Thêm chi phí</button> <button className="btn btn-primary btn-sm" onClick={saveCosts}>Lưu chi phí</button></span>}</div><div className="finance-summary"><div><small>Doanh thu đã xác nhận</small><b>{Number(finance.revenue || 0).toLocaleString('vi-VN')} đ</b></div><div><small>Tổng chi phí</small><b>{Number(finance.costTotal || 0).toLocaleString('vi-VN')} đ</b></div><div><small>Lợi nhuận tạm tính</small><b className={finance.profit >= 0 ? 'profit-positive' : 'profit-negative'}>{Number(finance.profit || 0).toLocaleString('vi-VN')} đ</b></div></div><div className="finance-cost-list">{finance.costs.map((cost, index) => <div className="finance-cost-row" key={cost._id || index}><select className="form-control" value={cost.category} onChange={event => updateCost(index, 'category', event.target.value)}><option value="vehicle">Xe</option><option value="guide">HDV</option><option value="restaurant">Nhà hàng</option><option value="hotel">Khách sạn</option><option value="ticket">Vé</option><option value="flight">Vé máy bay</option><option value="insurance">Bảo hiểm</option><option value="other">Khác</option></select><input className="form-control" placeholder="Nội dung chi phí" value={cost.description || ''} onChange={event => updateCost(index, 'description', event.target.value)} /><input className="form-control" placeholder="Nhà cung cấp" value={cost.vendor || ''} onChange={event => updateCost(index, 'vendor', event.target.value)} /><input className="form-control" placeholder="Link h?a ??n/ch?ng t?" value={cost.receiptUrl || ''} onChange={event => updateCost(index, 'receiptUrl', event.target.value)} /><input type="number" min="0" className="form-control" placeholder="SL" value={cost.quantity ?? 1} onChange={event => updateCost(index, 'quantity', event.target.value)} /><input type="number" min="0" className="form-control" placeholder="Đơn giá" value={cost.unitCost ?? 0} onChange={event => updateCost(index, 'unitCost', event.target.value)} /><select className="form-control" value={cost.status || 'estimated'} onChange={event => updateCost(index, 'status', event.target.value)}><option value="estimated">Dự toán</option><option value="approved">Đã duyệt</option><option value="paid">Đã trả</option><option value="cancelled">Hủy</option></select></div>)}{!finance.costs.length && <p className="text-muted text-sm">Chưa có chi phí. Thêm xe, HDV, nhà hàng, khách sạn và các khoản phát sinh để tính lợi nhuận.</p>}</div></section>
         <section className="ops-detail-section attendance-section"><div className="ops-detail-title"><h3><ClipboardCheck size={17} /> Bảng điểm danh ({departure.attendanceSessions?.length || 0})</h3>{canManage && !!departure.passengers?.length && <button className="btn btn-primary btn-sm" onClick={() => newAttendance()}><Plus size={15} /> Tạo bảng</button>}</div>
           <div className="attendance-session-list">{departure.attendanceSessions?.map(session => { const present = session.records.filter(record => record.status === 'present').length; const missing = session.records.filter(record => record.status === 'missing').length; const isOpen = openAttendance === session._id; return <article className="attendance-session" key={session._id}><header onClick={() => setOpenAttendance(isOpen ? '' : session._id)}><ClipboardCheck size={18} /><span><b>{session.title}</b><small>{session.vehicle?.plateNumber} · {attendanceTypes[session.type]}{session.day ? ` · Ngày ${session.day}` : ''}</small></span><strong>{present}/{session.records.length}</strong>{canManage && <span className="attendance-actions"><button className="btn btn-icon btn-ghost btn-sm" onClick={event => { event.stopPropagation(); editAttendance(session); }}><Edit3 size={14} /></button><button className="btn btn-icon btn-ghost btn-sm text-danger" onClick={event => { event.stopPropagation(); deleteAttendance(session); }}><Trash2 size={14} /></button></span>}</header>{isOpen && <div className="attendance-records"><div className="attendance-progress"><span><CheckCircle2 size={14} /> Có mặt {present}</span><span>Vắng {missing}</span><span>Chưa điểm danh {session.records.filter(record => record.status === 'pending').length}</span></div>{session.records.map(record => <div className="attendance-record" key={record._id}><span className="passenger-avatar">{record.fullName.charAt(0)}</span><div><b>{record.fullName}</b><small>Ghế {record.seatNumber || 'chưa xếp'}</small></div><div className="attendance-status-buttons">{[['present', 'Có mặt'], ['missing', 'Vắng'], ['excused', 'Có phép']].map(([value, label]) => <button type="button" className={record.status === value ? `active ${value}` : ''} onClick={() => markAttendance(session, record, record.status === value ? 'pending' : value)} key={value}>{label}</button>)}</div></div>)}</div>}</article>; })}{!departure.attendanceSessions?.length && <p className="text-muted text-sm">Chưa có bảng điểm danh. Có thể tạo tại điểm khởi hành, sau mỗi điểm nghỉ hoặc trước từng chặng.</p>}</div>
         </section>

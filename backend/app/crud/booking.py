@@ -105,6 +105,7 @@ def create_booking(db: Session, booking: BookingCreate):
                 raise HTTPException(status_code=400, detail="Mã giảm giá đã hết hạn hoặc chưa đạt giá trị đơn tối thiểu.")
 
     total_amount = subtotal - discount_amount
+    partner_code = booking.partner_code.upper() if booking.partner_code else None
 
     db_booking = Booking(
         tour_id=booking.tour_id,
@@ -124,6 +125,7 @@ def create_booking(db: Session, booking: BookingCreate):
         total_amount=total_amount,
         discount_code=applied_code,
         discount_amount=discount_amount
+        , partner_code=partner_code
     )
     db.add(db_booking)
     db.flush()

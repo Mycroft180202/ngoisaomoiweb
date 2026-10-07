@@ -288,6 +288,33 @@
   background: var(--accent);
 }
 
+/* Cookie consent sits on the dark V2 shell. Keep its copy high-contrast
+   instead of inheriting the light-theme text colors from globals.css. */
+.site-frame--v2 .cookie-banner-container {
+  background: #0d2638;
+  border-color: rgba(129, 214, 239, .3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .38);
+}
+
+.site-frame--v2 .cookie-banner-text strong {
+  color: #e8f7ff;
+}
+
+.site-frame--v2 .cookie-banner-text p {
+  color: #c4d9e5;
+}
+
+.site-frame--v2 .cookie-btn--secondary {
+  color: #173247;
+  background: #d8e3eb;
+  border-color: #d8e3eb;
+}
+
+.site-frame--v2 .cookie-btn--secondary:hover {
+  color: #0b2437;
+  background: #eef5f8;
+}
+
 .site-frame--v2 .news-category-pill {
   color: var(--accent);
   border-color: var(--border-strong);

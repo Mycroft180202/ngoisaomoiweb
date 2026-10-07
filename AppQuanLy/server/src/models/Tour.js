@@ -45,6 +45,14 @@ const tourSchema = new mongoose.Schema({
     child: { type: Number, default: 0, min: 0 },
     surcharge: { type: Number, default: 0, min: 0 }
   },
+  pricing: {
+    netServiceCostPerPerson: { type: Number, min: 0, default: 0 },
+    taxRate: { type: Number, min: 0, max: 1, default: 0.08 },
+    profitRate: { type: Number, min: 0, max: 1, default: 0.10 },
+    partnerCommissionPerDay: { type: Number, min: 0, default: 160000 },
+    calculatedAdultPrice: { type: Number, min: 0, default: 0 },
+    calculatedAt: { type: Date }
+  },
   status: {
     type: String,
     enum: ['draft', 'active', 'departing', 'completed', 'cancelled'],

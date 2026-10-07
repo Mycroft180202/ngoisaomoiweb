@@ -20,6 +20,7 @@ class BookingBase(BaseModel):
     total_amount: Optional[float] = 0.0
     discount_code: Optional[str] = None
     discount_amount: Optional[float] = 0.0
+    partner_code: Optional[str] = None
 
 class BookingCreate(BookingBase):
     # Giá và trạng thái thanh toán luôn do server/admin quyết định.
@@ -39,6 +40,7 @@ class BookingUpdate(BaseModel):
     total_amount: Optional[float] = None
     discount_code: Optional[str] = None
     discount_amount: Optional[float] = None
+    partner_code: Optional[str] = None
 
 class BookingResponse(BookingBase):
     id: int

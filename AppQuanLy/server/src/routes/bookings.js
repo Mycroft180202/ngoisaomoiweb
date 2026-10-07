@@ -7,6 +7,7 @@ const { requireDepartment } = require('../middleware/rbac');
 const { generateCode } = require('../utils/codeGenerator');
 const { updateWebsiteBookingStatus } = require('../services/websiteBookingSync');
 const RouteSchedule = require('../models/RouteSchedule');
+const TourPartner = require('../models/TourPartner');
 
 /**
  * GET /api/bookings
@@ -59,7 +60,7 @@ router.get('/', async (req, res) => {
  */
 router.post('/', requireDepartment('director', 'sale'), async (req, res) => {
   try {
-    const { tour: tourId, customerName, customerPhone, customerEmail, adults, children, note } = req.body;
+    const { tour: tourId, customerName, customerPhone, customerEmail, adults, children, note, partnerCode } = req.body;
 
     if (!tourId || !customerName || !customerPhone) {
       return res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin' });
@@ -78,6 +79,8 @@ router.post('/', requireDepartment('director', 'sale'), async (req, res) => {
     // Auto-generate code (atomic, race-condition safe)
     const code = await generateCode('BK', 3);
 
+    const partner = partnerCode ? await TourPartner.findOne({ code: String(partnerCode).toUpperCase(), status: 'active' }) : null;
+    const guestCount = adultsCount + childrenCount;
     const booking = new Booking({
       code,
       tour: tourId,
@@ -86,7 +89,7 @@ router.post('/', requireDepartment('director', 'sale'), async (req, res) => {
       customerEmail,
       adults: adultsCount,
       children: childrenCount,
-      totalPrice,
+      totalPrice, partner: partner?._id || null, partnerCommission: partner ? partner.commissionPerDay * tour.durationDays * guestCount : 0,
       note,
       createdBy: req.user._id
     });

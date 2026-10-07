@@ -25,6 +25,8 @@ class Booking(Base):
     total_amount = Column(Float, default=0.0)
     discount_code = Column(String, nullable=True)
     discount_amount = Column(Float, default=0.0)
+    partner_code = Column(String, nullable=True)
+    partner_commission = Column(Float, default=0.0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     crm_sync_status = Column(String, nullable=False, default="not_synced")
     crm_customer_id = Column(String, nullable=True)

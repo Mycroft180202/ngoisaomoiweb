@@ -4,7 +4,8 @@ from datetime import date
 
 class TourScheduleBase(BaseModel):
     departure_date: date
-    max_capacity: int = Field(default=30, ge=1, le=5000)
+    # Sức chứa phụ thuộc từng chuyến; không tự mặc định 30 để tránh bán quá chỗ.
+    max_capacity: int = Field(..., ge=1, le=5000)
     booked_seats: int = Field(default=0, ge=0, le=5000)
     status: Literal["active", "locked", "cancelled"] = "active"
 

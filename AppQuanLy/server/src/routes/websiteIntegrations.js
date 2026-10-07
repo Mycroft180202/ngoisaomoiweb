@@ -4,6 +4,7 @@ const Tour = require('../models/Tour');
 const User = require('../models/User');
 const Booking = require('../models/Booking');
 const Customer = require('../models/Customer');
+const TourPartner = require('../models/TourPartner');
 
 const router = express.Router();
 
@@ -88,12 +89,15 @@ router.post('/bookings', authorizeWebsite, async (req, res) => {
     else Object.assign(customer, { name: customerData.full_name || customer.name, email: customerData.email || customer.email, status: 'booked' });
     await customer.save();
     const mappedStatus = data.booking_status === 'cancelled' ? 'cancelled' : data.payment_status === 'paid' ? 'paid' : data.booking_status === 'confirmed' ? 'confirmed' : 'pending';
+    const partner = data.partner_code ? await TourPartner.findOne({ code: String(data.partner_code).toUpperCase(), status: 'active' }) : null;
+    const guestCount = Math.max(1, Number(data.passenger_counts?.total) || (Number(data.passenger_counts?.adults) || 1) + (Number(data.passenger_counts?.children) || 0) + (Number(data.passenger_counts?.infants) || 0));
+    const partnerCommission = partner ? partner.commissionPerDay * tour.durationDays * guestCount : 0;
     const booking = await Booking.findOneAndUpdate(
       { code: String(data.booking_code).toUpperCase() },
       { $set: { tour: tour._id, customerName: customerData.full_name, customerPhone: customerData.phone, customerEmail: customerData.email,
         adults: Math.max(1, Number(data.passenger_counts?.adults) || 1), children: Number(data.passenger_counts?.children) || 0,
         infants: Number(data.passenger_counts?.infants) || 0,
-        totalPrice: Number(data.quoted_total) || 0, status: mappedStatus, note: data.notes || '',
+        totalPrice: Number(data.quoted_total) || 0, status: mappedStatus, note: data.notes || '', partner: partner?._id || null, partnerCommission,
         websiteSource: {
           bookingId: Number(data.booking_id), bookingCode: String(data.booking_code).toUpperCase(),
           departureId: data.departure_id, departureCode: data.departure_code, departureDate: data.departure_date,

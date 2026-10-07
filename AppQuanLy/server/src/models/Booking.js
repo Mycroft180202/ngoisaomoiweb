@@ -72,6 +72,8 @@ const bookingSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
+  partner: { type: mongoose.Schema.Types.ObjectId, ref: 'TourPartner' },
+  partnerCommission: { type: Number, min: 0, default: 0 },
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'paid', 'completed', 'cancelled'],

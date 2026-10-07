@@ -49,6 +49,22 @@ const assignedGuideSchema = new mongoose.Schema({
   note: { type: String, trim: true, default: '' }
 });
 
+const departureCostSchema = new mongoose.Schema({
+  category: { type: String, enum: ['vehicle', 'guide', 'restaurant', 'hotel', 'ticket', 'flight', 'insurance', 'other'], required: true },
+  description: { type: String, required: true, trim: true },
+  vendor: { type: String, trim: true, default: '' },
+  quantity: { type: Number, min: 0, default: 1 },
+  unitCost: { type: Number, min: 0, default: 0 },
+  totalCost: { type: Number, min: 0, default: 0 },
+  status: { type: String, enum: ['estimated', 'approved', 'paid', 'cancelled'], default: 'estimated' },
+  receiptUrl: { type: String, trim: true, default: '' },
+  approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  approvedAt: { type: Date },
+  incurredAt: { type: Date },
+  note: { type: String, trim: true, default: '' },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+});
+
 const passengerSchema = new mongoose.Schema({
   booking: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
   sourceTour: { type: mongoose.Schema.Types.ObjectId, ref: 'Tour' },
@@ -133,6 +149,7 @@ const tourDepartureSchema = new mongoose.Schema({
   manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   assignedVehicles: [assignedVehicleSchema],
   assignedGuides: [assignedGuideSchema],
+  costs: [departureCostSchema],
   itineraryDays: [itineraryDaySchema],
   passengers: [passengerSchema],
   attendanceSessions: [attendanceSessionSchema],

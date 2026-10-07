@@ -152,6 +152,8 @@ export default function AdminLayout({
 
   const tourSubItems = [
     { label: "✈️ Tour du lịch", href: "/admin/tours" },
+    { label: "📅 Lịch khởi hành & sức chứa", href: "/admin/tours/schedules" },
+    { label: "📊 Báo cáo lợi nhuận tour", href: "/admin/tour-reports" },
     { label: "📍 Tỉnh / Thành phố", href: "/admin/tours/provinces" },
     { label: "🌏 Quốc gia", href: "/admin/tours/countries" },
     { label: "⏱️ Thời gian tour", href: "/admin/tours/durations" },

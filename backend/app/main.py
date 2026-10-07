@@ -189,6 +189,8 @@ try:
         conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS total_amount DOUBLE PRECISION DEFAULT 0.0"))
         conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS discount_code VARCHAR"))
         conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS discount_amount DOUBLE PRECISION DEFAULT 0.0"))
+        conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS partner_code VARCHAR"))
+        conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS partner_commission DOUBLE PRECISION DEFAULT 0.0"))
         conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_code VARCHAR"))
         conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_bookings_booking_code ON bookings (booking_code)"))
         conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS adults_count INTEGER DEFAULT 1 NOT NULL"))

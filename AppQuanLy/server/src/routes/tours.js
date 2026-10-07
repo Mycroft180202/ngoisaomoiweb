@@ -15,6 +15,40 @@ const allowSystemAdmin = (middleware) => (req, res, next) => {
 
 const requireTourEditor = allowSystemAdmin(requireDepartment('director', 'sale'));
 const requireTourDeleter = allowSystemAdmin(requireRole('director'));
+const requirePricingEditor = (req, res, next) => {
+  if (req.user?.username?.toLowerCase() === 'admin' || req.user?.role === 'director' || req.user?.department === 'sale' || req.user?.department === 'operations' || req.user?.permissions?.includes('tour_operations.manage')) return next();
+  return res.status(403).json({ error: 'Bạn không có quyền cấu hình giá tour' });
+};
+
+const calculatePricing = (tour, input = {}) => {
+  const net = Number(input.netServiceCostPerPerson ?? tour.pricing?.netServiceCostPerPerson ?? tour.estimatedCost ?? 0);
+  const taxRate = Number(input.taxRate ?? tour.pricing?.taxRate ?? 0.08);
+  const profitRate = Number(input.profitRate ?? tour.pricing?.profitRate ?? 0.10);
+  const perDay = Number(input.partnerCommissionPerDay ?? tour.pricing?.partnerCommissionPerDay ?? 160000);
+  const days = Number(tour.durationDays || 1);
+  const tax = net * taxRate;
+  const profit = net * profitRate;
+  const partnerCommission = perDay * days;
+  return { net, taxRate, tax, profitRate, profit, partnerCommissionPerDay: perDay, days, partnerCommission, adultPrice: Math.round(net + tax + profit + partnerCommission) };
+};
+
+router.post('/:id/pricing/calculate', requirePricingEditor, async (req, res) => {
+  const tour = await Tour.findById(req.params.id);
+  if (!tour) return res.status(404).json({ error: 'Không tìm thấy tour' });
+  res.json({ pricing: calculatePricing(tour, req.body) });
+});
+
+router.put('/:id/pricing', requirePricingEditor, async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    if (!tour) return res.status(404).json({ error: 'Không tìm thấy tour' });
+    const pricing = calculatePricing(tour, req.body);
+    tour.pricing = { netServiceCostPerPerson: pricing.net, taxRate: pricing.taxRate, profitRate: pricing.profitRate, partnerCommissionPerDay: pricing.partnerCommissionPerDay, calculatedAdultPrice: pricing.adultPrice, calculatedAt: new Date() };
+    tour.price.adult = pricing.adultPrice;
+    await tour.save();
+    res.json({ tour, pricing, message: 'Đã tính và lưu giá bán theo cấu phần' });
+  } catch (error) { res.status(400).json({ error: error.message }); }
+});
 
 /**
  * GET /api/tours

@@ -179,6 +179,7 @@ export default function CheckoutClient() {
   const tourTitle = searchParams.get("tourTitle") || "";
   const dateParam = searchParams.get("date") || "";
   const guestsParam = parseInt(searchParams.get("guests") || "1");
+  const partnerCode = searchParams.get("partner") || searchParams.get("partnerCode") || "";
 
   // Tour data
   const [tour, setTour] = useState<TourData | null>(null);
@@ -456,6 +457,7 @@ export default function CheckoutClient() {
         discount_code: appliedPromo && discountAmount > 0 && appliedPromo.code === discountCode.trim().toUpperCase() ? appliedPromo.code : null,
         total_amount: total > 0 ? total : null,
         discount_amount: discountAmount > 0 ? discountAmount : 0,
+        partner_code: partnerCode || null,
       };
 
       const res = await fetch(`${API_BASE}/bookings/`, {

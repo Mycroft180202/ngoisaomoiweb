@@ -51,6 +51,7 @@ def _booking_payload(booking: Booking) -> dict:
             "quoted_total": booking.total_amount,
             "discount_code": booking.discount_code,
             "discount_amount": booking.discount_amount,
+            "partner_code": booking.partner_code,
             "notes": booking.notes,
             "source": "website",
         },
