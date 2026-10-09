@@ -101,6 +101,46 @@ function parseHighlights(description: string): string[] {
   return items;
 }
 
+
+const ROUTE_MAX_CHARS = 120;
+
+function RouteField({ route }: { route: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = route && route.length > ROUTE_MAX_CHARS;
+
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
+      <span style={{ fontSize: "1.1rem", marginTop: "0.1rem" }}>📍</span>
+      <span style={{ color: "var(--public-text, #475569)", lineHeight: "1.5" }}>
+        Tuyến:{" "}
+        <strong>
+          {isLong && !expanded ? route.slice(0, ROUTE_MAX_CHARS) + "..." : route}
+        </strong>
+        {isLong && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            style={{
+              marginLeft: "0.4rem",
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              color: "var(--accent, #10b981)",
+              fontWeight: 700,
+              fontSize: "0.78rem",
+              textDecoration: "underline",
+              display: "inline",
+            }}
+          >
+            {expanded ? "Thu gọn ▲" : "Xem thêm ▼"}
+          </button>
+        )}
+      </span>
+    </div>
+  );
+}
+
 export default function TourDetailClient({ slug }: { slug: string }) {
   const [tour, setTour] = useState<any | null>(null);
   const [allTours, setAllTours] = useState<any[]>([]);
@@ -679,12 +719,9 @@ export default function TourDetailClient({ slug }: { slug: string }) {
                       <span>Điểm đi: <strong>{tour.departurePoint}</strong></span>
                     </div>
                   )}
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
-                    <span style={{ fontSize: "1.1rem", marginTop: "0.1rem" }}>📍</span>
-                    <span style={{ color: "var(--public-text, #475569)", lineHeight: "1.5" }}>
-                      Tuyến: <strong>{tour.route}</strong>
-                    </span>
-                  </div>
+                  <RouteField route={tour.route} />
+
+
                 </div>
 
                 <Link

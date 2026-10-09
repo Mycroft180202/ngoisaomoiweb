@@ -153,6 +153,42 @@ function CurrencyInput({ value, onChange, style, placeholder }: { value: number;
   />;
 }
 
+
+const LOCATION_MAX_CHARS = 80;
+
+function LocationCell({ location }: { location: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = location && location.length > LOCATION_MAX_CHARS;
+
+  return (
+    <span style={{ fontSize: "0.78rem", color: "var(--public-muted, #94a3b8)", display: "block" }}>
+      {"📍 "}
+      {isLong && !expanded
+        ? location.slice(0, LOCATION_MAX_CHARS) + "..."
+        : location}
+      {isLong && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
+          style={{
+            marginLeft: "0.3rem",
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            color: "var(--public-info-text, #3b82f6)",
+            fontWeight: 700,
+            fontSize: "0.72rem",
+            textDecoration: "underline",
+          }}
+        >
+          {expanded ? "Thu gọn" : "Xem thêm"}
+        </button>
+      )}
+    </span>
+  );
+}
+
 function ToursManagerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -2577,9 +2613,7 @@ function ToursManagerContent() {
                               {tour.title_en}
                             </span>
                           )}
-                          <span style={{ fontSize: "0.78rem", color: "var(--public-muted, #94a3b8)" }}>
-                            📍 {tour.location}
-                          </span>
+                          <LocationCell location={tour.location} />
                           <span style={{ fontSize: ".72rem", color: tour.crm_tour_id ? "var(--public-success-text, #059669)" : "var(--public-muted, #94a3b8)", marginTop: 3 }}>{tour.crm_tour_id ? `✓ CRM: ${tour.crm_tour_id}` : `CMS: ${tour.tour_code || tour.id}`}</span>
                         </div>
                       </td>
